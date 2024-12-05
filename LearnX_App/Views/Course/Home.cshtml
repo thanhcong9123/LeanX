@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<style>
+    div {
+        display: block;
+    }
+
+    .backdrop {
+        height: 500px;
+        /* Làm kích thước ảnh thu lại đủ để chu trong khung */
+        background-size: cover;
+        /* Thuộc tính background-position dùng để thiết lập "vị trí của hình nền" trong phần tử HTML. */
+        background-position: 50% 0;
+        /* Thuộc tính background-repeat dùng để thiết lập "sự lặp lại của hình nền" cho phần tử HTML. */
+        background-repeat: no-repeat;
+        /* làm cho phần tử không tác động đến các thẻ khác */
+        position: relative;
+        z-index: 1;
+    }
+
+    .backdrop:before {
+        position: absolute;
+        content: "";
+        width: 100%;
+        top: 0;
+        bottom: 0;
+
+    }
+
+    .botton {
+        height: 350px;
+        background-color: rgb(245, 247, 248);
+        width: 350px;
+        border: 2px solid rgb(146, 201, 233);
+        box-shadow: 0px 4px 8px rgba(146, 201, 233);
+        /* Hiệu ứng đổ bóng */
+        border-radius: 5px;
+    }
+
+    .botton-login {
+        margin-right: 200px;
+
+    }
+
+    .section {
+        position: relative;
+        /* Đảm bảo các phần tử nội dung xếp chồng lên hình nền */
+        margin-top: -50px;
+        z-index: 2;
+    }
+
+    .btn {
+        /* Màu nền mặc định */
+        color: white;
+        /* Màu chữ */
+        padding: 10px 20px;
+        cursor: pointer;
+        transition: filter 0.3s;
+        /* Hiệu ứng mượt mà */
+        background-color: rgb(54, 77, 127);
+        width: 200px;
+        height: 80px;
+        border: 2px solid rgb(146, 201, 233);
+        border-radius: 75px;
+        display: block;
+    }
+
+    .btn:hover {
+        filter: brightness(1.2);
+        /* Làm sáng 20% khi hover */
+    }
+</style>
+
+<body>
+    <div class="backdrop"
+        style="background-image: url('https://files.oaiusercontent.com/file-LylJd7icdJLgS6pciCymfv6N?se=2024-11-14T15%3A53%3A10Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D0d4237f6-aba6-4b2c-9f99-a1dd3373249b.webp&sig=//5shz5iL2e95I4Ie0vEd8bokCUOGhw/M1wNsfPxHWE%3D');">
+
+    </div>
+    <section class="section container d-flex justify-content-center align-items-center">
+        <div class="botton botton-login d-flex justify-content-center align-items-center">
+            <div>
+               <img src="https://files.oaiusercontent.com/file-ILj0YpXPc7oefiJpRHtryuF5?se=2024-11-14T16%3A41%3A02Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3D1c3125e8-deba-4192-bd2b-3d661a67dada.webp&sig=wkkM4ZlW0NCUw7FLTuzQG4xgoNqrnO3Thpaq5Ptzyh0%3D"
+                    width="100" alt=""> 
+                <a href="/User/Login" class="btn d-flex justify-content-center align-items-center">
+                    Login
+                </a>
+
+            </div>
+        </div>
+        <div class="botton botton-regis d-flex justify-content-center align-items-center">
+            <a href="/User/Register" class="btn d-flex justify-content-center align-items-center">
+                Register
+            </a>
+        </div>
+    </section>
+</body>
+
+</html>

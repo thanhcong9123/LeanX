@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "LearnX_ModelView/1.0.0": {
+        "runtime": {
+          "LearnX_ModelView.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "LearnX_ModelView/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

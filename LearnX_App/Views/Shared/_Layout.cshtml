@@ -1,0 +1,82 @@
+﻿@model NavigationViewModel
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - LearnX_App</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/LearnX_App.styles.css" asp-append-version="true" />
+</head>
+<style>
+    .icon {
+        color: #89d3d3;
+        font-size: 50px;
+    }
+
+    .text-center {
+        color: #3fa0a0;
+        font-size: 50px;
+    }
+
+    nav {
+        background-color: #FEF9EF;
+    }
+</style>
+
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow ">
+            <div class="container">
+                <div class="row d-flex flex-nowrap">
+                    <div class="col-4 d-flex ">
+                        <img src="/img/Evening classes.png" alt="" height="100px">
+                        <h2 class="mg-2 icon d-flex justify-content-center align-items-center">LearX</h2>
+                    </div>
+                    <div class="clo-4 text-center">
+
+                        <h2 class=" h-100 d-flex justify-content-center align-items-center"
+                            style="font-size: 50px; padding-bottom: 10px;">Learn from the best</h2>
+                    </div>
+                </div>
+            </div>
+
+        </nav>
+        @if (User.Identity.IsAuthenticated)
+        {
+            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow
+        mb-3">
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Index">Course</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Course"
+                                asp-action="Exercise">Exercise</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        }
+      
+    </header>
+    <div class="">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>
