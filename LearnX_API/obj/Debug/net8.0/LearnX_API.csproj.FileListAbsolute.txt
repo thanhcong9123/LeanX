@@ -304,3 +304,5 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\Le
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_Utilities.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_Application.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_Utilities.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\Castle.Core.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.sourcelink.json

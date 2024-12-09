@@ -9,3 +9,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\refint\LearnX_ModelView.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_ModelView.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\ref\LearnX_ModelView.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_ModelView.sourcelink.json

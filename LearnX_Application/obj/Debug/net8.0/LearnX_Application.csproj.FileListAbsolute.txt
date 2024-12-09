@@ -17,3 +17,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Application\obj\Debug\n
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Application\obj\Debug\net8.0\refint\LearnX_Application.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Application\obj\Debug\net8.0\LearnX_Application.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Application\obj\Debug\net8.0\ref\LearnX_Application.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Application\obj\Debug\net8.0\LearnX_Application.sourcelink.json
