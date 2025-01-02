@@ -5,5 +5,9 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
+ 
+  <ItemGroup>
+    <ProjectReference Include="..\LearnX_Data\LearnX_Data.csproj" />
+    <ProjectReference Include="..\LearnX_Utilities\LearnX_Utilities.csproj" />
+  </ItemGroup>
 </Project>

@@ -10,3 +10,9 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_ModelView.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\ref\LearnX_ModelView.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_ModelView.sourcelink.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\bin\Debug\net8.0\LearnX_Data.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\bin\Debug\net8.0\LearnX_Utilities.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\bin\Debug\net8.0\LearnX_Data.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\bin\Debug\net8.0\LearnX_Utilities.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_ModelView.csproj.AssemblyReference.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ModelView\obj\Debug\net8.0\LearnX_M.BCD4C30E.Up2Date

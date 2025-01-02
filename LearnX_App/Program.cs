@@ -11,18 +11,20 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
     .AddCookie(options =>
     {
-        options.LoginPath = "/Login/Index";
+        options.LoginPath = "/User/Login";
         options.AccessDeniedPath = "/User/Forbidden/";
     });
     
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set your timeout
-    options.Cookie.HttpOnly = true; // Make the cookie HTTP only
-    options.Cookie.IsEssential = true; // Make the session cookie essential
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian session tồn tại
+
 });
+builder.Services.AddHttpContextAccessor(); // Đăng ký HttpContextAccessor
+
 builder.Services.AddTransient<IUserApiClient, UserApiClient>();
 builder.Services.AddTransient<ICourseApiClient, CourseApiClient>();
+builder.Services.AddTransient<IEnrollmentClient, EnrollmentClient>();
 builder.Services.AddRazorPages();
 var app = builder.Build();
 
@@ -37,16 +39,15 @@ if (!app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAuthentication();
-
 app.UseRouting();
-app.UseSession();
-
+app.UseCookiePolicy();
 app.UseAuthorization();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Course}/{action=Home}/{id?}");
-// app.MapControllerRoute(
-//     name: "Areas",
-//     pattern: "{area:exists}/{controller=User}/{action=Login}/{id?}");
+app.MapControllerRoute(
+    name: "Areas",
+    pattern: "{area:exists}/{controller=User}/{action=Login}/{id?}");
 app.Run();

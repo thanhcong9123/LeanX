@@ -9,6 +9,7 @@ using LearnX_Data.Entities;
 using LearnX_Application.SystemService;
 using Microsoft.AspNetCore.Authorization;
 using LearnX_ModelView.System.User;
+using AopDemo;
 
 namespace LearnX_API.Controllers
 {
@@ -16,6 +17,7 @@ namespace LearnX_API.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        // private readonly IMyService _myService;
         private readonly IUserService _service;
 
         public UserController(IUserService service)

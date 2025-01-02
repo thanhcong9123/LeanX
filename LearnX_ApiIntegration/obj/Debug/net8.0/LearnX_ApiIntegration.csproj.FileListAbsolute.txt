@@ -17,3 +17,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ApiIntegration\obj\Debu
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ApiIntegration\obj\Debug\net8.0\refint\LearnX_ApiIntegration.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ApiIntegration\obj\Debug\net8.0\LearnX_ApiIntegration.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ApiIntegration\obj\Debug\net8.0\ref\LearnX_ApiIntegration.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_ApiIntegration\obj\Debug\net8.0\LearnX_ApiIntegration.sourcelink.json

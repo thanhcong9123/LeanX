@@ -2528,6 +2528,10 @@
         }
       },
       "LearnX_ModelView/1.0.0": {
+        "dependencies": {
+          "LearnX_Data": "1.0.0",
+          "LearnX_Utilities": "1.0.0"
+        },
         "runtime": {
           "LearnX_ModelView.dll": {
             "assemblyVersion": "1.0.0",

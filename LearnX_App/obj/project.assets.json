@@ -3826,6 +3826,10 @@
       "LearnX_ModelView/1.0.0": {
         "type": "project",
         "framework": ".NETCoreApp,Version=v8.0",
+        "dependencies": {
+          "LearnX_Data": "1.0.0",
+          "LearnX_Utilities": "1.0.0"
+        },
         "compile": {
           "bin/placeholder/LearnX_ModelView.dll": {}
         },

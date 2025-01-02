@@ -41,13 +41,13 @@ namespace LearnX_App.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LearnX_ModelView.System.User.Login request)
         {
-            if (!ModelState.IsValid)
+             if (!ModelState.IsValid)
                 return View(request);
 
             var result = await _context.Authenticate(request);
             if (result.ResultObj == null)
             {
-                // ModelState.AddModelError("", "Login failure");
+                ModelState.AddModelError("", "Login failure");
                 return View();
             }
             var userPrincipal = this.ValidateToken(result.ResultObj);
@@ -56,11 +56,15 @@ namespace LearnX_App.Controllers
                 ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
                 IsPersistent = false
             };
-            HttpContext.Session.SetString(SystemConstants.AppSettings.DefaultLanguageId, _configuration[SystemConstants.AppSettings.DefaultLanguageId]);
-            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj); await HttpContext.SignInAsync(
-                        CookieAuthenticationDefaults.AuthenticationScheme,
-                        userPrincipal,
-                        authProperties);
+            // Lưu token vào Session
+            // HttpContext.Session.SetString("Token", result.ResultObj);
+
+            // Lưu các thông tin cần thiết vào session
+            HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
+
+            // Thực hiện đăng nhập
+            
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
 
             return RedirectToAction("Index", "Course");
         }
@@ -106,6 +110,18 @@ namespace LearnX_App.Controllers
             ClaimsPrincipal principal = new JwtSecurityTokenHandler().ValidateToken(jwtToken, validationParameters, out validatedToken);
 
             return principal;
+        }
+        private Guid GetUserIdFromPrincipal(ClaimsPrincipal principal)
+        {
+            // Lấy claim 'sub' hoặc 'nameid' (tùy theo API của bạn cấu hình)
+            var userIdClaim = principal?.FindFirst(ClaimTypes.NameIdentifier) ?? principal?.FindFirst("sub");
+
+            if (userIdClaim != null && Guid.TryParse(userIdClaim.Value, out var userId))
+            {
+                return userId;
+            }
+
+            return Guid.Empty;
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using LearnX_Data.Entities;
+using LearnX_ModelView.Catalog.Courses;
 
 namespace LearnX_ApiIntegration
 {
@@ -10,8 +11,9 @@ namespace LearnX_ApiIntegration
     {
         Task<List<Course>> GetAll();
         Task<Course> GetbyID(Guid id);
-        Task<int> Create(Course course);
-        Task<int> Delete(Guid id);
-        Task<int> Edit(Guid id, Course course);
+        Task<bool> Create(CourseRequest course);
+        Task<bool> Delete(int id);
+        Task<bool> Edit(Guid id, Course course);
+        Task<MyCourses> GetmyCourse(Guid id);
     }
 }

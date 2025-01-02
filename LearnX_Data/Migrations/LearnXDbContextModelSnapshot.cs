@@ -253,7 +253,7 @@ namespace LearnX_Data.Migrations
 
                     b.HasIndex("CourseId");
 
-                    b.ToTable("Exercise");
+                    b.ToTable("Exercises");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.Lesson", b =>

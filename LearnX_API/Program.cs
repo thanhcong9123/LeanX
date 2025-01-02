@@ -4,26 +4,22 @@ using LearnX_Application.Comman;
 using LearnX_Application.SystemService;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
+using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddControllers(options =>
-{
-    options.Filters.Add<LoggingActionFilter>();
-});
-builder.Services.AddSingleton<LoggingInterceptor>();
-builder.Services.AddSingleton<IProxyGenerator, ProxyGenerator>();
-builder.Services.AddTransient<IMyService>(provider =>
-{
-    var proxyGenerator = provider.GetRequiredService<IProxyGenerator>();
-    var interceptor = provider.GetRequiredService<LoggingInterceptor>();
-    return proxyGenerator.CreateInterfaceProxyWithTarget<IMyService>(
-        new MyService(),
-        interceptor
-    );
-});
+builder.Services.AddDataProtection()
+    .ProtectKeysWithDpapi();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.Preserve;
+        options.JsonSerializerOptions.DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull;
+    });
+
 // Add services to the container.
 builder.Services.AddDbContext<LearnXDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("LearnX")));
@@ -70,15 +66,14 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICourseService, CourseService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
+builder.Services.AddScoped<ILessonService, LessonService>();
+builder.Services.AddScoped<IExerciseService, ExerciseService>();
 
 
-builder.Services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-});
+
 var app = builder.Build();
-app.UseSession();
-app.UseMiddleware<LoggingMiddleware>();
+// app.UseMiddleware<LoggingMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -94,3 +89,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+// Middleware: Xử lý cấp toàn cục.
+// Filters: Xử lý cấp Controller hoặc Action.
+// Castle Core: Triển khai Interceptor linh hoạt.

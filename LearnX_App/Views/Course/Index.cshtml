@@ -1,3 +1,5 @@
+@model LearnX_ModelView.Catalog.Courses.MyCourses
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -5,42 +7,413 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
 </head>
+<style>
+    .course-card {
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease-in-out;
+    }
+
+    .course-card:hover {
+        transform: scale(1.05);
+    }
+
+    .course-card-header {
+        background: #4CAF50;
+        color: white;
+        padding: 10px;
+        font-size: 1.2rem;
+    }
+
+    .course-card-body {
+        padding: 15px;
+    }
+
+    .course-card-footer {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+        background: #f9f9f9;
+        border-top: 1px solid #ddd;
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        background: #FF5722;
+        border-radius: 50%;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+    }
+
+    .course-icon {
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .course-icon:hover {
+        color: #4CAF50;
+    }
+
+    .course-card .dropdown-menu {
+        z-index: 1050;
+        /* Đảm bảo menu dropdown luôn hiển thị trên các phần tử khác */
+    }
+</style>
 
 <body>
-    <div class="container">
-        <div class="section d-flex justify-content-between align-items-center">
-            <div class="btn-group category" role="group">
-                <a href="" class="btn btn-secondary " style="margin-right: 5px;" type="button">My course</a>
-                <a href=""  class="btn btn-secondary" type="button">The course has been signed</a>
+    <div class="container mt-5">
+        @if (Model == null)
+        {
+            <p>No courses available.</p>
+        }
+        else
+        {
+            <div class="section d-flex justify-content-between align-items-center">
+                <div class="btn-group category" role="group">
+                    <button id="myCourseBtn" class="btn btn-secondary m-1" type="button" onclick="showMyCourses()">My
+                        course</button>
+                    <button id="signedCourseBtn" class="btn btn-secondary m-1" type="button"
+                        onclick="showSignedCourses()">The course has been signed</button>
+                </div>
+                <div class="d-flex justify-content-between align-items-center my-3">
+                    <!-- Button to Create Course -->
+                    <button class="btn btn-primary d-flex align-items-center m-1" onclick="loadCreateCourseForm()"
+                        data-bs-toggle="modal" data-bs-target="#createCourseModal">
+                        <i class="bi bi-plus-circle me-2"></i> <!-- Bootstrap icon -->
+                        Create Course
+                    </button>
+
+                    <!-- Button to Register Course -->
+                    <button class="btn btn-success d-flex align-items-center m-1" data-bs-toggle="modal"
+                        data-bs-target="#registerCourseModal">
+                        <i class="bi bi-pencil-square me-2"></i> <!-- Bootstrap icon -->
+                        Register Course
+                    </button>
+                </div>
             </div>
-            <div class="item-addcourse">
-                <a href="">Craete course</a>
-                <a href="">Register course</a>
+
+            <!-- My Course Table -->
+            <div id="myCourseTable" class="course-table">
+                <h3>My Courses</h3>
+                <div class="d-flex w-100 row">
+                    @{
+                        var userName = User.FindFirst("FullName")?.Value; // Giả sử bạn lưu "FullName" trong Claim
+                    }
+                    @foreach (var course in Model.MyCourse)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="course-card">
+                                <div class="course-card-header d-flex justify-content-between align-items-center">
+                                    <span>@course.CourseName</span>
+                                    <div class="dropdown">
+                                        <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="cursor: pointer;"></i>
+                                        <ul class="dropdown-menu">
+                                            <li>
+                                                <a class="dropdown-item"
+                                                    href="@Url.Action("Edit", "Course", new { id = course.CourseID })">
+                                                    Edit
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a class="dropdown-item text-danger" href="javascript:void(0);"
+                                                    onclick="confirmDelete(@course.CourseID)">
+                                                    Delete
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                    <!-- Icon for options -->
+                                </div>
+                                <div class="course-card-body">
+                                    <p><strong>Course ID:</strong> @course.CourseID</p>
+                                    <p><strong>Description:</strong>@course.Description</p> <!-- Update with instructor data -->
+                                </div>
+                                <div class="course-card-footer d-flex align-items-center">
+                                    <div class="avatar"> @ViewData["ActivePage"]</div> <!-- Avatar with initials -->
+                                    <div>
+                                        <i class="bi bi-camera-fill course-icon me-2"></i> <!-- Camera Icon -->
+                                        <i class="bi bi-folder-fill course-icon"></i> <!-- Folder Icon -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+
+            <!-- Signed Course Table -->
+            <div id="signedCourseTable" class="course-table " style="display: none;">
+                <h3>The Courses That Have Been Signed</h3>
+                <div class="d-flex w-100 row">
+                    @foreach (var course in Model.CourseSinged)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="course-card">
+                                <div class="course-card-header d-flex justify-content-between align-items-center">
+                                    <span>@course.CourseName</span>
+                                    <div class="dropdown">
+                                        <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"
+                                            style="cursor: pointer;"></i>
+                                        <ul class="dropdown-menu">
+
+                                            <li>
+                                                <a class="dropdown-item text-danger"
+                                                    onclick="confirmOutClass(@course.CourseID)">
+                                                    Out Class
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div> <!-- Icon for options -->
+                                </div>
+                                <div class="course-card-body">
+                                    <p><strong>Course ID:</strong> @course.CourseID</p>
+                                    <p><strong>Instructor:</strong>@course.Instructor</p> <!-- Update with instructor data -->
+                                </div>
+                                <div class="course-card-footer d-flex align-items-center">
+
+                                    <div class="avatar">@course.Instructor</div> <!-- Avatar with initials -->
+                                    <div>
+                                        <i class="bi bi-camera-fill course-icon me-2"></i> <!-- Camera Icon -->
+                                        <i class="bi bi-folder-fill course-icon"></i> <!-- Folder Icon -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        }
+    </div>
+
+    <!-- Modal for Create Course -->
+    <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div id="createCourseContent">
+                    <!-- Nội dung sẽ được tải bằng AJAX -->
+                </div>
             </div>
         </div>
-        <table class="table">
-            <thead>
-                <tr>
-                    <th scope="col">#</th>
-                    <th scope="col">Course name</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Course key</th>
-                    <th scope="col">Teacher name</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <th scope="row">1</th>
-                    <td>Mark</td>
-                    <td>Otto</td>
-                    <td></td>
-                    <td>Otto</td>
-                </tr>
-
-            </tbody>
-        </table>
     </div>
+    <!-- Modal for Register Course -->
+    <div class="modal fade" id="registerCourseModal" tabindex="-1" aria-labelledby="registerCourseModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="registerCourseModalLabel">Register Course</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="registerCourseForm">
+                        <div class="mb-3">
+                            <label for="CourseID" class="form-label">Course ID</label>
+                            <input type="text" class="form-control" id="CourseID" placeholder="Enter Course ID"
+                                required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" readonly>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" onclick="registerCourse()">Register</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Function to show the "My Course" table and hide the "Signed Course" table
+        function showMyCourses() {
+            document.getElementById("myCourseTable").style.display = "block";
+            document.getElementById("signedCourseTable").style.display = "none";
+            document.getElementById("myCourseBtn").classList.add("active");
+            document.getElementById("signedCourseBtn").classList.remove("active");
+        }
+
+        // Function to show the "Signed Course" table and hide the "My Course" table
+        function showSignedCourses() {
+            document.getElementById("myCourseTable").style.display = "none";
+            document.getElementById("signedCourseTable").style.display = "block";
+            document.getElementById("signedCourseBtn").classList.add("active");
+            document.getElementById("myCourseBtn").classList.remove("active");
+        }
+
+        // Default view to show "My Course" table initially
+        showMyCourses();
+    </script>
 </body>
 
 </html>
+@section Scripts {
+    <script type="text/javascript">
+        function loadCreateCourseForm() {
+            const input = {}; // Nếu cần, bạn có thể định nghĩa dữ liệu cần gửi ở đây
+            $.ajax({
+                url: '@Url.Action("Create")', // Đường dẫn action
+                data: null,
+                method: 'GET', // Phương thức GET
+                dataType: 'html', // Loại dữ liệu nhận lại
+                success: function (res) {
+                    // Hiển thị nội dung trả về vào modal
+                    $('#createCourseContent').html('').html(res);
+                    $('#createCourseModal').modal('show'); // Hiển thị modal
+
+                },
+                error: function () {
+                    alert('An error occurred while loading the form.');
+                }
+            });
+        }
+        function saveCourse() {
+            var course = new Object(); // Lấy dữ liệu form
+            course.CourseName = $('#CourseName').val()
+            course.Description = $('#Description').val()
+            course.StartDate = $('#StartDate').val()
+            course.EndDate = $('#EndDate').val()
+            course.Price = $('#Price').val()
+            course.InstructorID = "a30e9f53-5675-4558-ad70-08dd1f34b25f"
+            course.CategoryID = 1
+            console.log(JSON.stringify(course));
+
+            $.ajax({
+                url: '@Url.Action("CreateCourse", "Course")', // URL đến action POST Create
+                data: course,
+                method: 'GET', // Phương thức GET
+                contentType: 'application/json; charset=utf-8', // Định dạng dữ liệu gửi
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success == true) {
+                        alert('Course created successfully!');
+                        $('#createCourseModal').modal('hide');
+                        location.reload(); // Tải lại trang để cập nhật danh sách
+                    } else {
+                        console.log(JSON.stringify(response));
+                        alert(response.message || 'An error occurred!');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while saving the course.');
+                }
+            });
+        }
+        //Đăng ký
+        $('#registerCourseModal').on('show.bs.modal', function () {
+
+            const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại (định dạng YYYY-MM-DD)
+            $('#startDate').val(today); // Đặt ngày hiện tại
+        });
+
+        // Hàm xử lý đăng ký khóa học
+        function registerCourse() {
+            var CourseID = $('#CourseID').val();
+            var EnrollmentDate = $('#startDate').val();
+
+            if (!CourseID) {
+                alert("Please enter the Course ID.");
+                return;
+            }
+
+            var enrollmentRequest = {
+                UserID: "3c911071-dcb6-42d5-00f9-08dd19323d5a", // Thay bằng ID người dùng hiện tại
+                CourseID: CourseID,
+                EnrollmentDate: EnrollmentDate,
+                CompletionDate: null
+            };
+
+            $.ajax({
+                url: '@Url.Action("Create", "Enrollment")', // URL đến action POST Create
+                data: enrollmentRequest,
+                method: 'GET', // Phương thức GET
+                contentType: 'application/json; charset=utf-8', // Định dạng dữ liệu gửi
+                dataType: 'json',
+                success: function (response) {
+                    if (response.success == true) {
+                        alert('Course created successfully!');
+                        $('#createCourseModal').modal('hide');
+                        location.reload(); // Tải lại trang để cập nhật danh sách
+                    } else {
+                        console.log(JSON.stringify(response));
+                        alert(response.message || 'An error occurred!');
+                    }
+                },
+                error: function () {
+                    alert('An error occurred while saving the course.');
+                }
+            });
+        }
+        function confirmDelete(courseId) {
+            if (confirm("Are you sure you want to delete this course?")) {
+                // Thực hiện AJAX xóa khóa học
+                var obj = new Object();
+                obj.courseId = courseId
+                console.log(JSON.stringify(obj));
+                $.ajax({
+                    url: '@Url.Action("Delete", "Course")',
+                    data: obj,
+                    method: 'GET', // Phương thức GET
+                    contentType: 'application/json; charset=utf-8', // Định dạng dữ liệu gửi
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message || "Course deleted successfully!");
+                            location.reload(); // Tải lại trang
+                        } else {
+                            alert(response.message || "Failed to delete course.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the course.");
+                    }
+                });
+            }
+        }
+        function confirmOutClass(courseId) {
+            if (confirm("Are you sure you want to delete this course?")) {
+                var obj = new Object();
+                obj.idCourse = courseId
+                console.log(JSON.stringify(obj)); // Sử dụng cú pháp ngắn gọn
+                $.ajax({
+                    url: '@Url.Action("Outclass", "Enrollment")', // URL đến action POST Create
+                    data: obj,
+                    method: 'GET', // Phương thức GET
+                    contentType: 'application/json; charset=utf-8', // Định dạng dữ liệu gửi
+                    dataType: 'json',
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message || "Course deleted successfully!");
+                            location.reload();
+                        } else {
+                            alert(response.message || "Failed to delete course.");
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while deleting the course.");
+                    }
+                });
+            }
+        }
+    </script>
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>

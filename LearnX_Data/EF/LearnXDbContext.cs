@@ -80,5 +80,6 @@ namespace LearnX_Data.EF
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<Exercise> Exercises { get; set; }
     }
 }

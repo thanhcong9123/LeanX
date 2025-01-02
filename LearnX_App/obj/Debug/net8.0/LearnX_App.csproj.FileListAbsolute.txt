@@ -305,3 +305,5 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\re
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Bcl.TimeProvider.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_ApiIntegration.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_ApiIntegration.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\LearnX_App.sourcelink.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\appsettings.Production.json

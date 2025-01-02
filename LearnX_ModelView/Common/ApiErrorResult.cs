@@ -11,6 +11,8 @@ namespace LearnX_ModelView.Common
 
         public ApiErrorResult()
         {
+
+            
         }
 
         public ApiErrorResult(string message)

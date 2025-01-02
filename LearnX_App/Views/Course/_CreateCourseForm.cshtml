@@ -1,0 +1,36 @@
+
+
+<form id="createCourseForm">
+     <div class="modal-body">
+        <div class="mb-3">
+            <label for="CourseName" class="form-label">Course Name</label>
+            <input type="text" name="CourseName" class="form-control" id="CourseName" required>
+        </div>
+        <div class="mb-3">
+            <label for="Description" class="form-label">Description</label>
+            <textarea name="Description" class="form-control" id="Description" rows="3" required></textarea>
+        </div>
+        <div class="mb-3">
+            <label for="CategoryID" class="form-label">Category</label>
+            <select name="CategoryID" class="form-control" id="CategoryID" required>
+                <option value="">--Select Category--</option>
+                <option value="1">Lớp 11</option>
+                <option value="2">Lớp 12</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="StartDate" class="form-label">Start Date</label>
+            <input type="date" name="StartDate" class="form-control" id="StartDate" required>
+        </div>
+        <div class="mb-3">
+            <label for="EndDate" class="form-label">End Date</label>
+            <input type="date" name="EndDate" class="form-control" id="EndDate" required>
+        </div>
+        <div class="mb-3">
+            <label for="Price" class="form-label">Price</label>
+            <input type="number" step="0.01" name="Price" class="form-control" id="Price" required>
+        </div>
+    </div>
+    <button type="button" class="btn btn-primary m-1" onclick="saveCourse()">Save</button>
+</form>
+
