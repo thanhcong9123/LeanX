@@ -34,11 +34,9 @@ namespace LearnX_ApiIntegration.SystemService
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5041");
             var response = await client.PostAsync("/api/user/authenticate", httpContent);
-            var responseString = await response.Content.ReadAsStringAsync();
-            Console.WriteLine(responseString); // Log or inspect the response here
+              var responseString = await response.Content.ReadAsStringAsync();
 
-
-            if (response.IsSuccessStatusCode)
+                   if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString);
             }

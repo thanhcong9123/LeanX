@@ -54,31 +54,57 @@
         </nav>
         @if (User.Identity.IsAuthenticated)
         {
-            <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-                <div class="container">
-                    <div class="navbar-collapse collapse d-flex justify-content-center w-100">
-                        <ul class="navbar-nav d-flex justify-content-center">
-                            <!-- Course Item with Icon -->
-                            <li class="nav-item mx-3 @((ViewData["ActivePage"] as string) == "Course" ? "active" : "")">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Index">
-                                    <i class="bi bi-chalkboard" style="font-size: 18px; margin-right: 5px;"></i> Course
-                                </a>
-                            </li>
-                            <!-- Exercise Item with Icon -->
-                            <li class="nav-item mx-3 @((ViewData["ActivePage"] as string) == "Exercise" ? "active" : "")">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Course" asp-action="Exercise">
-                                    <i class="bi bi-pencil-square" style="font-size: 18px; margin-right: 5px;"></i> Exercise
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                    <ul class="navbar-nav ml-auto">
-                        <li class="nav-item">
-                            <!-- Logout with Icon -->
-                            <form asp-controller="User" asp-action="Logout" method="post" class="nav-link text-dark"
-                                style="border: none; background: none; cursor: pointer;">
-                                <button type="submit" class="btn btn-link text-dark">
-                                    <i class="bi bi-box-arrow-right" style="font-size: 18px; margin-right: 5px;"></i> Logout
+            <nav class="navbar bg-white border-bottom shadow-sm">
+                <div class="container d-flex justify-content-center">
+                    <ul class="navbar-nav d-flex flex-row justify-content-center align-items-center">
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Course" asp-action="Index">
+                                <i class="bi bi-folder2" style="font-size: 24px;"></i>
+                                <span>Khóa học</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "AllExercise" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Exercise" asp-action="Index">
+                                <i class="bi bi-clipboard" style="font-size: 24px;"></i>
+                                <span>Bài tập</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Ebook" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Ebook" asp-action="Index">
+                                <i class="bi bi-book" style="font-size: 24px;"></i>
+                                <span>Sách điện tử</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Test" asp-action="Index">
+                                <i class="bi bi-calculator" style="font-size: 24px;"></i>
+                                <span>Bài kiểm tra</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Scores" asp-action="Index">
+                                <i class="bi bi-star" style="font-size: 24px;"></i>
+                                <span>Sổ điểm</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
+                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
+                                asp-controller="Messages" asp-action="SendMessage">
+                                <i class="bi bi-envelope" style="font-size: 24px;"></i>
+                                <span>Tin nhắn</span>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3">
+                            <form asp-controller="User" asp-action="Logout" method="post"
+                                class="d-flex flex-column align-items-center">
+                                <button class="btn btn-link text-dark">
+                                    <i class="bi bi-box-arrow-right" style="font-size: 24px;"></i>
+                                    <span>Logout</span>
                                 </button>
                             </form>
                         </li>

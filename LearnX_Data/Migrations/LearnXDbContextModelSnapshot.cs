@@ -43,7 +43,7 @@ namespace LearnX_Data.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answer");
+                    b.ToTable("Answers");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.AppRole", b =>
@@ -280,6 +280,35 @@ namespace LearnX_Data.Migrations
                     b.ToTable("Lessons");
                 });
 
+            modelBuilder.Entity("LearnX_Data.Entities.Message", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsRead")
+                        .HasColumnType("bit");
+
+                    b.Property<Guid>("ReceiverId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("SenderId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("SentAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Message");
+                });
+
             modelBuilder.Entity("LearnX_Data.Entities.Payment", b =>
                 {
                     b.Property<int>("PaymentID")
@@ -330,7 +359,7 @@ namespace LearnX_Data.Migrations
 
                     b.HasIndex("ExerciseId");
 
-                    b.ToTable("Question");
+                    b.ToTable("Questions");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.Review", b =>
@@ -363,6 +392,34 @@ namespace LearnX_Data.Migrations
                     b.HasIndex("UserID");
 
                     b.ToTable("Reviews");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.Scores", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("DateCompleted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("IdUser")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("IsPassed")
+                        .HasColumnType("bit");
+
+                    b.Property<decimal>("Score")
+                        .HasColumnType("decimal(18,2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Scores");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>

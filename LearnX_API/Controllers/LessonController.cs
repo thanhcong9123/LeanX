@@ -17,10 +17,10 @@ namespace MyApp.Namespace
         {
             _context = context;
         }
-        [HttpGet]
-        public async Task<IActionResult> GetLessons()
+        [HttpGet("lesson/{idcourse}")]
+        public async Task<IActionResult> GetLessons(int idcourse)
         {
-            var lessons = await _context.GetAllLessonsAsync();
+            var lessons = await _context.GetAllLessonsAsync(idcourse);
             return Ok(lessons);
         }
 
@@ -38,6 +38,8 @@ namespace MyApp.Namespace
         [Consumes("multipart/form-data")]
         public async Task<IActionResult> AddLesson([FromForm] LessonRequest lesson)
         {
+
+            Console.WriteLine("AddLesson" + lesson.Content);
             if (lesson == null)
                 return BadRequest(new { Message = "Invalid lesson data." });
 

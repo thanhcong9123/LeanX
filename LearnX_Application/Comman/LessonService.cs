@@ -20,9 +20,9 @@ namespace LearnX_Application.Comman
             _context = context;
         }
 
-        public async Task<IEnumerable<Lesson>> GetAllLessonsAsync()
+        public async Task<IEnumerable<Lesson>> GetAllLessonsAsync(int idcourse)
         {
-            return await _context.Lessons.ToListAsync();
+            return await _context.Lessons.Where(n => n.CourseID == idcourse).ToListAsync();
         }
 
         public async Task<Lesson?> GetLessonByIdAsync(int id)
@@ -57,9 +57,7 @@ namespace LearnX_Application.Comman
         {
             var lesson = await _context.Lessons.FindAsync(id);
             if (lesson == null)  throw new MyClassException($"Cannot find a course with ID: {id}");;
-
             _context.Lessons.Remove(lesson);
-
             return await _context.SaveChangesAsync(); ;
         }
     }

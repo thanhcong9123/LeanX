@@ -13,6 +13,14 @@
 
 </head>
 <style>
+    .description-truncate {
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        /* Add "..." for truncated text */
+    }
+
     .course-card {
         border: 1px solid #ddd;
         border-radius: 8px;
@@ -138,7 +146,11 @@
                                 </div>
                                 <div class="course-card-body">
                                     <p><strong>Course ID:</strong> @course.CourseID</p>
-                                    <p><strong>Description:</strong>@course.Description</p> <!-- Update with instructor data -->
+                                    <p class="description-truncate"><strong>Description:</strong>@course.Description</p>
+                                    <div>
+                                        <a class="btn btn-info btn-sm" href="/Lesson/Index/@course.CourseID">View
+                                            Details</a>
+                                    </div> <!-- Update with instructor data -->
                                 </div>
                                 <div class="course-card-footer d-flex align-items-center">
                                     <div class="avatar"> @ViewData["ActivePage"]</div> <!-- Avatar with initials -->
@@ -180,7 +192,11 @@
                                 </div>
                                 <div class="course-card-body">
                                     <p><strong>Course ID:</strong> @course.CourseID</p>
-                                    <p><strong>Instructor:</strong>@course.Instructor</p> <!-- Update with instructor data -->
+                                    <p><strong>Description:</strong>@course.Description</p>
+                                    <div>
+                                        <a class="btn btn-info btn-sm" href="/Lesson/Index/@course.CourseID">View
+                                            Details</a>
+                                    </div> <!-- Update with instructor data -->
                                 </div>
                                 <div class="course-card-footer d-flex align-items-center">
 

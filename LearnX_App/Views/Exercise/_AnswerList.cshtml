@@ -1,0 +1,11 @@
+@using LearnX_ModelView.Catalog.Exercise
+@model List<AnswerRequest>
+
+@foreach (var answer in Model)
+{
+    <div class="answer">
+        <label for="answerText">Answer @answer.AnswerId</label>
+        <input type="text" name="AnswerText_@answer.AnswerId" value="@answer.AnswerText" class="form-control" required />
+        <input type="checkbox" name="IsCorrect_@answer.AnswerId" @(answer.IsCorrect ? "checked" : "") /> Correct
+    </div>
+}

@@ -68,7 +68,6 @@ namespace LearnX_Application.Comman
             var courses = await _context.Enrollments
                     .Where(e => e.UserID == idUser)
                     .Include(e => e.Course) // Bao gồm thông tin khóa học
-                    .ThenInclude(c => c.Instructor) // Bao gồm thông tin giảng viên (nếu cần)
                     .Select(e => e.Course) // Lấy đối tượng Course
                     .ToListAsync();
             return courses;
@@ -85,6 +84,13 @@ namespace LearnX_Application.Comman
             throw new NotImplementedException();
         }
 
-        
+        public async Task<List<AppUser>> GetCourseUser(int id)
+        {
+             var students = await _context.Enrollments
+            .Where(e => e.CourseID == id) // Tìm các enrollment có CourseID giống với khóa học
+            .Include(e => e.User) // Liên kết với AppUser
+            .Select(e => e.User).ToListAsync();
+            return students;
+        }
     }
 }

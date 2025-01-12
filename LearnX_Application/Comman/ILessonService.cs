@@ -9,7 +9,7 @@ namespace LearnX_Application.Comman
 {
     public interface ILessonService
     {
-        Task<IEnumerable<Lesson>> GetAllLessonsAsync();
+        Task<IEnumerable<Lesson>> GetAllLessonsAsync(int idcourse);
         Task<Lesson?> GetLessonByIdAsync(int id);
         Task<int> AddLessonAsync(LessonRequest lesson);
         Task<int> UpdateLessonAsync(LessonRequest lesson);

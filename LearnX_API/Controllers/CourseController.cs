@@ -37,6 +37,14 @@ namespace LearnX_API.Controllers
 
             return Ok(data);
         }
+        [HttpGet("courseUser/{idCourse}")]
+        public async Task<ActionResult> GetCourseUser(int idCourse)
+        {
+            var courseSinged = await _context.GetCourseUser(idCourse);
+          
+
+            return Ok(courseSinged);
+        }
 
 
         // GET: api/Course/5
@@ -74,12 +82,17 @@ namespace LearnX_API.Controllers
 
             if (!ModelState.IsValid!)
             {
-                Console.WriteLine(course);
+                Console.WriteLine("không nhận đưucoj dữ liệu");
+                var errors = ModelState.Values.SelectMany(v => v.Errors);
+                foreach (var error in errors)
+                {
+                    Console.WriteLine($"Validation Error: {error.ErrorMessage}");
+                }
                 return BadRequest(ModelState);
             }
-            Console.WriteLine(course.CourseName + course.CategoryID + course.Description + course.InstructorID);
+                Console.WriteLine($"CourseName: {course.CourseName}, Description: {course.Description}, InstructorID: {course.InstructorID}, CategoryID: {course.CategoryID}, StartDate: {course.StartDate}, EndDate: {course.EndDate}, Price: {course.Price}");
+
             var result = await _context.CreateCourse(course);
-            Console.WriteLine(course.CourseName + course.CategoryID + course.Description + course.InstructorID);
             if (result == 0)
             {
                 return BadRequest();

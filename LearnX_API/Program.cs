@@ -69,11 +69,21 @@ builder.Services.AddScoped<IRoleService, RoleService>();
 builder.Services.AddScoped<IEnrollmentService, EnrollmentService>();
 builder.Services.AddScoped<ILessonService, LessonService>();
 builder.Services.AddScoped<IExerciseService, ExerciseService>();
+builder.Services.AddScoped<IScoreService, ScoreService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
 
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder => builder.WithOrigins("http://localhost:4200") // URL frontend
+                            .AllowAnyMethod()
+                            .AllowAnyHeader());
+});
 
 var app = builder.Build();
 // app.UseMiddleware<LoggingMiddleware>();
+app.UseCors("AllowSpecificOrigin");
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

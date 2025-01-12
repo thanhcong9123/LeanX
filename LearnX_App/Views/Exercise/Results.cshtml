@@ -1,0 +1,48 @@
+@using LearnX_ModelView.Catalog.Exercise
+
+@model DoExerciseViewModel
+
+<div class="container mt-5">
+    <h2 class="text-center">Kết Quả</h2>
+    
+    <!-- Hiển thị điểm số và trạng thái -->
+    <div class="alert alert-info">
+        <h4 class="text-center">Điểm Số: @ViewBag.Score</h4>
+        <h5 class="text-center">
+            @if (ViewBag.IsPassed)
+            {
+                <span class="text-success">Bạn đã vượt qua bài tập!</span>
+            }
+            else
+            {
+                <span class="text-danger">Bạn chưa vượt qua bài tập.</span>
+            }
+        </h5>
+    </div>
+
+    <!-- Hiển thị câu hỏi và kết quả đúng/sai -->
+    @if (Model.Questions != null && Model.Questions.Any())
+    {
+        <ul class="list-group">
+            @foreach (var question in Model.Questions)
+            {
+                var userAnswerId = Model.UserAnswers.ContainsKey(question.QuestionId)
+                    ? Model.UserAnswers[question.QuestionId]
+                    : -1; // Giá trị mặc định nếu không có câu trả lời
+
+                var isCorrect = question.Answers.Any(a => a.AnswerId == userAnswerId && a.IsCorrect);
+
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <span>@question.QuestionText</span>
+                    <span class="@(isCorrect ? "text-success" : "text-danger")">
+                        @(isCorrect ? "Đúng" : "Sai")
+                    </span>
+                </li>
+            }
+        </ul>
+    }
+    else
+    {
+        <div class="alert alert-info">Không có câu hỏi nào để hiển thị kết quả.</div>
+    }
+</div>

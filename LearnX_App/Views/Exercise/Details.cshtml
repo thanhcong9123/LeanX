@@ -1,0 +1,95 @@
+@using LearnX_Data.Entities
+@model IEnumerable<Exercise>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container mt-5">
+        <h2 class="text-center mb-4">Danh sách bài tập của khóa học</h2>
+        @{
+            var IsOwner = ViewBag.isInMyCourse ?? false; // Nếu ViewBag.IsOwner là null, mặc định là false
+            var IsEnrolled = ViewBag.isInCourseSigned ?? false; // Nếu ViewBag.IsEnrolled là null, mặc định là false
+        }
+        <!-- Hiển thị thông báo nếu không thuộc khóa học -->
+        @if (!IsOwner && !IsEnrolled)
+        {
+            <div class="alert alert-warning text-center">
+                <p>Bạn không thuộc khóa học này. Vui lòng kiểm tra lại.</p>
+                <a href="/courses" class="btn btn-primary mt-3">Quay lại danh sách khóa học</a>
+            </div>
+        }
+
+        <!-- Giao diện cho người tạo khóa học -->
+        @if (IsOwner)
+        {
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3>Quản lý bài tập</h3>
+                <a class="btn btn-primary" asp-action="CreateExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập mới</a>
+            </div>
+
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Tiêu đề</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exercise in Model)
+                    {
+                        <tr>
+                            <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
+                            <td>@exercise.Title</td>
+                            <td>
+                                <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Xem
+                                    chi tiết</a>
+                                <button class="btn btn-warning btn-sm" onclick="editExercise(@exercise.ExerciseId)">Sửa</button>
+                                <button class="btn btn-danger btn-sm"
+                                    onclick="deleteExercise(@exercise.ExerciseId)">Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+
+        <!-- Giao diện cho người đã đăng ký -->
+        @if (IsEnrolled && !IsOwner)
+        {
+            <h3>Bài tập của bạn</h3>
+            <table class="table table-bordered table-hover">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Tiêu đề</th>
+                        <th>Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var exercise in Model)
+                    {
+                        <tr>
+                            <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
+                            <td>@exercise.Title</td>
+                            <td>
+                                <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Làm
+                                    bài tập</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+
+</body>
+
+</html>

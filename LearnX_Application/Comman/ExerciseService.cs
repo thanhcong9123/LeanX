@@ -33,17 +33,17 @@ namespace LearnX_Application.Comman
                 ExerciseId = e.ExerciseId,
                 Title = e.Title,
                 CourseId = e.CourseId,
-                Questions = e.Questions?.Select(q => new QuestionRequest
-                {
-                    QuestionId = q.QuestionId,
-                    QuestionText = q.QuestionText,
-                    Answers = q.Answers?.Select(a => new AnswerRequest
-                    {
-                        AnswerId = a.AnswerId,
-                        AnswerText = a.AnswerText,
-                        IsCorrect = a.IsCorrect
-                    }).ToList()
-                }).ToList()
+                // Questions = e.Questions?.Select(q => new QuestionRequest
+                // {
+                //     QuestionId = q.QuestionId,
+                //     QuestionText = q.QuestionText,
+                //     Answers = q.Answers?.Select(a => new AnswerRequest
+                //     {
+                //         AnswerId = a.AnswerId,
+                //         AnswerText = a.AnswerText,
+                //         IsCorrect = a.IsCorrect
+                //     }).ToList()
+                // }).ToList()
             });
         }
 
@@ -61,41 +61,73 @@ namespace LearnX_Application.Comman
                 ExerciseId = exercise.ExerciseId,
                 Title = exercise.Title,
                 CourseId = exercise.CourseId,
-                Questions = exercise.Questions?.Select(q => new QuestionRequest
-                {
-                    QuestionId = q.QuestionId,
-                    QuestionText = q.QuestionText,
-                    Answers = q.Answers?.Select(a => new AnswerRequest
-                    {
-                        AnswerId = a.AnswerId,
-                        AnswerText = a.AnswerText,
-                        IsCorrect = a.IsCorrect
-                    }).ToList()
-                }).ToList()
+                // Questions = exercise.Questions?.Select(q => new QuestionRequest
+                // {
+                //     QuestionId = q.QuestionId,
+                //     QuestionText = q.QuestionText,
+                //     Answers = q.Answers?.Select(a => new AnswerRequest
+                //     {
+                //         AnswerId = a.AnswerId,
+                //         AnswerText = a.AnswerText,
+                //         IsCorrect = a.IsCorrect
+                //     }).ToList()
+                // }).ToList()
             };
         }
 
-        public async Task<int> AddExerciseAsync(ExerciseRequest exerciseDto)
+        public async Task<int> AddExerciseAsync(ExerciseRequest exerciseRequest, List<QuestionRequest> questionRequest)
         {
+
+            // Tạo mới Exercise
             var exercise = new Exercise
             {
-                Title = exerciseDto.Title,
-                CourseId = exerciseDto.CourseId,
-                Questions = exerciseDto.Questions?.Select(q => new Question
-                {
-                    QuestionText = q.QuestionText,
-                    Answers = q.Answers?.Select(a => new Answer
-                    {
-                        AnswerText = a.AnswerText,
-                        IsCorrect = a.IsCorrect
-                    }).ToList()
-                }).ToList()
+                Title = exerciseRequest.Title,
+                CourseId = exerciseRequest.CourseId,
             };
 
             _context.Exercises.Add(exercise);
             await _context.SaveChangesAsync();
+
+            // Kiểm tra nếu Questions không null
+            if (questionRequest != null)
+            {
+                foreach (var item in questionRequest)
+                {
+                    Console.WriteLine("code chạy" + item.QuestionText);
+                    // Tạo mới Question
+                    var question = new Question
+                    {
+                        QuestionText = item.QuestionText,
+                        ExerciseId = exercise.ExerciseId
+                    };
+
+                    _context.Questions.Add(question);
+                    await _context.SaveChangesAsync();
+
+                    // Kiểm tra nếu Answers không null
+                    if (item.Answers != null)
+                    {
+                        foreach (var item2 in item.Answers)
+                        {
+                            // Tạo mới Answer
+                            var answer = new Answer
+                            {
+                                AnswerText = item2.AnswerText,
+                                QuestionId = question.QuestionId,
+                                IsCorrect = item2.IsCorrect
+                            };
+
+                            _context.Answers.Add(answer);
+                        }
+
+                        await _context.SaveChangesAsync();
+                    }
+                }
+            }
+
             return exercise.ExerciseId;
         }
+
 
         public async Task<int> UpdateExerciseAsync(ExerciseRequest exerciseDto)
         {
@@ -111,17 +143,17 @@ namespace LearnX_Application.Comman
             existingExercise.CourseId = exerciseDto.CourseId;
 
             // Update Questions
-            existingExercise.Questions = exerciseDto.Questions?.Select(q => new Question
-            {
-                QuestionId = q.QuestionId,
-                QuestionText = q.QuestionText,
-                Answers = q.Answers?.Select(a => new Answer
-                {
-                    AnswerId = a.AnswerId,
-                    AnswerText = a.AnswerText,
-                    IsCorrect = a.IsCorrect
-                }).ToList()
-            }).ToList();
+            // existingExercise.Questions = exerciseDto.Questions?.Select(q => new Question
+            // {
+            //     QuestionId = q.QuestionId,
+            //     QuestionText = q.QuestionText,
+            //     Answers = q.Answers?.Select(a => new Answer
+            //     {
+            //         AnswerId = a.AnswerId,
+            //         AnswerText = a.AnswerText,
+            //         IsCorrect = a.IsCorrect
+            //     }).ToList()
+            // }).ToList();
 
             return await _context.SaveChangesAsync();
         }
@@ -134,6 +166,26 @@ namespace LearnX_Application.Comman
 
             _context.Exercises.Remove(exercise);
             return await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Exercise>> GetExerciseByIdcourseAsync(int id)
+        {
+            return await _context.Exercises.Where(c => c.CourseId == id).ToListAsync();
+        }
+
+        public async Task<List<Question>> GetQuestionByIdExerciseAsync(int id)
+        {
+            return await _context.Questions.Where(q => q.ExerciseId == id).Include(m => m.Answers).ToListAsync();
+        }
+        public async Task<List<Exercise>> GetExercisesForUserAsync(Guid userId)
+        {
+            // Tìm tất cả các bài tập liên quan đến các khóa học mà người dùng đã đăng ký
+            var exercises = await _context.Enrollments
+                .Where(e => e.UserID == userId)  // Lọc các enrollment của người dùng
+                .SelectMany(e => e.Course.Exercises)  // Lấy các bài tập của các khóa học mà người dùng đã tham gia
+                .ToListAsync();  // Chuyển đổi thành danh sách
+
+            return exercises;
         }
     }
 }

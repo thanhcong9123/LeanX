@@ -1,0 +1,55 @@
+@using LearnX_ModelView.Catalog.Messages
+@model List<ViewMessage>
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+
+<body>
+    <div class="container">
+
+        @{
+            ViewData["Title"] = "Inbox";
+        }
+
+        <h2>@ViewData["Title"]</h2>
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Sender</th>
+                    <th>Content</th>
+                    <th>Date Sent</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var message in Model)
+                {
+                    <tr>
+                        <td>@message.SenderEmail</td>
+                        <td>@message.Content</td>
+                        <td>@message.SentAt.ToString("yyyy-MM-dd HH:mm:ss")</td>
+                        <td>@(message.IsRead ? "Read" : "Unread")</td>
+                        <td>
+                              @if (!message.IsRead && message.SenderId != (Guid)ViewBag.UserId)
+                                {
+                                <form method="post" asp-action="MarkMessageAsRead" asp-route-messageId="@message.Id">
+                                    <button type="submit" class="btn btn-success">Mark as Read</button>
+                                </form>
+                                }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

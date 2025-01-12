@@ -41,6 +41,7 @@ namespace LearnX_App.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var userIds);
             var data = await _context.GetmyCourse(userIds);
+            Console.WriteLine(userIds);
             if (data == null)
             {
                 return View(); // Trả về View trống nếu không có khóa học

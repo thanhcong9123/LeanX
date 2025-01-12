@@ -46,3 +46,19 @@ button.accept-policy {
   white-space: nowrap;
   line-height: 60px;
 }
+.navbar-nav .nav-item .nav-link {
+  font-size: 14px;
+  text-align: center;
+  color: #333333;
+  border-bottom: 3px solid transparent;
+}
+
+.navbar-nav .nav-item.active .nav-link,
+.navbar-nav .nav-item .nav-link.active {
+  color: #ffc107;
+  border-bottom: 3px solid #ffc107;
+}
+
+.navbar-nav .nav-item:hover .nav-link {
+  color: #007bff;
+}

@@ -46,3 +46,19 @@ button.accept-policy[b-1sj7snwc86] {
   white-space: nowrap;
   line-height: 60px;
 }
+.navbar-nav .nav-item .nav-link[b-1sj7snwc86] {
+  font-size: 14px;
+  text-align: center;
+  color: #333333;
+  border-bottom: 3px solid transparent;
+}
+
+.navbar-nav .nav-item.active .nav-link[b-1sj7snwc86],
+.navbar-nav .nav-item .nav-link.active[b-1sj7snwc86] {
+  color: #ffc107;
+  border-bottom: 3px solid #ffc107;
+}
+
+.navbar-nav .nav-item:hover .nav-link[b-1sj7snwc86] {
+  color: #007bff;
+}

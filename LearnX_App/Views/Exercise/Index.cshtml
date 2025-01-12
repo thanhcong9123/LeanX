@@ -1,0 +1,48 @@
+@using LearnX_Data.Entities
+@model IEnumerable<Exercise> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index</title>
+</head>
+<body>
+    <div class="container">
+    <h3>Bài tập của bạn</h3>
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>#</th>
+                <th>Tiêu đề</th>
+                <th>Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (Model != null && Model.Any())
+            {
+                int index = 1;
+                foreach (var exercise in Model)
+                {
+                    <tr>
+                        <td>@index</td>
+                        <td>@exercise.Title</td>
+                        <td>
+                            <a class="btn btn-info btn-sm" asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Làm bài tập</a>
+                        </td>
+                    </tr>
+                    index++;
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="3" class="text-center">Không có bài tập nào được tìm thấy.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+</body>
+</html>  

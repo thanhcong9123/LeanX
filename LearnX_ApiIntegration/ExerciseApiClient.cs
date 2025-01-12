@@ -1,0 +1,80 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http.Headers;
+using System.Text;
+using System.Threading.Tasks;
+using LearnX_Data.Entities;
+using LearnX_ModelView.Catalog.Exercise;
+using LearnX_ModelView.Common;
+using LearnX_Utilities.Constants;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
+
+namespace LearnX_ApiIntegration
+{
+    public class ExerciseApiClient : BaseApiClient, IExerciseApiClient
+    {
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public ExerciseApiClient(IHttpClientFactory httpClientFactory,
+                   IHttpContextAccessor httpContextAccessor,
+                    IConfiguration configuration) : base(httpClientFactory, httpContextAccessor, configuration)
+        {
+            _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
+            _httpClientFactory = httpClientFactory;
+        }
+        public async Task<ApiResult<string>> AddExerciseAsync(ExerciseRequestWrapper model)
+        {
+
+            // Lấy token từ Session
+            try
+            {
+                Console.WriteLine("AddExerciseAsync");
+                var client = _httpClientFactory.CreateClient();
+                client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
+
+                var sessions = _httpContextAccessor.HttpContext.Session.GetString("Token");
+
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+                var json = JsonConvert.SerializeObject(model);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/api/Exercise", httpContent);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+
+                // Kiểm tra kết quả
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString) ?? new ApiSuccessResult<string> { ResultObj = null };
+                }
+                return JsonConvert.DeserializeObject<ApiErrorResult<string>>(responseString) ?? new ApiErrorResult<string> { ResultObj = null };
+            }
+            catch (Exception ex)
+            {
+                return new ApiErrorResult<string> { Message = $"Error: {ex.Message}" };
+            }
+        }
+
+        public async Task<List<Exercise>> GetAll(Guid id)
+        {
+            var data = await GetListAsync<Exercise>($"/api/Exercise/user/{id}/exercises");
+            return data;
+        }
+        public async Task<List<Question>> getQuestion(int id)
+        {
+            var data = await GetListAsync<Question>($"api/Exercise/question/{id}");
+            return data;
+        }
+
+        public async Task<List<Exercise>> GetExerciseDetailsAsync(int courseId)
+        {
+            var data = await GetListAsync<Exercise>($"/api/Exercise/exercise/{courseId}");
+            return data;
+        }
+    }
+}

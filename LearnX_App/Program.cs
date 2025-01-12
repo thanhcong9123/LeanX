@@ -20,11 +20,16 @@ builder.Services.AddSession(options =>
     options.IdleTimeout = TimeSpan.FromMinutes(30); // Thời gian session tồn tại
 
 });
+
 builder.Services.AddHttpContextAccessor(); // Đăng ký HttpContextAccessor
 
 builder.Services.AddTransient<IUserApiClient, UserApiClient>();
 builder.Services.AddTransient<ICourseApiClient, CourseApiClient>();
 builder.Services.AddTransient<IEnrollmentClient, EnrollmentClient>();
+builder.Services.AddTransient<IExerciseApiClient, ExerciseApiClient>();
+builder.Services.AddTransient<ILessonApiClient, LessonApiClient>();
+builder.Services.AddTransient<IScoreApiClient, ScoreApiClient>();
+builder.Services.AddTransient<IMessageApiClient, MessageApiClient>();
 builder.Services.AddRazorPages();
 var app = builder.Build();
 

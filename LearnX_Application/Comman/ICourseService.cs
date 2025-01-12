@@ -12,6 +12,7 @@ namespace LearnX_Application.Comman
         Task<List<Course>> GetMyCourse(Guid nameUser);
         Task<List<Course>> GetCourseSinged(Guid nameUser);
         Task<Course> GetByID(int id);
+        Task<List<AppUser>> GetCourseUser(int id);
         Task<int> CreateCourse(CourseRequest course);
         Task<int> UpdateCourse(CourseUpdateRequest course);
         Task<int> DeleteCourse(int id);

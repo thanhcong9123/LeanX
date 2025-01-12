@@ -1,0 +1,55 @@
+@using LearnX_ModelView.Catalog.Messages
+@model SendMessageRequest
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inbox</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+</head>
+<style>
+        .mailbox-button {
+            top: 10px;
+            right: 10px;
+        }
+    </style>
+<body>
+    
+
+    <div class="container">
+        @{
+            ViewData["Title"] = "Send Message";
+        }
+
+        <div class="d-flex justify-content-between">
+            <h2 style="display: inline-block;">@ViewData["Title"]</h2>
+        <!-- Nút chuyển đến hộp thư nằm đối diện với tiêu đề -->
+        <div class="mailbox-button mt-3">
+            <a href="http://localhost:5184/inbox" class="btn btn-secondary">
+                <i class="fas fa-envelope"></i> Inbox
+            </a>
+        </div>
+        </div>
+        <form method="post" asp-action="SendMessage">
+            <div class="form-group">
+                <label for="ReceiverId">Email</label>
+                <input type="text" class="form-control" id="ReceiverId" name="ReceiverId" placeholder="Receiver ID"
+                    required />
+            </div>
+            <div class="form-group">
+                <label for="Content">Message</label>
+                <textarea class="form-control" id="Content" name="Content" rows="4" placeholder="Enter your message"
+                    required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Send</button>
+        </form>
+
+        @ViewBag.SuccessMessage
+        @ViewBag.ErrorMessage
+    </div>
+</body>
+
+</html>
