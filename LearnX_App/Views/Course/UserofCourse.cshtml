@@ -1,0 +1,68 @@
+@using LearnX_Data.Entities
+@model List<AppUser> 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2 class="text-center">
+        <i class="fas fa-users"></i> Danh Sách Người Dùng Đăng Ký Khoá Học
+    </h2>
+
+    @* Hiển thị trạng thái đang tải *@
+    @if (ViewData["Loading"] as bool? == true)
+    {
+        <div class="text-center">
+            <p>Loading..
+    using LearnX_Data.Entities;
+
+        </div>
+    }
+    else
+    {
+        @* Nếu không có người dùng *@
+        if (Model == null || !Model.Any())
+        {
+            <div class="alert alert-info text-center">
+                Không có người dùng đăng ký cho khóa học này.
+            </div>
+        }
+        else
+        {
+            @* Hiển thị danh sách người dùng *@
+            <div>
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th><i class="fas fa-user"></i> User Name</th>
+                            <th><i class="fas fa-envelope"></i> Email</th>
+                            <th><i class="fas fa-phone"></i> Phone Number</th>
+                            <th><i class="fas fa-calendar-alt"></i> Joined Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var user in Model)
+                        {
+                            <tr>
+                                <td>@user.UserName</td>
+                                <td>@user.Email</td>
+                                <td>@user.PhoneNumber</td>
+                                <td>@user.DateJoined.ToString("yyyy-MM-dd")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
+
+
+</body>
+</html>

@@ -2494,7 +2494,7 @@
         },
         "runtime": {
           "LearnX_Application.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -2522,7 +2522,7 @@
         },
         "runtime": {
           "LearnX_Data.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -2534,7 +2534,7 @@
         },
         "runtime": {
           "LearnX_ModelView.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }
@@ -2546,7 +2546,7 @@
         },
         "runtime": {
           "LearnX_Utilities.dll": {
-            "assemblyVersion": "1.0.0",
+            "assemblyVersion": "1.0.0.0",
             "fileVersion": "1.0.0.0"
           }
         }

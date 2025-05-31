@@ -85,5 +85,6 @@ namespace LearnX_Data.EF
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Scores> Scores { get; set; }
         public DbSet<Message> Message { get; set; }
+        public DbSet<EBook> EBooks { get; set; }
     }
 }

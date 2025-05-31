@@ -52,8 +52,8 @@
                                 <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Xem
                                     chi tiết</a>
                                 <button class="btn btn-warning btn-sm" onclick="editExercise(@exercise.ExerciseId)">Sửa</button>
-                                <button class="btn btn-danger btn-sm"
-                                    onclick="deleteExercise(@exercise.ExerciseId)">Xóa</button>
+                                <a class="btn btn-danger btn-sm"
+                                   href="@Url.Action("Delete", "Exercise", new { id = exercise.ExerciseId ,idCourse =exercise.CourseId})">Xóa</a>
                             </td>
                         </tr>
                     }

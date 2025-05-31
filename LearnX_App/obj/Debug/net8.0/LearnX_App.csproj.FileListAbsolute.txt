@@ -307,3 +307,12 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Le
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_ApiIntegration.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\LearnX_App.sourcelink.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\appsettings.Production.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_App.staticwebassets.endpoints.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\staticwebassets\msbuild.LearnX_App.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Extensions.DependencyInjection.Abstractions.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Extensions.Diagnostics.Abstractions.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Extensions.Hosting.Abstractions.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Extensions.Logging.Abstractions.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\Microsoft.Extensions.ObjectPool.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\System.Net.WebSockets.WebSocketProtocol.dll

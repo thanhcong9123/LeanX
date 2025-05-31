@@ -74,7 +74,7 @@ namespace MyApp.Namespace
 
             if (exercises == null || !exercises.Any())
             {
-                return NotFound("No exercises found for this user.");
+                return Ok(null);
             }
 
             return Ok(exercises);

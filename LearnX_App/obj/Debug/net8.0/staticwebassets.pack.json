@@ -2,7 +2,23 @@
   "Files": [
     {
       "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\LearnX_App.bundle.scp.css",
-      "PackagePath": "staticwebassets\\LearnX_App.bundle.scp.css"
+      "PackagePath": "staticwebassets\\LearnX_App.uirstyu4rj.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\EBook\\create.js",
+      "PackagePath": "staticwebassets\\EBook\\create.js"
+    },
+    {
+      "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\FileBook\\4351051181-Nguyễn Thanh Bảo.pdf",
+      "PackagePath": "staticwebassets\\FileBook\\4351051181-Nguyễn Thanh Bảo.pdf"
+    },
+    {
+      "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\FileBook\\WPS PDF Quick Start Guide.pdf",
+      "PackagePath": "staticwebassets\\FileBook\\WPS PDF Quick Start Guide.pdf"
+    },
+    {
+      "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\FileBook\\Đặng Thành Công-4451190096.docx",
+      "PackagePath": "staticwebassets\\FileBook\\Đặng Thành Công-4451190096.docx"
     },
     {
       "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\css\\site.css",
@@ -251,6 +267,10 @@
     {
       "Id": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\wwwroot\\lib\\jquery\\dist\\jquery.min.map",
       "PackagePath": "staticwebassets\\lib\\jquery\\dist\\jquery.min.map"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.LearnX_App.Microsoft.AspNetCore.StaticWebAssetEndpoints.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssetEndpoints.props"
     },
     {
       "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.LearnX_App.Microsoft.AspNetCore.StaticWebAssets.props",

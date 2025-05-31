@@ -30,6 +30,18 @@
                 </tr>
             </thead>
             <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">No messages found.</td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="5" class="text-center">You have @Model.Count() messages.</td>
+                    </tr>
+                }
                 @foreach (var message in Model)
                 {
                     <tr>

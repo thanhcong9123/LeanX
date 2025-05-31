@@ -33,7 +33,11 @@ namespace LearnX_App.Controllers
             }
             return View();
         }
-
+        public async Task<IActionResult> UserofCourse(int id)
+        {
+            var mode = await _context.GetUserCourse(id);
+            return View(mode);
+        }
         // GET: Course
         [Authorize]
         public async Task<IActionResult> Index()
@@ -46,7 +50,7 @@ namespace LearnX_App.Controllers
             {
                 return View(); // Trả về View trống nếu không có khóa học
             }
-              var userName = User.Identity.Name; // Lấy FullName từ Claims
+            var userName = User.Identity.Name; // Lấy FullName từ Claims
 
             ViewData["ActivePage"] = userName;
 
@@ -84,7 +88,7 @@ namespace LearnX_App.Controllers
                 }
                 var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 Guid.TryParse(userId, out var userIds);
-                if(userId!=null)
+                if (userId != null)
                 {
                     course.InstructorID = userIds;
                 }
@@ -129,25 +133,25 @@ namespace LearnX_App.Controllers
         }
 
         // GET: Course/Delete/5
-     
+
 
         // POST: Course/Delete/5
         [HttpGet]
         public async Task<IActionResult> Delete(int courseId)
         {
-              
-             try
+
+            try
             {
                 if (!ModelState.IsValid)
                 {
                     return Json(new { success = false, message = "Invalid course data." });
                 }
-              
+
                 // Logic để xử lý lưu course
                 // Ví dụ: lưu vào database hoặc gọi một API
                 bool isSaved = await _context.Delete(courseId);
 
-                Console.WriteLine("id"+courseId);
+                Console.WriteLine("id" + courseId);
                 if (isSaved != false)
                 {
                     return Json(new { success = true, message = "Course Delete successfully!" });
@@ -162,7 +166,7 @@ namespace LearnX_App.Controllers
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
         }
-       
+
         private Guid GetUserIdFromToken()
         {
             // Lấy token từ session

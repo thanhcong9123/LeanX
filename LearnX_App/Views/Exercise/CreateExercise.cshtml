@@ -41,26 +41,26 @@
             $(document).ready(function () {
                 $('#addQuestion').on('click', function () {
                     let questionHtml = `
-                <div class="form-group question">
-                    <label>Question:</label>
-                    <input type="text" class="form-control questionText" placeholder="Enter question" required />
-                    <div class="answers"></div>
-                    <button type="button" class="btn btn-primary addAnswer">Add Answer</button>
-                    <button type="button" class="btn btn-danger removeQuestion">Remove Question</button>
-                </div>`;
+                    <div class="form-group question">
+                        <label>Question:</label>
+                        <input type="text" class="form-control questionText" placeholder="Enter question" required />
+                        <div class="answers"></div>
+                        <button type="button" class="btn btn-primary addAnswer">Add Answer</button>
+                        <button type="button" class="btn btn-danger removeQuestion">Remove Question</button>
+                    </div>`;
                     $('#questions').append(questionHtml);
                 });
 
                 $(document).on('click', '.addAnswer', function () {
                     let answerHtml = `
-                <div class="form-group answer">
-                    <label>Answer:</label>
-                    <input type="text" class="form-control answerText" placeholder="Enter answer" required />
-                    <label>
-                        <input type="checkbox" class="isCorrect" /> Correct
-                    </label>
-                    <button type="button" class="btn btn-danger removeAnswer">Remove Answer</button>
-                </div>`;
+                    <div class="form-group answer">
+                        <label>Answer:</label>
+                        <input type="text" class="form-control answerText" placeholder="Enter answer" required />
+                        <label>
+                            <input type="checkbox" class="isCorrect" /> Correct
+                        </label>
+                        <button type="button" class="btn btn-danger removeAnswer">Remove Answer</button>
+                    </div>`;
                     $(this).siblings('.answers').append(answerHtml);
                 });
 
@@ -116,6 +116,7 @@
                         success: function (response) {
                             if (response.success) {
                                 alert(response.message);
+                                window.location.href = '@Url.Action("Details", "Exercise")' + "?id=" + courseId;
                             } else {
                                 alert('Error: ' + response.message);
                             }

@@ -135,6 +135,12 @@
                                                 </a>
                                             </li>
                                             <li>
+                                                <a class="dropdown-item"
+                                                    href="@Url.Action("UserofCourse", "Course", new { id = course.CourseID })">
+                                                    Enrollment
+                                                </a>
+                                            </li>
+                                            <li>
                                                 <a class="dropdown-item text-danger" href="javascript:void(0);"
                                                     onclick="confirmDelete(@course.CourseID)">
                                                     Delete

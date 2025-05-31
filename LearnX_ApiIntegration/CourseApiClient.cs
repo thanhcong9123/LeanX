@@ -90,7 +90,12 @@ namespace LearnX_ApiIntegration
             return data;
 
         }
+        public async Task<List<AppUser>> GetUserCourse(int idCourse)
+        {
+            var data = await GetListAsync<AppUser>($"api/Course/courseUser/{idCourse}");
+            return data;
 
-        
+        }
+
     }
 }

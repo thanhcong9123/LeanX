@@ -306,3 +306,6 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\Le
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_Utilities.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\Castle.Core.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.sourcelink.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_API.staticwebassets.endpoints.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.LearnX_API.Microsoft.AspNetCore.StaticWebAssetEndpoints.props

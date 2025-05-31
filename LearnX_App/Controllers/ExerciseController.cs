@@ -74,8 +74,12 @@ namespace MyApp.Namespace
             }
             ViewBag.isInMyCourse = isInMyCourse;
             ViewBag.isInCourseSigned = isInCourseSigned;
-            Console.WriteLine("id" + isInMyCourse);
             var courseDetails = await _exerciseService.GetExerciseDetailsAsync(id);
+            if (courseDetails == null)
+            {
+                TempData["Error"] = "Không tìm thấy khóa học.";
+                 return View();
+            }
             ViewBag.CourseId = id;
             return View(courseDetails);
         }
@@ -215,5 +219,19 @@ namespace MyApp.Namespace
         }
 
 
+        [HttpGet("Delete/{id}/{idCourse}")]
+        public async Task<IActionResult> Delete(int id, int idCourse)
+        {
+            var result = await _exerciseService.DeleteExerciseAsync(id);
+            if (result)
+            {
+                return RedirectToAction("Details", "Exercise", new { id = idCourse });
+            }
+            else
+            {
+                return RedirectToAction("Details", "Exercise", new { id = idCourse });
+            }
+        }
+       
     }
 }

@@ -1,5 +1,7 @@
 using LearnX_ApiIntegration;
+using LearnX_ApiIntegration.FileService;
 using LearnX_ApiIntegration.SystemService;
+using LearnX_App.Hubs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -30,7 +32,11 @@ builder.Services.AddTransient<IExerciseApiClient, ExerciseApiClient>();
 builder.Services.AddTransient<ILessonApiClient, LessonApiClient>();
 builder.Services.AddTransient<IScoreApiClient, ScoreApiClient>();
 builder.Services.AddTransient<IMessageApiClient, MessageApiClient>();
+builder.Services.AddTransient<IEBookApiClient, EBookApiClient>();
+builder.Services.AddTransient<IFileUpLoadServices,LoaclFileUpLoadService>();
+
 builder.Services.AddRazorPages();
+builder.Services.AddSignalR();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -48,6 +54,7 @@ app.UseRouting();
 app.UseCookiePolicy();
 app.UseAuthorization();
 app.UseSession();
+app.MapHub<ChatHub>("/chatHub");
 
 app.MapControllerRoute(
     name: "default",

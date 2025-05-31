@@ -76,5 +76,10 @@ namespace LearnX_ApiIntegration
             var data = await GetListAsync<Exercise>($"/api/Exercise/exercise/{courseId}");
             return data;
         }
+
+        public async Task<bool> DeleteExerciseAsync(int courseId)
+        {
+            return await Delete($"http://localhost:5041/api/Exercise/{courseId}");
+        }
     }
 }

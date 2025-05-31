@@ -1,0 +1,108 @@
+@using LearnX_ModelView.Catalog.Messages
+@model List<ViewMessage>
+
+@{
+    ViewData["Title"] = "Chat";
+    var userId = (Guid)ViewBag.UserId;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+
+<body>
+    <div class="container mt-4">
+        <h2>@ViewData["Title"]</h2>
+
+        <div id="messageList" class="border p-3 mb-3" style="height: 300px; overflow-y: auto;">
+            @foreach (var msg in Model.OrderBy(m => m.SentAt))
+            {
+                <div class="mb-2">
+                    <strong>@(msg.SenderId == userId ? "You" : msg.SenderEmail):</strong>
+                    <span>@msg.Content</span>
+                    <small class="text-muted" style="font-size: 0.8em;">@msg.SentAt.ToString("HH:mm:ss")</small>
+                </div>
+            }
+        </div>
+
+        <form id="chatForm" class="d-flex gap-2">
+            <input type="text" class="form-control" id="ReceiverId" placeholder="Receiver Email" required />
+            <input type="text" class="form-control" id="MessageContent" placeholder="Type a message..." required />
+            <button type="submit" id="btnSend" class="btn btn-primary">Send</button>
+        </form>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+
+    @section Scripts {
+        <script>
+            $(document).ready(function () {
+                const connection = new signalR.HubConnectionBuilder()
+                    .withUrl("/chatHub")
+                    .build();
+
+                connection.on("ReceiveMessage", function (sender, message, time) {
+                    $('#messageList').append(`
+                        <div class="mb-2">
+                            <strong>${sender}:</strong>
+                            <span>${message}</span>
+                            <small class="text-muted" style="font-size: 0.8em;">${time}</small>
+                        </div>
+                    `);
+                    let box = document.getElementById('messageList');
+                    box.scrollTop = box.scrollHeight;
+                });
+
+                connection.start().then(function () {
+                    console.log("Connected to chatHub");
+                }).catch(function (err) {
+                    console.error(err.toString());
+                });
+                $(document).ready(function () {
+                    $('#chatForm').submit(function (e) {
+                        e.preventDefault();
+
+                        var obj = {
+                            receiverId: $('#ReceiverId').val(),
+                            content: $('#MessageContent').val()
+                        };
+
+
+                        $.ajax({
+                            url: '@Url.Action("SendFromChat", "Messages")',
+                            data: JSON.stringify(obj),
+                            method: 'POST',
+                            contentType: 'application/json; charset=utf-8',
+                            dataType: 'json',
+                            success: function (response) {
+                                if (response.success) {
+                                    $('#messageList').append(`
+                                                    <div class="mb-2">
+                                                        <strong>You:</strong>
+                                                        <span>${obj.content}</span>
+                                                        <small class="text-muted" style="font-size: 0.8em;">now</small>
+                                                    </div>
+                                                `);
+                                    $('#MessageContent').val('');
+                                } else {
+                                    alert(response.message || "Send failed");
+                                }
+                            },
+                            error: function () {
+                                alert("Error sending message.");
+                            }
+                        });
+                    });
+                });
+            });
+        </script>
+    }
+</body>
+
+</html>

@@ -1,0 +1,43 @@
+@using LearnX_ModelView.Catalog.EBook
+
+@model EBookRequest
+
+
+
+<body>
+    <div class="container mt-5">
+        <h2>Upload Sách Điện Tử</h2>
+        <div class="form-group">
+            <label>Tiêu Đề</label>
+            <input asp-for="Title" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Mô Tả</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Ảnh</label>
+            <input asp-for="ImgPath" class="form-control" />
+        </div>
+        <div class="item d-flex">
+            <label for="">File :</label>
+            <form id="upload_form" enctype="multipart/form-data" method="post">
+                <input type="file" name="file1" id="file1" onchange="uploadFile()" autocomplete="episodes"
+                    placeholder="Episodes" id="Episodes"  accept=".pdf"><br>
+                <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
+                <h3 id="status"></h3>
+                <p id="loaded_n_total"></p>
+            </form>
+
+        </div>
+        <button type="submit" id="create" class="btn btn-success">Upload</button>
+    </div>
+</body>
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+
+    }
+    <script src="~/EBook/create.js" asp-append-version="true"></script>
+}
+<script src="~/lib/jquery/dist/jquery.min.js"></script>

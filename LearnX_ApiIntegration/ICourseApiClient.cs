@@ -15,5 +15,6 @@ namespace LearnX_ApiIntegration
         Task<bool> Delete(int id);
         Task<bool> Edit(Guid id, Course course);
         Task<MyCourses> GetmyCourse(Guid id);
+        Task<List<AppUser>> GetUserCourse(int idCourse);
     }
 }
