@@ -34,9 +34,9 @@ namespace LearnX_ApiIntegration.SystemService
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5041");
             var response = await client.PostAsync("/api/user/authenticate", httpContent);
-              var responseString = await response.Content.ReadAsStringAsync();
+            var responseString = await response.Content.ReadAsStringAsync();
 
-                   if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString);
             }
@@ -68,17 +68,17 @@ namespace LearnX_ApiIntegration.SystemService
         public async Task<ApiResult<UserVm>> GetByID(Guid id)
         {
             var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            var client =  _httpClientFactory.CreateClient();
+            var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5041");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
             var response = await client.GetAsync($"/api/user/{id}");
-            var body= await response.Content.ReadAsStringAsync();
-             if (response.IsSuccessStatusCode)
+            var body = await response.Content.ReadAsStringAsync();
+            if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<UserVm>>(body);
 
             }
-            return JsonConvert.DeserializeObject<ApiErrorResult<UserVm>>(body) ;
+            return JsonConvert.DeserializeObject<ApiErrorResult<UserVm>>(body);
 
         }
 
@@ -102,14 +102,14 @@ namespace LearnX_ApiIntegration.SystemService
         {
             var client = _httpClientFactory.CreateClient();
             var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            client.BaseAddress =  new Uri("http://localhost:5041");
+            client.BaseAddress = new Uri("http://localhost:5041");
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
 
             var json = JsonConvert.SerializeObject(register);
-            var httpContent= new StringContent(json, Encoding.UTF8,"application/json");
-            var response = await client.PutAsync($"api/user/{id}",httpContent);
+            var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+            var response = await client.PutAsync($"api/user/{id}", httpContent);
             var result = await response.Content.ReadAsStringAsync();
-             if (response.IsSuccessStatusCode)
+            if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
 

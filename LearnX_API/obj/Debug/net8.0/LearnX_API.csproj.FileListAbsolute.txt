@@ -288,11 +288,6 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\Le
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.MvcApplicationPartsAssemblyInfo.cache
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.build.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.development.json
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.LearnX_API.Microsoft.AspNetCore.StaticWebAssets.props
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.build.LearnX_API.props
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.buildMultiTargeting.LearnX_API.props
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.buildTransitive.LearnX_API.props
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.pack.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\scopedcss\bundle\LearnX_API.styles.css
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.csproj.Up2Date
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.dll
@@ -308,4 +303,8 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\Ca
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.sourcelink.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\LearnX_API.staticwebassets.endpoints.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.build.endpoints.json
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets\msbuild.LearnX_API.Microsoft.AspNetCore.StaticWebAssetEndpoints.props
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\rpswa.dswa.cache.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\rjimswa.dswa.cache.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\staticwebassets.build.json.cache
