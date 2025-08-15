@@ -44,7 +44,8 @@ namespace MyApp.Namespace
                 Title = book.Title,
                 Description = book.Description,
                 imgPath = book.imgPath,
-                FilePath = book.FilePath
+                FilePath = book.FilePath,
+                LinkYoutube = book.LinkYoutube,
             };
             return View(model);
         }

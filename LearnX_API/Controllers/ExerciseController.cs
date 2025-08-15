@@ -47,7 +47,7 @@ namespace MyApp.Namespace
         [HttpPost]
         public async Task<IActionResult> AddExercise(ExerciseRequestWrapper wrapper)
         {
-            var exerciseId = await _exerciseService.AddExerciseAsync(wrapper.ExerciseRequest, wrapper.QuestionRequest);
+            var exerciseId = await _exerciseService.AddExerciseAsync(wrapper);
             return CreatedAtAction(nameof(GetExercise), new { id = exerciseId }, wrapper.ExerciseRequest);
         }
 

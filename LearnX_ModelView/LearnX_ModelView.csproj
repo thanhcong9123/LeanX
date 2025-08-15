@@ -5,9 +5,15 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
- 
+
   <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
+
     <ProjectReference Include="..\LearnX_Data\LearnX_Data.csproj" />
     <ProjectReference Include="..\LearnX_Utilities\LearnX_Utilities.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="AutoMapper" Version="13.0.1" />
   </ItemGroup>
 </Project>

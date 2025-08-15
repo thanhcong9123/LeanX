@@ -34,6 +34,7 @@ namespace MyApp.Namespace
                 Console.WriteLine("Book not found.");
                 return BadRequest();
             }
+
             return Ok(book);
         }
 
@@ -41,7 +42,7 @@ namespace MyApp.Namespace
         [HttpPost]
         public async Task<IActionResult> UploadBook([FromForm] EBookRequest eBookRequest)
         {
-            if (eBookRequest.IFormFile == null )
+            if (eBookRequest.FilePath == null)
             {
                 return BadRequest("No file selected.");
             }
@@ -77,6 +78,14 @@ namespace MyApp.Namespace
             {
                 return BadRequest();
             }
+        }
+        [HttpPost("evaluate")]
+        public async Task<IActionResult> AddEvaluate([FromBody] EvaluateBookRequest request)
+        {
+            var result = await _bookService.AddEvaluateAsync(request);
+            if (result)
+                return Ok(new { success = true, message = "Đánh giá thành công!" });
+            return BadRequest(new { success = false, message = "Đánh giá thất bại!" });
         }
     }
 }

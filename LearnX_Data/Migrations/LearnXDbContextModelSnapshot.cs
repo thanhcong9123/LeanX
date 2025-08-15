@@ -188,6 +188,9 @@ namespace LearnX_Data.Migrations
                     b.Property<Guid>("InstructorID")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<string>("Prerequisites")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -211,6 +214,13 @@ namespace LearnX_Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Author")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CountPages")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -223,12 +233,22 @@ namespace LearnX_Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("NameCategory")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("UploadedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("View")
+                        .HasColumnType("int");
 
                     b.Property<string>("imgPath")
                         .IsRequired()
@@ -271,6 +291,94 @@ namespace LearnX_Data.Migrations
                     b.ToTable("Enrollments");
                 });
 
+            modelBuilder.Entity("LearnX_Data.Entities.EssaySubmissions", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<Guid?>("AppUserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AttachmentFilePath")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("AttemptNumber")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("ExerciseId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExerciseId1")
+                        .HasColumnType("int");
+
+                    b.Property<Guid>("IdUser")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Status")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("StudentAnswer")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("SubmittedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("TeacherComment")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AppUserId");
+
+                    b.HasIndex("ExerciseId");
+
+                    b.HasIndex("ExerciseId1");
+
+                    b.HasIndex("IdUser");
+
+                    b.ToTable("EssaySubmissions");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.EvaluateBook", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("BookId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Comment")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<float>("Rating")
+                        .HasColumnType("real");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BookId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("EvaluateBooks");
+                });
+
             modelBuilder.Entity("LearnX_Data.Entities.Exercise", b =>
                 {
                     b.Property<int>("ExerciseId")
@@ -279,8 +387,20 @@ namespace LearnX_Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ExerciseId"));
 
+                    b.Property<string>("AnswerFile")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Category")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("CourseId")
                         .HasColumnType("int");
+
+                    b.Property<string>("Describe")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Instruct")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .HasColumnType("nvarchar(max)");
@@ -306,7 +426,19 @@ namespace LearnX_Data.Migrations
                     b.Property<int>("CourseID")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("EndDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("LessonTitle")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Objectives")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("StratDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VideoUrl")
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("LessonID");
@@ -396,6 +528,36 @@ namespace LearnX_Data.Migrations
                     b.HasIndex("ExerciseId");
 
                     b.ToTable("Questions");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.ResourcesLesson", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LessonID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ResourceName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResourceType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("ResourceUrl")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LessonID");
+
+                    b.ToTable("ResourcesLessons");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.Review", b =>
@@ -610,6 +772,52 @@ namespace LearnX_Data.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("LearnX_Data.Entities.EssaySubmissions", b =>
+                {
+                    b.HasOne("LearnX_Data.Entities.AppUser", null)
+                        .WithMany("EssaySubmissions")
+                        .HasForeignKey("AppUserId");
+
+                    b.HasOne("LearnX_Data.Entities.Exercise", "Exercise")
+                        .WithMany()
+                        .HasForeignKey("ExerciseId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearnX_Data.Entities.Exercise", null)
+                        .WithMany("EssaySubmissions")
+                        .HasForeignKey("ExerciseId1");
+
+                    b.HasOne("LearnX_Data.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("IdUser")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exercise");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.EvaluateBook", b =>
+                {
+                    b.HasOne("LearnX_Data.Entities.EBook", "Book")
+                        .WithMany("EvaluateBooks")
+                        .HasForeignKey("BookId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("LearnX_Data.Entities.AppUser", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Book");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("LearnX_Data.Entities.Exercise", b =>
                 {
                     b.HasOne("LearnX_Data.Entities.Course", "Course")
@@ -660,6 +868,17 @@ namespace LearnX_Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Exercise");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.ResourcesLesson", b =>
+                {
+                    b.HasOne("LearnX_Data.Entities.Lesson", "Lesson")
+                        .WithMany("Resources")
+                        .HasForeignKey("LessonID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.Review", b =>
@@ -738,6 +957,8 @@ namespace LearnX_Data.Migrations
 
                     b.Navigation("Enrollments");
 
+                    b.Navigation("EssaySubmissions");
+
                     b.Navigation("Payments");
 
                     b.Navigation("Reviews");
@@ -759,9 +980,21 @@ namespace LearnX_Data.Migrations
                     b.Navigation("Reviews");
                 });
 
+            modelBuilder.Entity("LearnX_Data.Entities.EBook", b =>
+                {
+                    b.Navigation("EvaluateBooks");
+                });
+
             modelBuilder.Entity("LearnX_Data.Entities.Exercise", b =>
                 {
+                    b.Navigation("EssaySubmissions");
+
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("LearnX_Data.Entities.Lesson", b =>
+                {
+                    b.Navigation("Resources");
                 });
 
             modelBuilder.Entity("LearnX_Data.Entities.Question", b =>

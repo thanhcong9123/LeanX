@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Exercise;
@@ -13,10 +14,13 @@ namespace LearnX_Application.Comman
     public class ExerciseService : IExerciseService
     {
         private readonly LearnXDbContext _context;
+        private readonly IMapper _mapper;
 
-        public ExerciseService(LearnXDbContext context)
+
+        public ExerciseService(LearnXDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<ExerciseRequest>> GetAllExercisesAsync()
@@ -33,6 +37,10 @@ namespace LearnX_Application.Comman
                 ExerciseId = e.ExerciseId,
                 Title = e.Title,
                 CourseId = e.CourseId,
+                Category = e.Category,
+                AnswerFile = e.AnswerFile,
+                Describe = e.Describe,
+                Instruct = e.Instruct
                 // Questions = e.Questions?.Select(q => new QuestionRequest
                 // {
                 //     QuestionId = q.QuestionId,
@@ -61,6 +69,10 @@ namespace LearnX_Application.Comman
                 ExerciseId = exercise.ExerciseId,
                 Title = exercise.Title,
                 CourseId = exercise.CourseId,
+                Category = exercise.Category,
+                AnswerFile = exercise.AnswerFile,
+                Describe = exercise.Describe,
+                Instruct = exercise.Instruct
                 // Questions = exercise.Questions?.Select(q => new QuestionRequest
                 // {
                 //     QuestionId = q.QuestionId,
@@ -75,55 +87,17 @@ namespace LearnX_Application.Comman
             };
         }
 
-        public async Task<int> AddExerciseAsync(ExerciseRequest exerciseRequest, List<QuestionRequest> questionRequest)
+        public async Task<int> AddExerciseAsync(ExerciseRequestWrapper exerciseRequest)
         {
 
             // Tạo mới Exercise
-            var exercise = new Exercise
-            {
-                Title = exerciseRequest.Title,
-                CourseId = exerciseRequest.CourseId,
-            };
+            if (exerciseRequest == null) throw new ArgumentNullException(nameof(exerciseRequest));
 
+            // Map toàn bộ wrapper -> entity (bao gồm Exercise + Questions + Answers)
+            var exercise = _mapper.Map<Exercise>(exerciseRequest);
+            Console.WriteLine($"{exercise}");
             _context.Exercises.Add(exercise);
             await _context.SaveChangesAsync();
-
-            // Kiểm tra nếu Questions không null
-            if (questionRequest != null)
-            {
-                foreach (var item in questionRequest)
-                {
-                    Console.WriteLine("code chạy" + item.QuestionText);
-                    // Tạo mới Question
-                    var question = new Question
-                    {
-                        QuestionText = item.QuestionText,
-                        ExerciseId = exercise.ExerciseId
-                    };
-
-                    _context.Questions.Add(question);
-                    await _context.SaveChangesAsync();
-
-                    // Kiểm tra nếu Answers không null
-                    if (item.Answers != null)
-                    {
-                        foreach (var item2 in item.Answers)
-                        {
-                            // Tạo mới Answer
-                            var answer = new Answer
-                            {
-                                AnswerText = item2.AnswerText,
-                                QuestionId = question.QuestionId,
-                                IsCorrect = item2.IsCorrect
-                            };
-
-                            _context.Answers.Add(answer);
-                        }
-
-                        await _context.SaveChangesAsync();
-                    }
-                }
-            }
 
             return exercise.ExerciseId;
         }
@@ -141,6 +115,11 @@ namespace LearnX_Application.Comman
 
             existingExercise.Title = exerciseDto.Title;
             existingExercise.CourseId = exerciseDto.CourseId;
+            existingExercise.Category = exerciseDto.Category;
+            existingExercise.AnswerFile = exerciseDto.AnswerFile;
+
+            existingExercise.Describe = exerciseDto.Describe;
+            existingExercise.Instruct = exerciseDto.Instruct;
 
             // Update Questions
             // existingExercise.Questions = exerciseDto.Questions?.Select(q => new Question

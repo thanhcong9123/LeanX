@@ -1,0 +1,310 @@
+@using System.IO
+@model LearnX_App.Models.EssaySubmissionListViewModel
+
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header bg-primary text-white">
+            <h4 class="card-title mb-0">
+                <i class="fas fa-list"></i> 
+                @if (Model.ShowAllSubmissions)
+                {
+                    <text>Tất cả bài nộp - Bài tập: @Model.ExerciseTitle</text>
+                }
+                else
+                {
+                    <text>Bài nộp của tôi - Bài tập: @Model.ExerciseTitle</text>
+                }
+            </h4>
+        </div>
+        <div class="card-body">
+            @{
+                // Kiểm tra quyền tương tự như trong ExerciseController
+                var IsOwner = ViewBag.isInMyCourse ?? false; // Người tạo khóa học
+                var IsEnrolled = ViewBag.isInCourseSigned ?? false; // Người đã đăng ký khóa học
+            }
+            
+            @if (IsOwner && !Model.ShowAllSubmissions)
+            {
+                <div class="mb-3">
+                    <a asp-action="ViewSubmissions" asp-route-exerciseId="@Model.ExerciseId" 
+                       asp-route-showAll="true" class="btn btn-info">
+                        <i class="fas fa-users"></i> Xem tất cả bài nộp
+                    </a>
+                </div>
+            }
+
+            @if (Model.Submissions == null || !Model.Submissions.Any())
+            {
+                <div class="alert alert-warning text-center">
+                    <h5><i class="fas fa-exclamation-triangle"></i> Chưa có bài nộp nào</h5>
+                    <p>
+                        @if (Model.ShowAllSubmissions)
+                        {
+                            <text>Chưa có học sinh nào nộp bài tập này.</text>
+                        }
+                        else
+                        {
+                            <text>Bạn chưa nộp bài tập này.</text>
+                        }
+                    </p>
+                    <a asp-controller="Exercise" asp-action="DoExercise" 
+                       asp-route-exerciseId="@Model.ExerciseId" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Làm bài ngay
+                    </a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-bordered table-hover">
+                        <thead class="thead-dark">
+                            <tr>
+                                <th>#</th>
+                                @if (Model.ShowAllSubmissions)
+                                {
+                                    <th>Học sinh</th>
+                                }
+                                <th>Lần nộp</th>
+                                <th>Thời gian nộp</th>
+                                <th>Trạng thái</th>
+                                <th>File đính kèm</th>
+                                <th>Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var submission in Model.Submissions.OrderByDescending(s => s.SubmittedAt))
+                            {
+                                <tr>
+                                    <td>@(Model.Submissions.ToList().IndexOf(submission) + 1)</td>
+                                    @if (Model.ShowAllSubmissions)
+                                    {
+                                        <td>
+                                            @if (submission.User != null)
+                                            {
+                                                <span>@submission.User.UserName</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-muted">N/A</span>
+                                            }
+                                        </td>
+                                    }
+                                    <td>
+                                        <span class="badge badge-info">Lần @submission.AttemptNumber</span>
+                                    </td>
+                                    <td>@submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td>
+                                        @switch (submission.Status)
+                                        {
+                                            case "Submitted":
+                                                <span class="badge badge-warning">Chờ chấm</span>
+                                                break;
+                                            case "Graded":
+                                                <span class="badge badge-success">Đã chấm</span>
+                                                break;
+                                            case "Reviewed":
+                                                <span class="badge badge-primary">Đã duyệt</span>
+                                                break;
+                                            default:
+                                                <span class="badge badge-success">@submission.Status</span>
+                                                break;
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (!string.IsNullOrEmpty(submission.AttachmentFilePath))
+                                        {
+                                            var fileName = submission.AttachmentFilePath.Split('/').LastOrDefault() ?? submission.AttachmentFilePath;
+                                            <a asp-action="DownloadAttachment" 
+                                               asp-route-fileName="@fileName" 
+                                               class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-download"></i> Tải về
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">Không có</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        <a asp-action="ViewSubmissionDetail" asp-route-id="@submission.Id" 
+                                           class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i> Xem chi tiết
+                                        </a>
+                                        
+                                        @if (IsOwner && submission.Status != "Graded")
+                                        {
+                                            <button class="btn btn-sm btn-success" 
+                                                onclick="gradeSubmission(@submission.Id)">
+                                                <i class="fas fa-star"></i> Chấm điểm
+                                            </button>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Statistics for course owners -->
+                @if (IsOwner && Model.ShowAllSubmissions)
+                {
+                    <div class="row mt-4">
+                        <div class="col-md-3">
+                            <div class="card bg-info text-white text-center">
+                                <div class="card-body">
+                                    <h5>@Model.Submissions.Count()</h5>
+                                    <p>Tổng bài nộp</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-warning text-white text-center">
+                                <div class="card-body">
+                                    <h5>@Model.Submissions.Count(s => s.Status == "Submitted")</h5>
+                                    <p>Chờ chấm</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-success text-white text-center">
+                                <div class="card-body">
+                                    <h5>@Model.Submissions.Count(s => s.Status == "Graded")</h5>
+                                    <p>Đã chấm</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card bg-primary text-white text-center">
+                                <div class="card-body">
+                                    <h5>@Model.Submissions.DistinctBy(s => s.IdUser).Count()</h5>
+                                    <p>Học sinh tham gia</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+
+            <div class="mt-4">
+                <a href="javascript:history.back()" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Quay lại
+                </a>
+                @if (!Model.ShowAllSubmissions)
+                {
+                    <a asp-controller="Exercise" asp-action="DoExercise" 
+                       asp-route-exerciseId="@Model.ExerciseId" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nộp bài mới
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (IsOwner)
+{
+    <!-- Grade Modal -->
+    <div class="modal fade" id="gradeModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Chấm điểm bài tập</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="gradeForm">
+                        <input type="hidden" id="submissionId" />
+                        <div class="form-group">
+                            <label for="teacherComment">Nhận xét:</label>
+                            <textarea id="teacherComment" class="form-control" rows="4" 
+                                placeholder="Nhập nhận xét cho bài làm của học sinh..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="status">Trạng thái:</label>
+                            <select id="status" class="form-control">
+                                <option value="Graded">Đã chấm</option>
+                                <option value="Reviewed">Đã duyệt</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                    <button type="button" class="btn btn-success" onclick="submitGrade()">Lưu</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@section Scripts {
+    <script>
+        function gradeSubmission(submissionId) {
+            document.getElementById('submissionId').value = submissionId;
+            $('#gradeModal').modal('show');
+        }
+
+        function submitGrade() {
+            const submissionId = document.getElementById('submissionId').value;
+            const comment = document.getElementById('teacherComment').value;
+            const status = document.getElementById('status').value;
+            if (!comment.trim()) {
+                alert('Vui lòng nhập nhận xét');
+                return;
+            }
+
+            // Submit comment
+            const formData = new FormData();
+            formData.append('comment', comment);
+            
+            fetch(`/EssaySubmission/AddTeacherComment/${submissionId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => {
+                console.log('AddTeacherComment response status:', response.status);
+                console.log('AddTeacherComment response headers:', response.headers.get('content-type'));
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    // Update status
+                    const statusFormData = new FormData();
+                    statusFormData.append('status', status);
+                    
+                    return fetch(`/EssaySubmission/UpdateStatus/${submissionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: statusFormData
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to add comment');
+                }
+            })
+            .then(response => {
+                console.log('UpdateStatus response status:', response.status);
+                console.log('UpdateStatus response headers:', response.headers.get('content-type'));
+                return response.json();
+            })
+            .then(data => {
+                if (data.success) {
+                    $('#gradeModal').modal('hide');
+                    location.reload();
+                } else {
+                    throw new Error( 'Failed to update status');
+                }
+            })
+            .catch(error => {
+
+                alert('Có lỗi xảy ra ở đây: ' + error.message);
+            });
+        }
+    </script>
+}

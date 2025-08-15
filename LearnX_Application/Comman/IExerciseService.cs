@@ -13,7 +13,7 @@ namespace LearnX_Application.Comman
         Task<ExerciseRequest?> GetExerciseByIdAsync(int id);
         Task<List<Exercise>> GetExerciseByIdcourseAsync(int id);
         Task<List<Question>> GetQuestionByIdExerciseAsync(int id);
-        Task<int> AddExerciseAsync(ExerciseRequest exerciseRequest,List<QuestionRequest> questionRequest);
+        Task<int> AddExerciseAsync(ExerciseRequestWrapper exerciseRequest);
         Task<int> UpdateExerciseAsync(ExerciseRequest exerciseDto);
         Task<int> DeleteExerciseAsync(int id);
         Task<List<Exercise>> GetExercisesForUserAsync(Guid userId);

@@ -99,7 +99,16 @@ namespace MyApp.Namespace
 
             if (success)
             {
-                await _hubContext.Clients.All.SendAsync("ReceiveMessage", HttpContext.User.Identity.Name, model.Content, DateTime.Now.ToString("HH:mm:ss"));
+                // Lấy User ID của người nhận từ email
+                var receiverId = await _messageApiClient.GetUserIdByEmailAsync(model.ReceiverId);
+                
+                if (receiverId.HasValue)
+                {
+                    // Chỉ gửi tin nhắn cho người nhận cụ thể thông qua User ID
+                    await _hubContext.Clients.User(receiverId.Value.ToString())
+                        .SendAsync("ReceiveMessage", HttpContext.User.Identity?.Name ?? "Unknown", model.Content, DateTime.Now.ToString("HH:mm:ss"));
+                }
+                
                 return Json(new { success = true });
             }
 

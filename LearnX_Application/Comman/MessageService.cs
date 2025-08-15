@@ -73,6 +73,15 @@ namespace LearnX_Application.Comman
                                  .ToListAsync();
         }
 
+        // Lấy User ID từ email
+        public async Task<Guid?> GetUserIdByEmailAsync(string email)
+        {
+            var userId = await _context.Users
+                                      .Where(u => u.Email == email)
+                                      .Select(u => u.Id)
+                                      .FirstOrDefaultAsync();
+            return userId == Guid.Empty ? null : userId;
+        }
 
         // Đánh dấu tin nhắn đã đọc
         public async Task<bool> MarkMessageAsReadAsync(int messageId)

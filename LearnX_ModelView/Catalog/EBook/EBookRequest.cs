@@ -8,9 +8,15 @@ namespace LearnX_ModelView.Catalog.EBook
 {
     public class EBookRequest
     {
-        public string IFormFile { get; set; }
-        public string Title { get; set; }
-        public string Description { get; set; } 
-        public string ImgPath { get; set; }
+         public string Title { get; set; }
+        public string imgPath { get; set; }
+        public string LinkYoutube { get; set; }
+        public string Description { get; set; }
+        public string FilePath { get; set; }
+        public DateTime UploadedAt { get; set; }
+        public int CountPages { get; set; }
+        public string Author { get; set; }
+        public string Status { get; set; } 
+        public string? NameCategory { get; set; }
     }
 }

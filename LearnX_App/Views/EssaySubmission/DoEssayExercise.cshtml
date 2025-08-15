@@ -1,0 +1,179 @@
+@model LearnX_App.Models.DoEssayExerciseViewModel
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-edit"></i> Bài tập tự luận
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @if (!Model.IsSubmitted)
+                    {
+                        <form asp-action="SubmitEssayExercise" method="post" enctype="multipart/form-data">
+                            <input asp-for="ExerciseId" type="hidden" />
+                            <input asp-for="AttemptNumber" type="hidden" />
+
+                            <div class="alert alert-info">
+                                <h6><i class="fas fa-info-circle"></i> Thông tin bài tập:</h6>
+                                <p><strong>Lần nộp thứ:</strong> @Model.AttemptNumber</p>
+                                @if (!string.IsNullOrEmpty(Model.ExerciseTitle))
+                                {
+                                    <p><strong>Tiêu đề:</strong> @Model.ExerciseTitle</p>
+                                }
+                            </div>
+
+                            @if (Model.ExistingSubmissions != null && Model.ExistingSubmissions.Any())
+                            {
+                                <div class="alert alert-warning">
+                                    <h6><i class="fas fa-history"></i> Bài nộp trước đó:</h6>
+                                    @foreach (var submission in Model.ExistingSubmissions)
+                                    {
+                                        <div class="border p-2 mb-2 rounded">
+                                            <strong>Lần @submission.AttemptNumber</strong> - 
+                                            Nộp lúc: @submission.SubmittedAt.ToString("dd/MM/yyyy HH:mm") - 
+                                            Trạng thái: <span class="badge badge-@(submission.Status == "Graded" ? "success" : "warning")">@submission.Status</span>
+                                            @if (!string.IsNullOrEmpty(submission.TeacherComment))
+                                            {
+                                                <br><small><strong>Nhận xét:</strong> @submission.TeacherComment</small>
+                                            }
+                                        </div>
+                                    }
+                                </div>
+                            }
+
+                            <div class="form-group mb-4">
+                                <label asp-for="StudentAnswer" class="form-label fw-bold">
+                                    <i class="fas fa-pencil-alt"></i> Nội dung bài làm <span class="text-danger">*</span>
+                                </label>
+                                <textarea asp-for="StudentAnswer" class="form-control" rows="15" 
+                                    placeholder="Nhập nội dung bài làm của bạn ở đây...&#10;&#10;Hãy trình bày rõ ràng, logic và đầy đủ nội dung theo yêu cầu đề bài."
+                                    required></textarea>
+                                <span asp-validation-for="StudentAnswer" class="text-danger"></span>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-lightbulb"></i> Gợi ý: Hãy đọc kỹ đề bài, sắp xếp ý tưởng và trình bày một cách có logic
+                                </small>
+                            </div>
+
+                            <div class="form-group mb-4">
+                                <label asp-for="AttachmentFile" class="form-label fw-bold">
+                                    <i class="fas fa-paperclip"></i> File đính kèm (tùy chọn)
+                                </label>
+                                <input asp-for="AttachmentFile" type="file" class="form-control" 
+                                    accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png" />
+                                <small class="form-text text-muted">
+                                    Hỗ trợ: PDF, Word, Text, Hình ảnh. Dung lượng tối đa: 10MB
+                                </small>
+                                <span asp-validation-for="AttachmentFile" class="text-danger"></span>
+                            </div>
+
+                            <div class="alert alert-warning">
+                                <h6><i class="fas fa-exclamation-triangle"></i> Lưu ý quan trọng:</h6>
+                                <ul class="mb-0">
+                                    <li>Hãy đọc kỹ yêu cầu đề bài trước khi làm</li>
+                                    <li>Kiểm tra kỹ nội dung trước khi nộp bài</li>
+                                    <li>Sau khi nộp, bài làm sẽ được gửi đến giáo viên để chấm điểm</li>
+                                    <li>Bạn có thể nộp lại nhiều lần nếu được phép</li>
+                                </ul>
+                            </div>
+
+                            <div class="d-flex justify-content-between">
+                                <a href="javascript:history.back()" class="btn btn-secondary">
+                                    <i class="fas fa-arrow-left"></i> Quay lại
+                                </a>
+                                <button type="submit" class="btn btn-primary btn-lg" 
+                                    onclick="return confirm('Bạn có chắc chắn muốn nộp bài? Hãy kiểm tra kỹ nội dung trước khi nộp.')">
+                                    <i class="fas fa-paper-plane"></i> Nộp bài
+                                </button>
+                            </div>
+                        </form>
+                    }
+                    else
+                    {
+                        <div class="alert alert-success text-center">
+                            <h5><i class="fas fa-check-circle"></i> Nộp bài thành công!</h5>
+                            <p>@Model.SubmissionResult</p>
+                        </div>
+
+                        <div class="text-center">
+                            <a href="javascript:history.back()" class="btn btn-primary">
+                                <i class="fas fa-arrow-left"></i> Quay lại danh sách bài tập
+                            </a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        // Character counter for textarea
+        const textarea = document.querySelector('textarea[name="StudentAnswer"]');
+        const counterDiv = document.createElement('div');
+        counterDiv.className = 'text-muted small mt-1';
+        textarea.parentElement.appendChild(counterDiv);
+
+        function updateCounter() {
+            const text = textarea.value;
+            const charCount = text.length;
+            const wordCount = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+            counterDiv.innerHTML = `<i class="fas fa-info"></i> Số ký tự: ${charCount} | Số từ: ${wordCount}`;
+        }
+
+        textarea.addEventListener('input', updateCounter);
+        updateCounter(); // Initial count
+
+        // File size validation
+        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const fileSize = file.size / 1024 / 1024; // MB
+                const small = e.target.parentElement.querySelector('small');
+                
+                if (fileSize > 10) {
+                    alert('Dung lượng file không được vượt quá 10MB');
+                    e.target.value = '';
+                    small.innerHTML = 'Hỗ trợ: PDF, Word, Text, Hình ảnh. Dung lượng tối đa: 10MB';
+                    small.className = 'form-text text-muted';
+                } else {
+                    small.innerHTML = `<strong>File đã chọn:</strong> ${file.name} (${fileSize.toFixed(2)} MB)`;
+                    small.className = 'form-text text-success';
+                }
+            }
+        });
+
+        // Auto-save draft (optional)
+        let autoSaveTimer;
+        textarea.addEventListener('input', function() {
+            clearTimeout(autoSaveTimer);
+            autoSaveTimer = setTimeout(function() {
+                localStorage.setItem('essay_draft_' + @Model.ExerciseId, textarea.value);
+            }, 2000);
+        });
+
+        // Load draft on page load
+        window.addEventListener('load', function() {
+            const draft = localStorage.getItem('essay_draft_' + @Model.ExerciseId);
+            if (draft && textarea.value.trim() === '') {
+                if (confirm('Có bản nháp được lưu trước đó. Bạn có muốn khôi phục không?')) {
+                    textarea.value = draft;
+                    updateCounter();
+                }
+            }
+        });
+
+        // Clear draft after successful submission
+        @if (Model.IsSubmitted)
+        {
+            <text>
+            localStorage.removeItem('essay_draft_' + @Model.ExerciseId);
+            </text>
+        }
+    </script>
+}

@@ -1,0 +1,15 @@
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\bin\Release\net8.0\LearnX_Data.deps.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\bin\Release\net8.0\LearnX_Data.runtimeconfig.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\bin\Release\net8.0\LearnX_Data.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\bin\Release\net8.0\LearnX_Data.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.csproj.AssemblyReference.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.AssemblyInfoInputs.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.AssemblyInfo.cs
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.csproj.CoreCompileInputs.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.sourcelink.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\refint\LearnX_Data.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.pdb
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\LearnX_Data.genruntimeconfig.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Data\obj\Release\net8.0\ref\LearnX_Data.dll

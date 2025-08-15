@@ -17,9 +17,9 @@ namespace MyApp.Namespace
             _context = context;
         }
         [HttpGet()]
-        public async Task<IActionResult> GetAll(Guid idcourse)
+        public async Task<IActionResult> GetAll(Guid idUser)
         {
-            var score = await _context.GetAll(idcourse);
+            var score = await _context.GetAll(idUser);
             return Ok(score);
         }
          [HttpPost]

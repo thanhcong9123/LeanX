@@ -315,3 +315,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\rj
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\rjsmrazor.dswa.cache.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\rjsmcshtml.dswa.cache.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\staticwebassets.build.json.cache
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\AutoMapper.dll

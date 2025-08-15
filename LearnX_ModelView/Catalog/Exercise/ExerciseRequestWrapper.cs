@@ -10,7 +10,8 @@ namespace LearnX_ModelView.Catalog.Exercise
         public ExerciseRequestWrapper() { }
 
         public ExerciseRequest ExerciseRequest { get; set; }
-        public List<QuestionRequest> QuestionRequest { get; set; }
+        public List<QuestionRequest>? QuestionRequest { get; set; }
+        
     }
 
 }

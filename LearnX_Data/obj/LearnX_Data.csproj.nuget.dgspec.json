@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {}
+    "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {}
   },
   "projects": {
-    "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {
+    "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+        "projectUniqueName": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
         "projectName": "LearnX_Data",
-        "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+        "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
         "packagesPath": "C:\\Users\\CONGGGG\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\obj\\",
+        "outputPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -50,6 +50,10 @@
         "net8.0": {
           "targetAlias": "net8.0",
           "dependencies": {
+            "AutoMapper": {
+              "target": "Package",
+              "version": "[12.0.1, )"
+            },
             "Microsoft.AspNetCore.Authentication": {
               "target": "Package",
               "version": "[2.2.0, )"
@@ -151,7 +155,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
         }
       }
     }

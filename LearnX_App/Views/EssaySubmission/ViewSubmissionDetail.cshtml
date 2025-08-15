@@ -1,0 +1,447 @@
+@using System.IO
+@using LearnX_ModelView.Catalog.EssaySubmission
+@model LearnX_ModelView.Catalog.EssaySubmission.EssaySubmissionRequest
+
+@{
+    ViewData["Title"] = "Chi tiết bài nộp";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-file-alt"></i> Chi tiết bài nộp
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Thông tin cơ bản -->
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-info-circle text-primary"></i> Thông tin bài nộp</h6>
+                                    <p><strong>ID:</strong> #@Model.Id</p>
+                                    <p><strong>Lần nộp:</strong> @Model.AttemptNumber</p>
+                                    <p><strong>Thời gian nộp:</strong> @Model.SubmittedAt.ToString("dd/MM/yyyy HH:mm:ss")</p>
+                              
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-tasks text-success"></i> Trạng thái</h6>
+                                    <p>
+                                        <strong>Hiện tại:</strong>
+                                        @switch (Model.Status)
+                                        {
+                                            case "Submitted":
+                                                <span class="badge badge-warning badge-lg col">
+                                                    <i class="fas fa-clock" ></i> Chờ chấm
+                                                </span>
+                                                break;
+                                            case "Graded":
+                                                <span class="badge badge-success badge-lg">
+                                                    <i class="fas fa-check"></i> Đã chấm
+                                                </span>
+                                                break;
+                                            case "Reviewed":
+                                                <span class=" ">
+                                                    <i class="fas fa-star"></i> Đã duyệt
+                                                </span>
+                                                break;
+                                            default:
+                                                <span class="">@Model.Status</span>
+                                                break;
+                                        }
+                                    </p>
+                                    @if (!string.IsNullOrEmpty(Model.TeacherComment))
+                                    {
+                                        <p><strong>Đã có nhận xét:</strong> <i class="fas fa-check text-success"></i></p>
+                                    }
+                                    else
+                                    {
+                                        <p><strong>Nhận xét:</strong> <span class="text-muted">Chưa có</span></p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Nội dung bài làm -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0"><i class="fas fa-edit"></i> Nội dung bài làm</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(Model.StudentAnswer))
+                            {
+                                <div class="border p-3 bg-light rounded">
+                                    <pre style="white-space: pre-wrap; font-family: inherit;">@Model.StudentAnswer</pre>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle"></i> Học sinh chưa nhập nội dung văn bản.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- File đính kèm -->
+                    @if (!string.IsNullOrEmpty(Model.AttachmentFilePath))
+                    {
+                        <div class="card mb-4">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0"><i class="fas fa-paperclip"></i> File đính kèm</h5>
+                            </div>
+                            <div class="card-body">
+                                @{
+                                    var fileName = Model.AttachmentFilePath.Split('/').LastOrDefault() ?? Model.AttachmentFilePath;
+                                    var lastDot = fileName.LastIndexOf('.');
+                                    var fileExtension = lastDot >= 0 ? fileName.Substring(lastDot).ToLower() : "";
+                                    var isImage = new[] { ".jpg", ".jpeg", ".png", ".gif", ".bmp" }.Contains(fileExtension);
+                                    var isPdf = fileExtension == ".pdf";
+                                    var isDoc = new[] { ".doc", ".docx" }.Contains(fileExtension);
+                                }
+                                
+                                <div class="d-flex align-items-center mb-3">
+                                    @if (isImage)
+                                    {
+                                        <i class="fas fa-image fa-2x text-success me-3"></i>
+                                    }
+                                    else if (isPdf)
+                                    {
+                                        <i class="fas fa-file-pdf fa-2x text-danger me-3"></i>
+                                    }
+                                    else if (isDoc)
+                                    {
+                                        <i class="fas fa-file-word fa-2x text-primary me-3"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fas fa-file fa-2x text-info me-3"></i>
+                                    }
+                                    <div>
+                                        <h6 class="mb-1">@fileName</h6>
+                                        <small class="text-muted">@fileExtension?.ToUpper() file</small>
+                                    </div>
+                                </div>
+                                
+                                <a asp-action="DownloadAttachment" asp-route-fileName="@fileName" 
+                                   class="btn btn-outline-primary">
+                                    <i class="fas fa-download"></i> Tải về file
+                                </a>
+                                
+                                @if (isImage)
+                                {
+                                    <button type="button" class="btn btn-outline-info ms-2" 
+                                            onclick="previewImage('@fileName')">
+                                        <i class="fas fa-eye"></i> Xem trước
+                                    </button>
+                                }
+                            </div>
+                        </div>
+                    }
+
+                    <!-- Nhận xét của giáo viên -->
+                    <div class="card mb-4">
+                        <div class="card-header bg-success text-white">
+                            <h5 class="mb-0"><i class="fas fa-comments"></i> Nhận xét của giáo viên</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (!string.IsNullOrEmpty(Model.TeacherComment))
+                            {
+                                <div class="border p-3 bg-light rounded">
+                                    <div class="d-flex align-items-start">
+                                        <i class="fas fa-quote-left text-success me-2 mt-1"></i>
+                                        <div>
+                                            <pre style="white-space: pre-wrap; font-family: inherit; margin: 0;">@Model.TeacherComment</pre>
+                                        </div>
+                                        <i class="fas fa-quote-right text-success ms-2 mt-1"></i>
+                                    </div>
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="alert alert-warning">
+                                    <i class="fas fa-exclamation-triangle"></i> Giáo viên chưa có nhận xét cho bài làm này.
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="card">
+                        <div class="card-body text-center">
+                            <a href="javascript:history.back()" class="btn btn-secondary me-2">
+                                <i class="fas fa-arrow-left"></i> Quay lại
+                            </a>
+                            
+                        
+                            
+                        
+                            
+                            <a asp-controller="EssaySubmission" asp-action="ViewSubmissions" 
+                               asp-route-exerciseId="@Model.ExerciseId" class="btn btn-info">
+                                <i class="fas fa-list"></i> Xem tất cả bài nộp
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Grade Modal -->
+<div class="modal fade" id="gradeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Chấm điểm bài tập</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="gradeForm">
+                    <input type="hidden" id="submissionId" />
+                    <div class="form-group">
+                        <label for="teacherComment">Nhận xét:</label>
+                        <textarea id="teacherComment" class="form-control" rows="4" 
+                            placeholder="Nhập nhận xét cho bài làm của học sinh...">@Model.TeacherComment</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="status">Trạng thái:</label>
+                        @* <select id="status" class="form-control " > 
+                            <option  value="Graded" @(Model.Status == "Graded" ? "selected" : "")>Đã chấm</option>
+                            <option value="Reviewed" @(Model.Status == "Reviewed" ? "selected" : "")>Đã duyệt</option>
+                        </select> *@
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-success" onclick="submitGrade()">Lưu</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Comment Modal -->
+<div class="modal fade" id="commentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Thêm/Sửa nhận xét</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="commentForm">
+                    <input type="hidden" id="commentSubmissionId" />
+                    <div class="form-group">
+                        <label for="commentText">Nhận xét:</label>
+                        <textarea id="commentText" class="form-control" rows="5" 
+                            placeholder="Nhập nhận xét cho bài làm của học sinh...">@Model.TeacherComment</textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Hủy</button>
+                <button type="button" class="btn btn-primary" onclick="submitComment()">Lưu nhận xét</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Image Preview Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Xem trước hình ảnh</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+                <img id="previewImage" src="" class="img-fluid" alt="Preview" />
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showGradeModal(submissionId) {
+            document.getElementById('submissionId').value = submissionId;
+            $('#gradeModal').modal('show');
+        }
+
+        function showCommentModal(submissionId) {
+            document.getElementById('commentSubmissionId').value = submissionId;
+            $('#commentModal').modal('show');
+        }
+
+        function submitGrade() {
+            const submissionId = document.getElementById('submissionId').value;
+            const comment = document.getElementById('teacherComment').value;
+            const status = document.getElementById('status').value;
+            
+            if (!comment.trim()) {
+                alert('Vui lòng nhập nhận xét');
+                return;
+            }
+
+            // Submit comment
+            const formData = new FormData();
+            formData.append('comment', comment);
+            
+            fetch(`/EssaySubmission/AddTeacherComment/${submissionId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Update status
+                    const statusFormData = new FormData();
+                    statusFormData.append('status', status);
+                    
+                    return fetch(`/EssaySubmission/UpdateStatus/${submissionId}`, {
+                        method: 'POST',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        },
+                        body: statusFormData
+                    });
+                } else {
+                    throw new Error(data.message || 'Failed to add comment');
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#gradeModal').modal('hide');
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Failed to update status');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        function submitComment() {
+            const submissionId = document.getElementById('commentSubmissionId').value;
+            const comment = document.getElementById('commentText').value;
+            
+            if (!comment.trim()) {
+                alert('Vui lòng nhập nhận xét');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('comment', comment);
+            
+            fetch(`/EssaySubmission/AddTeacherComment/${submissionId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    $('#commentModal').modal('hide');
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Failed to add comment');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        function updateStatus(submissionId, newStatus) {
+            if (!confirm(`Bạn có chắc muốn ${newStatus === 'Reviewed' ? 'duyệt' : 'cập nhật'} bài này?`)) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('status', newStatus);
+            
+            fetch(`/EssaySubmission/UpdateStatus/${submissionId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    throw new Error(data.message || 'Failed to update status');
+                }
+            })
+            .catch(error => {
+                alert('Có lỗi xảy ra: ' + error.message);
+            });
+        }
+
+        function previewImage(fileName) {
+            document.getElementById('previewImage').src = `/uploads/essays/${fileName}`;
+            $('#imageModal').modal('show');
+        }
+
+    </script>
+    <style>
+        .badge-lg {
+            font-size: 1rem;
+            padding: 0.5rem 0.75rem;
+        }
+        
+        .card-header h5, .card-header h6 {
+            margin-bottom: 0;
+        }
+        
+        pre {
+            background: transparent;
+            border: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .text-muted {
+            font-style: italic;
+        }
+        
+        .me-2 {
+            margin-right: 0.5rem !important;
+        }
+        
+        .me-3 {
+            margin-right: 1rem !important;
+        }
+        
+        .ms-2 {
+            margin-left: 0.5rem !important;
+        }
+    </style>
+}
+
+

@@ -12,5 +12,6 @@ namespace LearnX_Application.Comman
         Task<bool> SendMessageAsync(Guid senderId, string receiverId, string content);
         Task<List<ViewMessage>> GetMessagesByUserAsync(Guid userId);
         Task<bool> MarkMessageAsReadAsync(int messageId);
+        Task<Guid?> GetUserIdByEmailAsync(string email);
     }
 }

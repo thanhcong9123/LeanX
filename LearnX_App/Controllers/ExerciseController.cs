@@ -13,13 +13,19 @@ namespace MyApp.Namespace
         private readonly IExerciseApiClient _exerciseService;
         private readonly ICourseApiClient _courseService;
         private readonly IScoreApiClient _scoreService;
+        private readonly IEssaySubmissionApiClient _essaySubmissionService;
 
         [ActivatorUtilitiesConstructor]
-        public ExerciseController(IExerciseApiClient exerciseService, ICourseApiClient courseApiClient, IScoreApiClient scoreService)
+        public ExerciseController(
+            IExerciseApiClient exerciseService, 
+            ICourseApiClient courseApiClient, 
+            IScoreApiClient scoreService,
+            IEssaySubmissionApiClient essaySubmissionService)
         {
             _exerciseService = exerciseService;
             _courseService = courseApiClient;
             _scoreService = scoreService;
+            _essaySubmissionService = essaySubmissionService;
         }
         public IActionResult CreateExercise(int CourseId)
         {
@@ -92,7 +98,16 @@ namespace MyApp.Namespace
                 return RedirectToAction("Index", "Course");
             }
 
-            // Lấy danh sách câu hỏi của bài tập
+            // Kiểm tra loại bài tập
+            var isEssayExercise = await _exerciseService.IsEssayExercise(exerciseId);
+            
+            if (isEssayExercise)
+            {
+                // Chuyển hướng đến action làm bài tự luận
+                return RedirectToAction("DoEssayExercise", "EssaySubmission", new { exerciseId });
+            }
+
+            // Lấy danh sách câu hỏi của bài tập trắc nghiệm
             var questions = await _exerciseService.getQuestion(exerciseId);
             if (questions == null)
             {

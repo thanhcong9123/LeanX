@@ -15,8 +15,15 @@ namespace LearnX_Data.Entities
         // Một bài tập thuộc về một khóa học
         public int CourseId { get; set; }
         public Course? Course { get; set; }
+        public string? Category { get; set; }
+        public string? AnswerFile { get; set; }
+        public string? Describe { get; set; }
+        public string? Instruct { get; set; }
 
         // Một bài tập có nhiều câu hỏi
         public ICollection<Question>? Questions { get; set; }
+        
+        // Một bài tập có nhiều bài nộp tự luận
+        public ICollection<EssaySubmissions>? EssaySubmissions { get; set; }
     }
 }

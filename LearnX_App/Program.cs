@@ -33,6 +33,7 @@ builder.Services.AddTransient<ILessonApiClient, LessonApiClient>();
 builder.Services.AddTransient<IScoreApiClient, ScoreApiClient>();
 builder.Services.AddTransient<IMessageApiClient, MessageApiClient>();
 builder.Services.AddTransient<IEBookApiClient, EBookApiClient>();
+builder.Services.AddTransient<IEssaySubmissionApiClient, EssaySubmissionApiClient>();
 builder.Services.AddTransient<IFileUpLoadServices,LoaclFileUpLoadService>();
 
 builder.Services.AddRazorPages();

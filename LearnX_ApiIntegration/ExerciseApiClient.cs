@@ -34,7 +34,6 @@ namespace LearnX_ApiIntegration
             // Lấy token từ Session
             try
             {
-                Console.WriteLine("AddExerciseAsync");
                 var client = _httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
 
@@ -80,6 +79,29 @@ namespace LearnX_ApiIntegration
         public async Task<bool> DeleteExerciseAsync(int courseId)
         {
             return await Delete($"http://localhost:5041/api/Exercise/{courseId}");
+        }
+
+        // Thêm method để kiểm tra loại bài tập (trắc nghiệm hay tự luận)
+        public async Task<bool> IsEssayExercise(int exerciseId)
+        {
+            try
+            {
+                // Logic để xác định bài tập có phải là tự luận không
+                // Có thể dựa vào việc kiểm tra có Questions hay không
+                var questions = await getQuestion(exerciseId);
+                return questions == null || !questions.Any();
+            }
+            catch
+            {
+                return false;
+            }
+        }
+
+        // Method để lấy thông tin exercise đầy đủ
+        public async Task<Exercise?> GetExerciseByIdAsync(int exerciseId)
+        {
+            var data = await GetAsync<Exercise>($"/api/Exercise/{exerciseId}");
+            return data;
         }
     }
 }

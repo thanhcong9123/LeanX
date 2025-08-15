@@ -138,7 +138,7 @@ namespace LearnX_Application.SystemService
             {
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
-
+            
             user = new AppUser()
             {
                 Email = request.Email,

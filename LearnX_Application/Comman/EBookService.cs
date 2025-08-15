@@ -26,7 +26,7 @@ namespace LearnX_Application.Comman
             var book = await _context.EBooks.FindAsync(id);
             if (book == null) return false;
 
-            
+
 
             // Delete book record from database
             _context.EBooks.Remove(book);
@@ -49,10 +49,32 @@ namespace LearnX_Application.Comman
                 Title = book.Title,
                 Description = book.Description,
                 FilePath = book.FilePath,
-                UploadedAt = book.UploadedAt
+                UploadedAt = book.UploadedAt,
+                LinkYoutube = book.LinkYoutube,
+                imgPath = book.imgPath
             };
         }
-
+        public async Task<bool> AddEvaluateAsync(EvaluateBookRequest request)
+        {
+            try
+            {
+                var evaluate = new EvaluateBook
+                {
+                    BookId = request.BookId,
+                    UserId = request.UserId,
+                    Rating = request.Rating,
+                    Comment = request.Comment,
+                    CreatedAt = DateTime.UtcNow
+                };
+                _context.EvaluateBooks.Add(evaluate);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
         public async Task<List<EBook>> GetBooksAsync()
         {
             return await _context.EBooks.
@@ -64,16 +86,21 @@ namespace LearnX_Application.Comman
             try
             {
                 // Save file to wwwroot/files
-               
+
 
                 // Save book details to database
                 var book = new EBook
                 {
                     Title = eBookRequest.Title,
-                    imgPath = eBookRequest.ImgPath,
+                    imgPath = eBookRequest.imgPath,
                     Description = eBookRequest.Description,
-                    FilePath = eBookRequest.IFormFile, // Save relative path
-                    UploadedAt = DateTime.Now
+                    FilePath = eBookRequest.FilePath, // Save relative path
+                    UploadedAt = DateTime.Now,
+                    LinkYoutube = eBookRequest.LinkYoutube,
+                    CountPages = eBookRequest.CountPages,
+                    Author = eBookRequest.Author,
+                    Status = eBookRequest.Status,
+                    NameCategory = eBookRequest.NameCategory
                 };
                 _context.EBooks.Add(book);
                 await _context.SaveChangesAsync();

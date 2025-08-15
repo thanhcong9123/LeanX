@@ -31,7 +31,10 @@
         {
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3>Quản lý bài tập</h3>
-                <a class="btn btn-primary" asp-action="CreateExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập mới</a>
+                <div>
+                    <a class="btn btn-primary" asp-action="CreateExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập trắc nghiệm</a>
+                    <a class="btn btn-success" asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập tự luận</a>
+                </div>
             </div>
 
             <table class="table table-bordered table-hover">
@@ -39,6 +42,7 @@
                     <tr>
                         <th>#</th>
                         <th>Tiêu đề</th>
+                        <th>Loại bài tập</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -49,8 +53,22 @@
                             <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
                             <td>@exercise.Title</td>
                             <td>
+                                @if (exercise.Questions == null || !exercise.Questions.Any())
+                                {
+                                    <span class="badge badge-info">Tự luận</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-primary">Trắc nghiệm</span>
+                                }
+                            </td>
+                            <td>
                                 <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Xem
                                     chi tiết</a>
+                                @if (exercise.Questions == null || !exercise.Questions.Any())
+                                {
+                                    <a class="btn btn-secondary btn-sm" asp-controller="EssaySubmission" asp-action="ViewSubmissions" asp-route-exerciseId="@exercise.ExerciseId" asp-route-showAll="true">Xem bài nộp</a>
+                                }
                                 <button class="btn btn-warning btn-sm" onclick="editExercise(@exercise.ExerciseId)">Sửa</button>
                                 <a class="btn btn-danger btn-sm"
                                    href="@Url.Action("Delete", "Exercise", new { id = exercise.ExerciseId ,idCourse =exercise.CourseId})">Xóa</a>
@@ -70,6 +88,7 @@
                     <tr>
                         <th>#</th>
                         <th>Tiêu đề</th>
+                        <th>Loại bài tập</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -80,8 +99,22 @@
                             <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
                             <td>@exercise.Title</td>
                             <td>
+                                @if (exercise.Questions == null || !exercise.Questions.Any())
+                                {
+                                    <span class="badge badge-info">Tự luận</span>
+                                }
+                                else
+                                {
+                                    <span class="badge badge-primary">Trắc nghiệm</span>
+                                }
+                            </td>
+                            <td>
                                 <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Làm
                                     bài tập</a>
+                                @if (exercise.Questions == null || !exercise.Questions.Any())
+                                {
+                                    <a class="btn btn-secondary btn-sm" asp-controller="EssaySubmission" asp-action="ViewSubmissions" asp-route-exerciseId="@exercise.ExerciseId">Xem bài nộp của tôi</a>
+                                }
                             </td>
                         </tr>
                     }

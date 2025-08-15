@@ -22,6 +22,7 @@ namespace MyApp.Namespace
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var userIds);
             var scores = await _scoreService.GetScoreAsync(userIds);
+            Console.WriteLine(userId);
             return View(scores);
         }
 

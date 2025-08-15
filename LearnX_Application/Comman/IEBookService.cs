@@ -10,9 +10,10 @@ namespace LearnX_Application.Comman
 {
     public interface IEBookService
     {
+        Task<bool> AddEvaluateAsync(EvaluateBookRequest request);
         Task<List<EBook>> GetBooksAsync();
-    Task<EBook> GetBookByIdAsync(int id);
-    Task<bool> UploadBookAsync(EBookRequest eBookRequest);
-    Task<bool> DeleteBookAsync(int id);
+        Task<EBook> GetBookByIdAsync(int id);
+        Task<bool> UploadBookAsync(EBookRequest eBookRequest);
+        Task<bool> DeleteBookAsync(int id);
     }
 }

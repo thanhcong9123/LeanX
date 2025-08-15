@@ -16,6 +16,14 @@ namespace LearnX_Data.Entities
         public string Description { get; set; }
         public string FilePath { get; set; }
         public DateTime UploadedAt { get; set; }
+        public int CountPages { get; set; }
+        public string Author { get; set; }
+        public int View { get; set; } 
+        public string Status { get; set; } = "Free"; // Default status is Active
+        public string? NameCategory { get; set; }
+        public ICollection<EvaluateBook>? EvaluateBooks { get; set; }
+
+
         public EBook()
         {
         }

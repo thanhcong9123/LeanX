@@ -13,5 +13,6 @@ namespace LearnX_ApiIntegration
         Task<bool> SendMessageAsync(SendMessageRequest request);
         Task<List<ViewMessage>> GetMessagesAsync(Guid userId);
         Task<ApiResult<string>> MarkMessageAsReadAsync(int messageId);
+        Task<Guid?> GetUserIdByEmailAsync(string email);
     }
 }

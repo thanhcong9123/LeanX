@@ -20,6 +20,9 @@ namespace LearnX_Data.Entities
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal Price { get; set; }
+        public string? Prerequisites { get; set; } 
+        
+
 
         // Navigation properties
         public ICollection<Lesson>? Lessons { get; set; }

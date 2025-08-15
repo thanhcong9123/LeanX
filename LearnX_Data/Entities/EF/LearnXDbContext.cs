@@ -70,6 +70,29 @@ namespace LearnX_Data.EF
                 .HasForeignKey(a => a.QuestionId)
                 .OnDelete(DeleteBehavior.Cascade); // Cascade delete Answers when Question is deleted
 
+            modelBuilder.Entity<EssaySubmissions>()
+                .HasOne(es => es.User)
+                .WithMany()
+                .HasForeignKey(es => es.IdUser)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete when User is deleted
+
+            modelBuilder.Entity<EssaySubmissions>()
+                .HasOne(es => es.Exercise)
+                .WithMany()
+                .HasForeignKey(es => es.ExerciseId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete when Exercise is deleted
+            modelBuilder.Entity<Lesson>()
+                .HasMany(l => l.Resources)
+                .WithOne(r => r.Lesson)
+                .HasForeignKey(r => r.LessonID)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete Resources when Lesson is deleted
+            
+            modelBuilder.Entity<EBook>()
+                .HasMany(e => e.EvaluateBooks)
+                .WithOne(eb => eb.Book)
+                .HasForeignKey(eb => eb.BookId)
+                .OnDelete(DeleteBehavior.Cascade); // Cascade delete EvaluateBooks when EBook is deleted
+
             base.OnModelCreating(modelBuilder);
         }
         public DbSet<AppUser> AppUsers { get; set; } = default!;
@@ -86,5 +109,9 @@ namespace LearnX_Data.EF
         public DbSet<Scores> Scores { get; set; }
         public DbSet<Message> Message { get; set; }
         public DbSet<EBook> EBooks { get; set; }
+        public DbSet<EssaySubmissions> EssaySubmissions { get; set; }
+        public DbSet<ResourcesLesson> ResourcesLessons { get; set; } = default!;
+        public DbSet<EvaluateBook> EvaluateBooks { get; set; } = default!;
+
     }
 }

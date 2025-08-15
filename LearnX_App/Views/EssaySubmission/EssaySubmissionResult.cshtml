@@ -1,0 +1,69 @@
+@model LearnX_App.Models.DoEssayExerciseViewModel
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="card-title mb-0">
+                        <i class="fas fa-check-circle"></i> Nộp bài thành công!
+                    </h4>
+                </div>
+                <div class="card-body text-center">
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-thumbs-up"></i> Chúc mừng!</h5>
+                        <p class="mb-0">@Model.SubmissionResult</p>
+                    </div>
+
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-info-circle"></i> Thông tin bài nộp</h6>
+                                    <p><strong>Bài tập:</strong> @Model.ExerciseTitle</p>
+                                    <p><strong>Lần nộp:</strong> @Model.AttemptNumber</p>
+                                    <p><strong>Thời gian nộp:</strong> @DateTime.Now.ToString("dd/MM/yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="card bg-light">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-clock"></i> Bước tiếp theo</h6>
+                                    <p>Giáo viên sẽ chấm bài và đưa ra nhận xét</p>
+                                    <p>Bạn có thể kiểm tra kết quả trong phần "Xem bài nộp"</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="alert alert-info mt-4">
+                        <h6><i class="fas fa-lightbulb"></i> Lưu ý:</h6>
+                        <ul class="text-left mb-0">
+                            <li>Bài làm của bạn đã được lưu và gửi đến giáo viên</li>
+                            <li>Vui lòng chờ giáo viên chấm điểm và nhận xét</li>
+                            <li>Bạn có thể xem lại bài nộp trong danh sách bài tập</li>
+                            <li>Nếu được phép, bạn có thể nộp lại lần khác</li>
+                        </ul>
+                    </div>
+
+                    <div class="mt-4">
+                        <a asp-controller="EssaySubmission" asp-action="ViewSubmissions" 
+                           asp-route-exerciseId="@Model.ExerciseId" class="btn btn-info me-2">
+                            <i class="fas fa-eye"></i> Xem bài nộp của tôi
+                        </a>
+                        <a href="javascript:history.back()" class="btn btn-secondary me-2">
+                            <i class="fas fa-arrow-left"></i> Quay lại danh sách bài tập
+                        </a>
+                        <a asp-controller="Exercise" asp-action="DoExercise" 
+                           asp-route-exerciseId="@Model.ExerciseId" class="btn btn-primary">
+                            <i class="fas fa-redo"></i> Nộp lại (nếu được phép)
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

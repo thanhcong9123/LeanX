@@ -15,6 +15,8 @@ namespace LearnX_ApiIntegration
         Task<List<Exercise>> GetAll(Guid id);
         Task<List<Exercise>> GetExerciseDetailsAsync(int courseId);
         Task<List<Question>> getQuestion(int id);
+        Task<bool> IsEssayExercise(int exerciseId);
+        Task<Exercise?> GetExerciseByIdAsync(int exerciseId);
 
 
 

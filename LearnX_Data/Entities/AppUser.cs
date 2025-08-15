@@ -14,6 +14,7 @@ namespace LearnX_Data.Entities
         public ICollection<Review>? Reviews { get; set; }
         public ICollection<Payment>? Payments { get; set; }
         public ICollection<Course>? Courses { get; set; }
+        public ICollection<EssaySubmissions>? EssaySubmissions { get; set; }
 
 
     }

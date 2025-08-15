@@ -74,5 +74,24 @@ namespace MyApp.Namespace
 
             return NoContent();
         }
+
+        // Lấy User ID từ email
+        [HttpGet("get-user-id-by-email")]
+        public async Task<IActionResult> GetUserIdByEmail(string email)
+        {
+            if (string.IsNullOrEmpty(email))
+            {
+                return BadRequest();
+            }
+
+            var userId = await _messageService.GetUserIdByEmailAsync(email);
+
+            if (userId.HasValue)
+            {
+                return Ok(userId.Value);
+            }
+
+            return NotFound();
+        }
     }
 }

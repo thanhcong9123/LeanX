@@ -14,5 +14,7 @@ namespace LearnX_ModelView.Catalog.Courses
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
         public decimal Price { get; set; }
+        public string? Prerequisites { get; set; }
+
     }
 }

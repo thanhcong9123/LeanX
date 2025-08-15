@@ -7,10 +7,10 @@ namespace LearnX_ModelView.Catalog.Exercise
 {
     public class ExerciseScoreDto
     {
-         public int ExerciseId { get; set; }
-    public string ExerciseTitle { get; set; }
-    public decimal Score { get; set; }
-    public bool IsPassed { get; set; }
-    public DateTime DateCompleted { get; set; }
+        public int ExerciseId { get; set; }
+        public string ExerciseTitle { get; set; }
+        public decimal Score { get; set; }
+        public bool IsPassed { get; set; }
+        public DateTime DateCompleted { get; set; }
     }
 }

@@ -63,7 +63,7 @@ namespace LearnX_ApiIntegration
 
         public async Task<List<ExerciseScoreDto>> GetScoreAsync(Guid userId)
         {
-            var data = await GetListAsync<ExerciseScoreDto>($"api/Score?idcourse={userId}");
+            var data = await GetListAsync<ExerciseScoreDto>($"api/Score?idUser={userId}");
             return data;
         }
     }

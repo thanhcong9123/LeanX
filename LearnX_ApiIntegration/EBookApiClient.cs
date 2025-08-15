@@ -33,9 +33,9 @@ namespace LearnX_ApiIntegration
 
         public async Task<EBook> GetBookByIdAsync(int id)
         {
-            Console.WriteLine("GetBookByIdAsync sẻ " + id);
             var response = await GetAsync<EBook>($"api/books/{id}");
-            
+            Console.WriteLine("GetBookByIdAsync đã nhận " + response.LinkYoutube);
+      
             return response;
         }
 
@@ -54,8 +54,8 @@ namespace LearnX_ApiIntegration
                 var requestContent = new MultipartFormDataContent();
                 requestContent.Add(new StringContent(eBookRequest.Title), "title");
                 requestContent.Add(new StringContent(eBookRequest.Description), "description");
-                requestContent.Add(new StringContent(eBookRequest.ImgPath), "imgPath");
-                requestContent.Add(new StringContent(eBookRequest.IFormFile), "IFormFile");
+                requestContent.Add(new StringContent(eBookRequest.imgPath), "imgPath");
+                requestContent.Add(new StringContent(eBookRequest.FilePath), "FilePath");
 
 
                 // Gửi yêu cầu POST tới API

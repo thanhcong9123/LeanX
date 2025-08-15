@@ -104,5 +104,34 @@ namespace LearnX_ApiIntegration
             }
            
         }
+
+        public async Task<Guid?> GetUserIdByEmailAsync(string email)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient();
+                client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
+
+                var sessions = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+
+                var response = await client.GetAsync($"/api/Messages/get-user-id-by-email?email={Uri.EscapeDataString(email)}");
+                
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseString = await response.Content.ReadAsStringAsync();
+                    if (Guid.TryParse(responseString.Trim('"'), out var userId))
+                    {
+                        return userId;
+                    }
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error getting user ID by email: {ex.Message}");
+                return null;
+            }
+        }
     }
 }

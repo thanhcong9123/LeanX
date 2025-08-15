@@ -14,5 +14,10 @@ namespace LearnX_Data.Entities
         public Course? Course { get; set; }
         public string? LessonTitle { get; set; }
         public string? Content { get; set; }
+        public string? Objectives { get; set; }
+        public string? VideoUrl { get; set; } 
+        public DateTime StratDate { get; set; }
+        public DateTime EndDate { get; set; }
+        public ICollection<ResourcesLesson>? Resources { get; set; }  // Navigation property to ResourcesLesson
     }
 }
