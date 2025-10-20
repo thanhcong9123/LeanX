@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LearnX_ModelView")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+0197d1a386a562c9b8d41f77b13ad9f90c899b2b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+025d9eb9804f635057607105d0c59d2b0a5fa390")]
 [assembly: System.Reflection.AssemblyProductAttribute("LearnX_ModelView")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LearnX_ModelView")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

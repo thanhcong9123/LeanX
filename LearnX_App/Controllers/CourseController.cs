@@ -14,6 +14,7 @@ using LearnX_ModelView.Catalog.Courses;
 
 namespace LearnX_App.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
         private readonly ICourseApiClient _context;
