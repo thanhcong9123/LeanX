@@ -35,7 +35,6 @@ namespace LearnX_ApiIntegration.SystemService
             client.BaseAddress = new Uri("http://localhost:5041");
             var response = await client.PostAsync("/api/user/authenticate", httpContent);
             var responseString = await response.Content.ReadAsStringAsync();
-
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString);
@@ -73,6 +72,7 @@ namespace LearnX_ApiIntegration.SystemService
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
             var response = await client.GetAsync($"/api/user/{id}");
             var body = await response.Content.ReadAsStringAsync();
+
             if (response.IsSuccessStatusCode)
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<UserVm>>(body);

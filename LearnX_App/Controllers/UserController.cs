@@ -41,8 +41,10 @@ namespace LearnX_App.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(LearnX_ModelView.System.User.Login request)
         {
-             if (!ModelState.IsValid)
+
+            if (!ModelState.IsValid)
                 return View(request);
+
 
             var result = await _context.Authenticate(request);
             if (result.ResultObj == null)
@@ -53,7 +55,7 @@ namespace LearnX_App.Controllers
             var userPrincipal = this.ValidateToken(result.ResultObj);
             var authProperties = new AuthenticationProperties
             {
-                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(10),
+                ExpiresUtc = DateTimeOffset.UtcNow.AddMinutes(100),
                 IsPersistent = false
             };
             // Lưu token vào Session
@@ -63,7 +65,7 @@ namespace LearnX_App.Controllers
             HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
 
             // Thực hiện đăng nhập
-            
+
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);
 
             return RedirectToAction("Index", "Course");
@@ -75,6 +77,7 @@ namespace LearnX_App.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(LearnX_ModelView.System.User.Register register)
         {
+
             if (!ModelState.IsValid)
             {
                 return View(register);

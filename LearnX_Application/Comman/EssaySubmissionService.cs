@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.EssaySubmission;
@@ -13,10 +14,12 @@ namespace LearnX_Application.Comman
     public class EssaySubmissionService : IEssaySubmissionService
     {
         private readonly LearnXDbContext _context;
+        private readonly IMapper _mapper;
 
-        public EssaySubmissionService(LearnXDbContext context)
+        public EssaySubmissionService(LearnXDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
 
         public async Task<IEnumerable<EssaySubmissionRequest>> GetAllEssaySubmissionsAsync()
@@ -108,20 +111,22 @@ namespace LearnX_Application.Comman
                 // File được lưu ở app, API chỉ lưu tên file
                 attachmentPath = $"uploads/essays/{request.AttachmentFileName}";
             }
-
-            var submission = new EssaySubmissions
+            var exerciseUserSunmided = await _context.EssaySubmissions
+                .FirstOrDefaultAsync(es => es.IdUser == request.IdUser && es.ExerciseId == request.ExerciseId);
+            if (exerciseUserSunmided != null)
             {
-                IdUser = request.IdUser,
-                ExerciseId = request.ExerciseId,
-                StudentAnswer = request.StudentAnswer,
-                AttachmentFilePath = attachmentPath,
-                SubmittedAt = DateTime.Now,
-                Status = "Submitted",
-                AttemptNumber = request.AttemptNumber,
-                CreatedAt = DateTime.Now,
-                UpdatedAt = DateTime.Now
-            };
+                request.AttemptNumber = exerciseUserSunmided.AttemptNumber + exerciseUserSunmided.AttemptNumber;
+                _context.EssaySubmissions.Remove(exerciseUserSunmided);
+                await _context.SaveChangesAsync();
+            }
 
+
+
+            var submission = _mapper.Map<EssaySubmissions>(request);
+            submission.SubmittedAt = DateTime.Now;
+            submission.Status = "Submitted";
+            submission.CreatedAt = DateTime.Now;
+            submission.UpdatedAt = DateTime.Now;
             _context.EssaySubmissions.Add(submission);
             await _context.SaveChangesAsync();
 

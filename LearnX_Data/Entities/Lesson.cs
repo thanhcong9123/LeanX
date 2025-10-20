@@ -18,6 +18,6 @@ namespace LearnX_Data.Entities
         public string? VideoUrl { get; set; } 
         public DateTime StratDate { get; set; }
         public DateTime EndDate { get; set; }
-        public ICollection<ResourcesLesson>? Resources { get; set; }  // Navigation property to ResourcesLesson
+        public ICollection<ResourcesLesson>? Resources { get; set; }  
     }
 }

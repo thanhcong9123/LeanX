@@ -28,6 +28,7 @@ namespace LearnX_Application.Comman
         {
             return await _context.Lessons.Where(n => n.CourseID == idcourse)
             .Include(l => l.Resources)
+            .Include(l => l.Course)  
             .ToListAsync();
         }
 

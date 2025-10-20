@@ -1,238 +1,659 @@
-@model LearnX_ModelView.Catalog.Courses.MyCourses
+@model LearnX_ModelView.Catalog.ViewApp.HomeModel
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <title>EduHub - Nền tảng học tập hiện đại</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: #4f46e5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #4f46e5;
+            transition: transform 0.3s ease;
+        }
+
+        .profile-img:hover {
+            transform: scale(1.1);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://public.youware.com/users-website-assets/prod/c412a09e-ab17-4148-b01d-a8cd115f5dbc/53c4712fd6e0449faaef9554d1fcbdc0.png') center/cover;
+            opacity: 0.1;
+            z-index: 0;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #6b7280;
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4);
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(79, 70, 229, 0.6);
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 1rem;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #4f46e5;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Main Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        /* Classes Section */
+        .classes-section {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1.5rem;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1f2937;
+        }
+
+        .add-button {
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .add-button:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+
+        /* Class Cards */
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .class-card {
+            background: white;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .class-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .class-header {
+            height: 120px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            padding: 1.5rem;
+        }
+
+        .class-title {
+            color: white;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .class-subject {
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 0.9rem;
+        }
+
+        .class-content {
+            padding: 1.5rem;
+        }
+
+        .class-teacher {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .teacher-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .teacher-name {
+            font-weight: 500;
+            color: #374151;
+        }
+
+        .class-stats {
+            display: flex;
+            justify-content: space-between;
+            color: #6b7280;
+            font-size: 0.9rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .sidebar-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.15);
+        }
+
+        .sidebar-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Assignments */
+        .assignment-item {
+            padding: 1rem;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            margin-bottom: 0.75rem;
+            transition: all 0.3s ease;
+        }
+
+        .assignment-item:hover {
+            background: #f9fafb;
+            border-color: #4f46e5;
+        }
+
+        .assignment-title {
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 0.25rem;
+        }
+
+        .assignment-due {
+            color: #ef4444;
+            font-size: 0.9rem;
+        }
+
+        /* Calendar */
+        .calendar {
+            text-align: center;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 0.25rem;
+            margin-top: 1rem;
+        }
+
+        .calendar-day {
+            padding: 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .calendar-day:hover {
+            background: #4f46e5;
+            color: white;
+        }
+
+        .calendar-day.today {
+            background: #4f46e5;
+            color: white;
+            font-weight: 600;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+            }
+
+            .hero {
+                padding: 2rem 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .class-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Animations */
+        @@keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fade-in {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .animate-delay-1 {
+            animation-delay: 0.1s;
+            animation-fill-mode: both;
+        }
+
+        .animate-delay-2 {
+            animation-delay: 0.2s;
+            animation-fill-mode: both;
+        }
+
+        .animate-delay-3 {
+            animation-delay: 0.3s;
+            animation-fill-mode: both;
+        }
+
+        /* Floating elements */
+        .floating-icon {
+            position: absolute;
+            font-size: 2rem;
+            opacity: 0.1;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        @@keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .floating-icon:nth-child(1) {
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .floating-icon:nth-child(2) {
+            top: 20%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .floating-icon:nth-child(3) {
+            bottom: 20%;
+            left: 15%;
+            animation-delay: 4s;
+        }
+
+        a {
+            text-decoration: none;
+        }
+    </style>
 
 </head>
-<style>
-    .description-truncate {
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        /* Add "..." for truncated text */
-    }
-
-    .course-card {
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        overflow: hidden;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.3s ease-in-out;
-    }
-
-    .course-card:hover {
-        transform: scale(1.05);
-    }
-
-    .course-card-header {
-        background: #4CAF50;
-        color: white;
-        padding: 10px;
-        font-size: 1.2rem;
-    }
-
-    .course-card-body {
-        padding: 15px;
-    }
-
-    .course-card-footer {
-        display: flex;
-        justify-content: space-between;
-        padding: 10px;
-        background: #f9f9f9;
-        border-top: 1px solid #ddd;
-    }
-
-    .avatar {
-        width: 40px;
-        height: 40px;
-        background: #FF5722;
-        border-radius: 50%;
-        color: white;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-weight: bold;
-    }
-
-    .course-icon {
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .course-icon:hover {
-        color: #4CAF50;
-    }
-
-    .course-card .dropdown-menu {
-        z-index: 1050;
-        /* Đảm bảo menu dropdown luôn hiển thị trên các phần tử khác */
-    }
-</style>
 
 <body>
-    <div class="container mt-5">
-        @if (Model == null)
-        {
-            <p>No courses available.</p>
-        }
-        else
-        {
-            <div class="section d-flex justify-content-between align-items-center">
-                <div class="btn-group category" role="group">
-                    <button id="myCourseBtn" class="btn btn-secondary m-1" type="button" onclick="showMyCourses()">My
-                        course</button>
-                    <button id="signedCourseBtn" class="btn btn-secondary m-1" type="button"
-                        onclick="showSignedCourses()">The course has been signed</button>
-                </div>
-                <div class="d-flex justify-content-between align-items-center my-3">
-                    <!-- Button to Create Course -->
-                    <button class="btn btn-primary d-flex align-items-center m-1" onclick="loadCreateCourseForm()"
-                        data-bs-toggle="modal" data-bs-target="#createCourseModal">
-                        <i class="bi bi-plus-circle me-2"></i> <!-- Bootstrap icon -->
-                        Create Course
-                    </button>
 
-                    <!-- Button to Register Course -->
-                    <button class="btn btn-success d-flex align-items-center m-1" data-bs-toggle="modal"
-                        data-bs-target="#registerCourseModal">
-                        <i class="bi bi-pencil-square me-2"></i> <!-- Bootstrap icon -->
-                        Register Course
-                    </button>
-                </div>
+    <div class="container">
+        <!-- Hero Section -->
+        <section class="hero animate-fade-in">
+            <div class="floating-icon"><i class="fas fa-book"></i></div>
+            <div class="floating-icon"><i class="fas fa-lightbulb"></i></div>
+            <div class="floating-icon"><i class="fas fa-users"></i></div>
+
+            <div class="hero-content">
+                <h1>Chào mừng đến với EduHub</h1>
+                <p>Nền tảng học tập hiện đại giúp bạn quản lý lớp học, bài tập và kết nối với giáo viên một cách dễ dàng
+                    và hiệu quả.</p>
+                <a href="#" class="cta-button">
+                    <i class="fas fa-rocket"></i>
+                    Bắt đầu học ngay
+                </a>
             </div>
+        </section>
 
-            <!-- My Course Table -->
-            <div id="myCourseTable" class="course-table">
-                <h3>My Courses</h3>
-                <div class="d-flex w-100 row">
+        <!-- Stats -->
+        <div class="stats animate-fade-in animate-delay-1">
+            <div class="stat-card">
+                <div class="stat-number">@Model.Courses?.Count()</div>
+                <div class="stat-label">Lớp học đang tham gia</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">@{
+                var count = Model.Exercises?.Count() - Model.ExercisesNotDone?.Count();
+                                }
+                    @count</div>
+                <div class="stat-label">Bài tập đã hoàn thành</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
                     @{
-                        var userName = User.FindFirst("FullName")?.Value; // Giả sử bạn lưu "FullName" trong Claim
+                        var dueSoon = Model.ExercisesNotDone.Count();
                     }
-                    @foreach (var course in Model.MyCourse)
+                    @dueSoon
+                </div>
+                <div class="stat-label">Bài tập sắp hạn</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">
+                    @{
+                        int doneCount = Model.Exercises?.Count() - Model.ExercisesNotDone?.Count() ?? 0;
+                        int totalCount = Model.Exercises?.Count() ?? 0;
+                        int completion = totalCount > 0 ? (doneCount * 100 / totalCount) : 0;
+                    }
+                    @completion%
+                </div>
+                <div class="stat-label">Tỷ lệ hoàn thành</div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content-grid animate-fade-in animate-delay-2">
+            <!-- Classes Section -->
+            <div class="classes-section">
+                <div class="section-header">
+                    <h2 class="section-title">Lớp học của tôi</h2>
+                    <button class="add-button"  data-bs-target="#registerCourseModal" data-bs-toggle="modal">
+                        <i class="fas fa-plus"></i>
+                        Tham gia lớp
+                    </button>
+                </div>
+
+                <div class="class-grid">
+                    @foreach (var course in Model.Courses)
                     {
-                        <div class="col-md-4 mb-4">
-                            <div class="course-card">
-                                <div class="course-card-header d-flex justify-content-between align-items-center">
-                                    <span>@course.CourseName</span>
-                                    <div class="dropdown">
-                                        <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"
-                                            style="cursor: pointer;"></i>
-                                        <ul class="dropdown-menu">
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="@Url.Action("Edit", "Course", new { id = course.CourseID })">
-                                                    Edit
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item"
-                                                    href="@Url.Action("UserofCourse", "Course", new { id = course.CourseID })">
-                                                    Enrollment
-                                                </a>
-                                            </li>
-                                            <li>
-                                                <a class="dropdown-item text-danger" href="javascript:void(0);"
-                                                    onclick="confirmDelete(@course.CourseID)">
-                                                    Delete
-                                                </a>
-                                            </li>
-                                        </ul>
+                        var exerciseCount = course.Exercises?.Count() ?? 0;
+                        var teacher = course.Instructor?.UserName ?? "Chưa có giáo viên";
+                        <a href="@Url.Action("Details", "Course", new { id = course.CourseID })" class="class-card-link">
+                            <div class="class-card">
+                                <div class="class-header"
+                                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                    <div>
+                                        <div class="class-title">@course.CourseName</div>
+                                        <div class="class-subject">@course.Category?.CategoryName</div>
                                     </div>
-                                    <!-- Icon for options -->
                                 </div>
-                                <div class="course-card-body">
-                                    <p><strong>Course ID:</strong> @course.CourseID</p>
-                                    <p class="description-truncate"><strong>Description:</strong>@course.Description</p>
-                                    <div>
-                                        <a class="btn btn-info btn-sm" href="/Lesson/Index/@course.CourseID">View
-                                            Details</a>
-                                    </div> <!-- Update with instructor data -->
-                                </div>
-                                <div class="course-card-footer d-flex align-items-center">
-                                    <div class="avatar"> @ViewData["ActivePage"]</div> <!-- Avatar with initials -->
-                                    <div>
-                                        <i class="bi bi-camera-fill course-icon me-2"></i> <!-- Camera Icon -->
-                                        <i class="bi bi-folder-fill course-icon"></i> <!-- Folder Icon -->
+                                <div class="class-content">
+                                    <div class="class-teacher">
+                                        <img src="https://public.youware.com/users-website-assets/prod/c412a09e-ab17-4148-b01d-a8cd115f5dbc/34e2f542a7684f22a08ca328092dcf91.png"
+                                            alt="Teacher" class="teacher-avatar">
+                                        <span class="teacher-name">@teacher</span>
+                                    </div>
+                                    <div class="class-stats">
+                                        <span><i class="fas fa-users"></i> @(course.Enrollments?.Count() ?? 0) học
+                                            sinh</span>
+                                        <span><i class="fas fa-tasks"></i> @exerciseCount bài tập</span>
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </a>
                     }
                 </div>
-
             </div>
 
-            <!-- Signed Course Table -->
-            <div id="signedCourseTable" class="course-table " style="display: none;">
-                <h3>The Courses That Have Been Signed</h3>
-                <div class="d-flex w-100 row">
-                    @foreach (var course in Model.CourseSinged)
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <!-- Assignments -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-clipboard-list"></i>
+                        Bài tập sắp hạn
+                    </h3>
+                    @if (Model.Exercises != null && Model.ExercisesNotDone.Any())
                     {
-                        <div class="col-md-4 mb-4">
-                            <div class="course-card">
-                                <div class="course-card-header d-flex justify-content-between align-items-center">
-                                    <span>@course.CourseName</span>
-                                    <div class="dropdown">
-                                        <i class="bi bi-three-dots" data-bs-toggle="dropdown" aria-expanded="false"
-                                            style="cursor: pointer;"></i>
-                                        <ul class="dropdown-menu">
-
-                                            <li>
-                                                <a class="dropdown-item text-danger"
-                                                    onclick="confirmOutClass(@course.CourseID)">
-                                                    Out Class
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div> <!-- Icon for options -->
-                                </div>
-                                <div class="course-card-body">
-                                    <p><strong>Course ID:</strong> @course.CourseID</p>
-                                    <p><strong>Description:</strong>@course.Description</p>
-                                    <div>
-                                        <a class="btn btn-info btn-sm" href="/Lesson/Index/@course.CourseID">View
-                                            Details</a>
-                                    </div> <!-- Update with instructor data -->
-                                </div>
-                                <div class="course-card-footer d-flex align-items-center">
-
-                                    <div class="avatar">@course.Instructor</div> <!-- Avatar with initials -->
-                                    <div>
-                                        <i class="bi bi-camera-fill course-icon me-2"></i> <!-- Camera Icon -->
-                                        <i class="bi bi-folder-fill course-icon"></i> <!-- Folder Icon -->
-                                    </div>
-                                </div>
+                        foreach (var ex in Model.ExercisesNotDone.Take(3))
+                        {
+                            <div class="assignment-item">
+                                <div class="assignment-title">@ex.Title</div>
+                                <div class="assignment-due">Hạn nộp: @ex.Describe</div>
                             </div>
-                        </div>
+                        }
+                    }
+                    else
+                    {
+                        <div>Không có bài tập sắp hạn</div>
                     }
                 </div>
 
-            </div>
-        }
-    </div>
+                <!-- Calendar -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-calendar"></i>
+                        Lịch học
+                    </h3>
+                    <div class="calendar">
+                        <div style="margin-bottom: 1rem; font-weight: 600;">@DateTime.Now.ToString("MMMM, yyyy")</div>
+                        <div class="calendar-grid">
+                            <div class="calendar-day">CN</div>
+                            <div class="calendar-day">T2</div>
+                            <div class="calendar-day">T3</div>
+                            <div class="calendar-day">T4</div>
+                            <div class="calendar-day">T5</div>
+                            <div class="calendar-day">T6</div>
+                            <div class="calendar-day">T7</div>
+                            @for (int i = 1; i <= 30; i++)
+                            {
+                                var isToday = i == DateTime.Now.Day ? "today" : "";
+                                <div class="calendar-day @isToday">@i</div>
+                            }
+                        </div>
+                    </div>
+                </div>
 
-    <!-- Modal for Create Course -->
-    <div class="modal fade" id="createCourseModal" tabindex="-1" aria-labelledby="createCourseModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div id="createCourseContent">
-                    <!-- Nội dung sẽ được tải bằng AJAX -->
+                <!-- Quick Actions -->
+                <div class="sidebar-card">
+                    <h3 class="sidebar-title">
+                        <i class="fas fa-zap"></i>
+                        Thao tác nhanh
+                    </h3>
+                    <button class="add-button" style="width: 100%; margin-bottom: 0.75rem;">
+                        <i class="fas fa-upload"></i>
+                        Nộp bài tập
+                    </button>
+                    <button class="add-button" style="width: 100%; background: #10b981;">
+                        <i class="fas fa-comment"></i>
+                        Nhắn tin
+                    </button>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Modal for Register Course -->
+    @* table tham gia lớp học *@
     <div class="modal fade" id="registerCourseModal" tabindex="-1" aria-labelledby="registerCourseModalLabel"
         aria-hidden="true">
         <div class="modal-dialog">
@@ -262,84 +683,15 @@
         </div>
     </div>
 
-
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Function to show the "My Course" table and hide the "Signed Course" table
-        function showMyCourses() {
-            document.getElementById("myCourseTable").style.display = "block";
-            document.getElementById("signedCourseTable").style.display = "none";
-            document.getElementById("myCourseBtn").classList.add("active");
-            document.getElementById("signedCourseBtn").classList.remove("active");
-        }
-
-        // Function to show the "Signed Course" table and hide the "My Course" table
-        function showSignedCourses() {
-            document.getElementById("myCourseTable").style.display = "none";
-            document.getElementById("signedCourseTable").style.display = "block";
-            document.getElementById("signedCourseBtn").classList.add("active");
-            document.getElementById("myCourseBtn").classList.remove("active");
-        }
-
-        // Default view to show "My Course" table initially
-        showMyCourses();
-    </script>
 </body>
-
-</html>
+ <script>
+        // Function to show the "My Course" table and hide the "Signed Course" table
+     
+        // Default view to show "My Course" table initially
+    </script>
 @section Scripts {
     <script type="text/javascript">
-        function loadCreateCourseForm() {
-            const input = {}; // Nếu cần, bạn có thể định nghĩa dữ liệu cần gửi ở đây
-            $.ajax({
-                url: '@Url.Action("Create")', // Đường dẫn action
-                data: null,
-                method: 'GET', // Phương thức GET
-                dataType: 'html', // Loại dữ liệu nhận lại
-                success: function (res) {
-                    // Hiển thị nội dung trả về vào modal
-                    $('#createCourseContent').html('').html(res);
-                    $('#createCourseModal').modal('show'); // Hiển thị modal
-
-                },
-                error: function () {
-                    alert('An error occurred while loading the form.');
-                }
-            });
-        }
-        function saveCourse() {
-            var course = new Object(); // Lấy dữ liệu form
-            course.CourseName = $('#CourseName').val()
-            course.Description = $('#Description').val()
-            course.StartDate = $('#StartDate').val()
-            course.EndDate = $('#EndDate').val()
-            course.Price = $('#Price').val()
-            course.InstructorID = "a30e9f53-5675-4558-ad70-08dd1f34b25f"
-            course.CategoryID = 1
-            console.log(JSON.stringify(course));
-
-            $.ajax({
-                url: '@Url.Action("CreateCourse", "Course")', // URL đến action POST Create
-                data: course,
-                method: 'GET', // Phương thức GET
-                contentType: 'application/json; charset=utf-8', // Định dạng dữ liệu gửi
-                dataType: 'json',
-                success: function (response) {
-                    if (response.success == true) {
-                        alert('Course created successfully!');
-                        $('#createCourseModal').modal('hide');
-                        location.reload(); // Tải lại trang để cập nhật danh sách
-                    } else {
-                        console.log(JSON.stringify(response));
-                        alert(response.message || 'An error occurred!');
-                    }
-                },
-                error: function () {
-                    alert('An error occurred while saving the course.');
-                }
-            });
-        }
+       
         //Đăng ký
         $('#registerCourseModal').on('show.bs.modal', function () {
 

@@ -11,109 +11,178 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 </head>
-<style>
-    .icon {
-        color: #89d3d3;
-        font-size: 50px;
-    }
 
-    .text-center {
-        color: #3fa0a0;
-        font-size: 50px;
-    }
-
-    nav {
-        background-color: #FEF9EF;
-    }
-
-    .navbar-nav .nav-item.active .nav-link {
-        border-bottom: 2px solid #007bff;
-        /* Màu gạch chân */
-        padding-bottom: 0.5rem;
-        /* Khoảng cách giữa văn bản và gạch chân */
-    }
-</style>
 
 <body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light  border-bottom box-shadow ">
+    <header class="main-header">
+        <!-- Top Navigation -->
+        <nav class="top-nav">
             <div class="container">
-                <div class="row d-flex flex-nowrap">
-                    <div class="col-4 d-flex ">
-                        <img src="/img/Evening classes.png" alt="" height="100px">
-                        <h2 class="mg-2 icon d-flex justify-content-center align-items-center">LearX</h2>
+                <div class="nav-content">
+                    <!-- Logo Section -->
+                    <div class="logo-section">
+                        <div class="logo-container">
+                            <div class="logo-icon">
+                                <i class="fas fa-graduation-cap"></i>
+                            </div>
+                            <h2 class="brand-name">LearX</h2>
+                        </div>
+                        <div class="tagline">
+                            <h3 class="tagline-text">Learn from the best</h3>
+                            <div class="tagline-underline"></div>
+                        </div>
                     </div>
-                    <div class="clo-4 text-center">
 
-                        <h2 class=" h-100 d-flex justify-content-center align-items-center"
-                            style="font-size: 50px; padding-bottom: 10px;">Learn from the best</h2>
-                    </div>
+                    <!-- User Profile (when authenticated) -->
+                    
+                    
                 </div>
             </div>
-
         </nav>
+
+        <!-- Main Navigation (when authenticated) -->
         @if (User.Identity.IsAuthenticated)
         {
-            <nav class="navbar bg-white border-bottom shadow-sm">
-                <div class="container d-flex justify-content-center">
-                    <ul class="navbar-nav d-flex flex-row justify-content-center align-items-center">
+            <nav class="main-nav">
+                <div class="container">
+                    <ul class="nav-menu">
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="Course" asp-action="Index">
-                                <i class="bi bi-folder2" style="font-size: 24px;"></i>
-                                <span>Khóa học</span>
+                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <span class="nav-text">Khóa học</span>
+                                <div class="nav-indicator"></div>
                             </a>
                         </li>
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "AllExercise" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="Exercise" asp-action="Index">
-                                <i class="bi bi-clipboard" style="font-size: 24px;"></i>
-                                <span>Bài tập</span>
+                            <a class="nav-link" asp-area="" asp-controller="Exercise" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fas fa-pencil-alt"></i>
+                                </div>
+                                <span class="nav-text">Bài tập</span>
+                                <div class="nav-indicator"></div>
                             </a>
                         </li>
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Ebook" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="EBook" asp-action="Index">
-                                <i class="bi bi-book" style="font-size: 24px;"></i>
-                                <span>Sách điện tử</span>
+                            <a class="nav-link" asp-area="" asp-controller="EBook" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <span class="nav-text">Sách điện tử</span>
+                                <div class="nav-indicator"></div>
                             </a>
                         </li>
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="Test" asp-action="Index">
-                                <i class="bi bi-calculator" style="font-size: 24px;"></i>
-                                <span>Bài kiểm tra</span>
+                            <a class="nav-link" asp-area="" asp-controller="Test" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fas fa-clipboard-check"></i>
+                                </div>
+                                <span class="nav-text">Bài kiểm tra</span>
+                                <div class="nav-indicator"></div>
                             </a>
                         </li>
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="Scores" asp-action="Index">
-                                <i class="bi bi-star" style="font-size: 24px;"></i>
-                                <span>Sổ điểm</span>
+                            <a class="nav-link" asp-area="" asp-controller="Scores" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fas fa-chart-line"></i>
+                                </div>
+                                <span class="nav-text">Sổ điểm</span>
+                                <div class="nav-indicator"></div>
                             </a>
                         </li>
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
-                            <a class="nav-link text-dark d-flex flex-column align-items-center" asp-area=""
-                                asp-controller="Messages" asp-action="Chat">
-                                <i class="bi bi-envelope" style="font-size: 24px;"></i>
-                                <span>Tin nhắn</span>
+                            <a class="nav-link" asp-area="" asp-controller="Messages" asp-action="Chat">
+                                <div class="nav-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <span class="nav-text">Tin nhắn</span>
+                           
                             </a>
                         </li>
-                        <li class="nav-item mx-3">
-                            <form asp-controller="User" asp-action="Logout" method="post"
-                                class="d-flex flex-column align-items-center">
-                                <button class="btn btn-link text-dark">
-                                    <i class="bi bi-box-arrow-right" style="font-size: 24px;"></i>
-                                    <span>Logout</span>
+                        <li class="nav-item mx-3 logout-item">
+                            <form asp-controller="User" asp-action="Logout" method="post" class="logout-form">
+                                <button class="logout-btn">
+                                    <div class="nav-icon">
+                                        <i class="fas fa-sign-out-alt"></i>
+                                    </div>
+                                    <span class="nav-text">Đăng xuất</span>
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+
+                    <!-- Mobile Menu Toggle -->
+                    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </nav>
+
+            <!-- Mobile Navigation Overlay -->
+            <div class="mobile-nav-overlay" id="mobile-nav">
+                <div class="mobile-nav-content">
+                    <div class="mobile-nav-header">
+                        <div class="mobile-logo">
+                            <i class="fas fa-graduation-cap"></i>
+                            <span>LearX</span>
+                        </div>
+                        <button class="mobile-nav-close" onclick="toggleMobileMenu()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <ul class="mobile-nav-menu">
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Course" asp-action="Index">
+                                <i class="fas fa-book-open"></i>
+                                <span>Khóa học</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "AllExercise" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Exercise" asp-action="Index">
+                                <i class="fas fa-pencil-alt"></i>
+                                <span>Bài tập</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Ebook" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="EBook" asp-action="Index">
+                                <i class="fas fa-book"></i>
+                                <span>Sách điện tử</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Test" asp-action="Index">
+                                <i class="fas fa-clipboard-check"></i>
+                                <span>Bài kiểm tra</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Scores" asp-action="Index">
+                                <i class="fas fa-chart-line"></i>
+                                <span>Sổ điểm</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Messages" asp-action="Chat">
+                                <i class="fas fa-comments"></i>
+                                <span>Tin nhắn</span>
+                                <span class="mobile-badge">2</span>
+                            </a>
+                        </li>
+                        <li class="mobile-nav-item">
+                            <form asp-controller="User" asp-action="Logout" method="post" class="mobile-logout-form">
+                                <button class="mobile-logout-btn" onclick="handleLogout()">
+                                    <i class="fas fa-sign-out-alt"></i>
+                                    <span>Đăng xuất</span>
                                 </button>
                             </form>
                         </li>
                     </ul>
                 </div>
-            </nav>
-
+            </div>
         }
-
     </header>
     <div class="">
         <main role="main" class="pb-3">
@@ -125,14 +194,67 @@
 
     </footer>
     <!-- Thêm thư viện SignalR -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 
 
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const mobileToggle = document.querySelector('.mobile-menu-toggle');
+            const mobileNav = document.getElementById('mobile-nav');
+            const mobileClose = document.querySelector('.mobile-nav-close');
+            const hamburgerLines = document.querySelectorAll('.hamburger-line');
+
+            function toggleMobileMenu() {
+                mobileNav.classList.toggle('active');
+                
+                if (mobileNav.classList.contains('active')) {
+                    hamburgerLines[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+                    hamburgerLines[1].style.opacity = '0';
+                    hamburgerLines[2].style.transform = 'rotate(-45deg) translate(7px, -6px)';
+                } else {
+                    hamburgerLines[0].style.transform = 'none';
+                    hamburgerLines[1].style.opacity = '1';
+                    hamburgerLines[2].style.transform = 'none';
+                }
+            }
+
+            if (mobileToggle) {
+                mobileToggle.addEventListener('click', toggleMobileMenu);
+            }
+
+            if (mobileClose) {
+                mobileClose.addEventListener('click', toggleMobileMenu);
+            }
+
+            document.addEventListener('click', function(e) {
+                if (mobileNav && mobileNav.classList.contains('active') && 
+                    !mobileNav.contains(e.target) && 
+                    !mobileToggle.contains(e.target)) {
+                    toggleMobileMenu();
+                }
+            });
+
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', function() {
+                    // Remove active from all
+                    document.querySelectorAll('.mobile-nav-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    // Add active to current
+                    this.closest('.mobile-nav-item').classList.add('active');
+                    // Close menu
+                    toggleMobileMenu();
+                });
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
+
 </body>
 
 </html>

@@ -1,60 +1,546 @@
 @model LearnX_Data.Entities.Course
-
+@using System.Globalization
 @{
     ViewData["Title"] = "Details";
+    string GetWeek(DateTime start, DateTime lessonStart) => $"Week {((lessonStart - start).Days / 7) + 1}";
+    string GetStatus(DateTime now, DateTime start, DateTime end)
+    {
+        if (start > now) return "Upcoming";
+        if (end < now) return "Completed";
+        return "In Progress";
+    }
+    string GetStatusClass(DateTime now, DateTime start, DateTime end)
+    {
+        if (start > now) return "bg-gray-100 text-gray-800";
+        if (end < now) return "bg-green-100 text-green-800";
+        return "bg-yellow-100 text-yellow-800";
+    }
+    
+}
+@{
+    Func<DateTime, DateTime, int> getWeek = (start, lessonStart) => ((lessonStart - start).Days / 7) + 1;
+    Func<DateTime, DateTime, DateTime, string> getStatus = (now, start, end) => start > now ? "Upcoming" : end < now ? "Completed" : "In Progress";
+    Func<DateTime, DateTime, DateTime, string> getStatusClass = (now, start, end) => start > now ? "bg-gray-100 text-gray-800" : end < now ? "bg-green-100 text-green-800" : "bg-yellow-100 text-yellow-800";
+    var now = DateTime.Now;
+    var percent = Model.Lessons != null && Model.Lessons.Count > 0
+        ? (int)Math.Round(100.0 * Model.Lessons.Count(l => l.EndDate < now) / Model.Lessons.Count)
+        : 0;
 }
 
-<h1>Details</h1>
 
-<div>
-    <h4>Course</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CourseName)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CourseName)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Description)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Description)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Instructor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Instructor.Id)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Category)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Category.CategoryID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Price)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Price)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.CourseID">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+<title>Classroom Detail</title>
+<script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    :root {
+        --primary: #4f46e5;
+        --secondary: #7c3aed;
+        --background: #667eea;
+        --background-secondary: #764ba2;
+        --white: #ffffff;
+        --gray-50: #f9fafb;
+        --gray-100: #f3f4f6;
+        --gray-200: #e5e7eb;
+        --gray-300: #d1d5db;
+        --gray-400: #9ca3af;
+        --gray-500: #6b7280;
+        --gray-600: #4b5563;
+        --gray-700: #374151;
+        --gray-800: #1f2937;
+        --gray-900: #111827;
+        --red: #ef4444;
+        --green: #10b981;
+        --blue: #3b82f6;
+        --purple: #8b5cf6;
+        --pink: #ec4899;
+        --yellow: #f59e0b;
+        --orange: #f97316;
+    }
+
+    * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;s
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: #4f46e5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .card {
+        background-color: var(--white);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .card-glass {
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 16px;
+        padding: 24px;
+        margin-bottom: 16px;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        backdrop-filter: blur(10px);
+    }
+
+    .sidebar-card {
+        background-color: var(--white);
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 8px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+    }
+
+    .btn-primary {
+        background-color: var(--primary);
+        padding: 12px 24px;
+        border-radius: 12px;
+        margin-right: 1%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        color: var(--white);
+        font-weight: 700;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    .lesson-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .lesson-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .progress-bar {
+        height: 8px;
+        border-radius: 4px;
+        background-color: var(--gray-200);
+        overflow: hidden;
+    }
+
+    .progress-value {
+        height: 100%;
+        border-radius: 4px;
+        background: linear-gradient(90deg, var(--primary), var(--secondary));
+    }
+
+    .tab-active {
+        color: var(--primary);
+        border-bottom: 3px solid var(--primary);
+    }
+
+    .avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background-color: var(--primary);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: bold;
+    }
+    .modal-overlay {
+    position: fixed;
+    inset: 0;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(0,0,0,0.5);
+    z-index: 99999 !important; /* cao hơn header */
+}
+
+.modal-card {
+    background-color: #fff;
+    border-radius: 12px;
+    padding: 24px;
+    max-width: 1024px;
+    width: 95%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    z-index: 100000 !important; /* nội dung modal cao hơn overlay */
+}
+.header, .nav-menu {
+    z-index: 10;
+    position: relative;
+}
+</style>
+
+ <div class="max-w-7xl mx-auto mt-2">
+    <!-- Header -->
+    <div class="card-glass mb-8">
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div>
+          <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">@Model.CourseName</h1>
+          <p class="text-gray-600 mb-4">Professor: @Model.Instructor?.UserName</p>
+          <div class="flex items-center space-x-2 mb-4">
+            <span class="px-3 py-1 @(Model.StartDate <= now && Model.EndDate >= now ? "bg-green-100 text-green-800" : Model.EndDate < now ? "bg-gray-200 text-gray-800" : "bg-yellow-100 text-yellow-800") rounded-full text-sm font-medium">
+                @(Model.StartDate <= now && Model.EndDate >= now ? "Active" : Model.EndDate < now ? "Ended" : "Upcoming")
+            </span>
+            <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">@Model.Category?.CategoryName</span>
+            <span class="px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">
+                @Model.StartDate.ToString("MMM yyyy", CultureInfo.InvariantCulture) - @Model.EndDate.ToString("MMM yyyy", CultureInfo.InvariantCulture)
+            </span>
+          </div>
+        </div>
+        <div class="flex space-x-3 mt-4 md:mt-0">
+          <button class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+            </svg>
+            Edit Course
+          </button>
+          <button class="btn-primary">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+            </svg>
+            Add Lesson
+          </button>
+        </div>
+      </div>
+     
+    </div>
+
+    <!-- Main Content -->
+    <div class="flex flex-col lg:flex-row gap-8">
+      <!-- Left Column - Lessons -->
+      <div class="w-full lg:w-2/3">
+        <div class="card-glass">
+          <div class="flex border-b border-gray-200 mb-6">
+            <button class="px-4 py-2 font-medium tab-active">Lessons</button>
+            <button class="px-4 py-2 font-medium text-gray-500">Assignments</button>
+            <button class="px-4 py-2 font-medium text-gray-500">Resources</button>
+            <button class="px-4 py-2 font-medium text-gray-500">Discussions</button>
+          </div>
+          <!-- Lessons List -->
+          <div class="space-y-4">
+            @if (Model.Lessons != null)
+            {
+                foreach (var lesson in Model.Lessons.OrderBy(l => l.StratDate))
+                {
+                    var week = getWeek(Model.StartDate, lesson.StratDate);
+                    var status = getStatus(now, lesson.StratDate, lesson.EndDate);
+                    var statusClass = getStatusClass(now, lesson.StratDate, lesson.EndDate);
+                    var resourcesCount = lesson.Resources?.Count ?? 0;
+                    <div class="lesson-card card" onclick="showLessonDetails(@lesson.LessonID)">
+                      <div class="flex justify-between items-start">
+                        <div>
+                          <div class="flex items-center mb-2">
+                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-800 mr-2">Week @week</span>
+                            <span class="text-xs font-semibold px-2 py-1 rounded @statusClass">@status</span>
+                          </div>
+                          <h3 class="text-xl font-semibold text-gray-800">@lesson.LessonTitle</h3>
+                          <p class="text-gray-600 mt-1">@lesson.Content</p>
+                          <div class="flex items-center mt-3 text-sm text-gray-500">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <span>@((lesson.EndDate - lesson.StratDate).TotalMinutes > 0 ? (lesson.EndDate - lesson.StratDate).TotalMinutes.ToString("0") : "60") minutes</span>
+                            <span class="mx-2">•</span>
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                            <span>@resourcesCount resources</span>
+                          </div>
+                        </div>
+                        <div class="flex-shrink-0">
+                          <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+             
+                }
+            }
+          </div>
+        </div>
+      </div>
+      <!-- Right Column - Sidebar -->
+      <div class="w-full lg:w-1/3">
+        <!-- Course Info -->
+        <div class="sidebar-card mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Course Information</h3>
+          <div class="space-y-3">
+            <div class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Duration</p>
+                <p class="text-gray-800">@((Model.EndDate - Model.StartDate).Days / 7 + 1) weeks (@Model.StartDate:MMM d - @Model.EndDate:MMM d)</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Schedule</p>
+                <p class="text-gray-800">@(Model.StartDate.ToString("dddd, MMM d") + " - " + Model.EndDate.ToString("dddd, MMM d"))</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Enrollment</p>
+                <p class="text-gray-800">@Model.Enrollments?.Count() students</p>
+              </div>
+            </div>
+            <div class="flex items-start">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500 mr-3 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+              </svg>
+              <div>
+                <p class="text-sm font-medium text-gray-600">Prerequisites</p>
+                <p class="text-gray-800">@Model.Prerequisites</p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Upcoming Deadlines -->
+        <div class="sidebar-card mb-6">
+          <h3 class="text-lg font-semibold text-gray-800 mb-4">Upcoming Deadlines</h3>
+          <div class="space-y-4">
+            @if (Model.Exercises != null)
+            {
+                foreach (var ex in Model.Exercises.Take(3))
+                {
+            <div class="flex items-start">
+              <div class="flex-shrink-0 w-10 h-10 rounded-full bg-red-100 flex items-center justify-center mr-3">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <div>
+                <p class="font-medium text-gray-800">@ex.Title</p>
+                @* <p class="text-sm text-gray-600">Due @ex.CreatedAt.ToString("MMM dd • HH:mm")</p> *@
+              </div>
+            </div>
+                }
+            }
+          </div>
+        </div>
+        <!-- Students -->
+        <div class="sidebar-card">
+          <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold text-gray-800">Students</h3>
+            <button class="text-sm text-primary font-medium">View All</button>
+          </div>
+          <div class="space-y-3">
+            @if (Model.Enrollments != null)
+            {
+                foreach (var enroll in Model.Enrollments.Take(5))
+                {
+                    var user = enroll.User;
+                    var initials = user != null && !string.IsNullOrEmpty(user.UserName)
+                        ? string.Concat(user.UserName.Split(' ').Select(s => s.Length > 0 ? s[0] : '?')).ToUpper()
+                        : "";
+            <div class="flex items-center">
+              <div class="avatar mr-3 bg-blue-500">@initials</div>
+              <div>
+                <p class="font-medium text-gray-800">@user?.UserName</p>
+                <p class="text-xs text-gray-500">Last active: @user?.LastLogin.ToString("MMM dd")</p>
+              </div>
+            </div>
+                }
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+   @if (Model.Lessons != null)
+            {
+               
+                foreach (var lesson in Model.Lessons.OrderBy(l => l.StratDate))
+                {
+                   var week = getWeek(Model.StartDate, lesson.StratDate);
+                    var status = getStatus(now, lesson.StratDate, lesson.EndDate);
+                    var statusClass = getStatusClass(now, lesson.StratDate, lesson.EndDate);
+                    var resourcesCount = lesson.Resources?.Count ?? 0;
+                  <div id="modal-@lesson.LessonID" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 modal-overlay hidden" aria-hidden="true">
+                    <div class="bg-white rounded-xl max-w-3xl w-full max-h-[90vh] overflow-y-auto p-6 mx-4">
+                      <div class=" modal-card flex justify-between items-start mb-6">
+                        <div>
+                          <div class="flex items-center mb-2">
+                            <span class="text-xs font-semibold px-2 py-1 rounded bg-blue-100 text-blue-800 mr-2">Week @week</span>
+                            <span class="text-xs font-semibold px-2 py-1 rounded @statusClass">@status</span>
+                          </div>
+                          <h2 class="text-2xl font-bold text-gray-800">@lesson.LessonTitle</h2>
+                        </div>
+                        <button onclick="document.getElementById('modal-@lesson.LessonID').classList.add('hidden');document.body.style.overflow='auto';" class="text-gray-500 hover:text-gray-700">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                          </svg>
+                        </button>
+                      </div>
+                      <div class="mb-6">
+                        <div class="aspect-w-16 aspect-h-9 mb-4">
+                          <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
+                            @if (!string.IsNullOrEmpty(lesson.VideoUrl))
+                            {
+                              <video class="w-full h-full rounded-lg" controls>
+                                <source src="@lesson.VideoUrl" type="video/mp4" />
+                                Your browser does not support the video tag.
+                              </video>
+                            }
+                            else
+                            {
+                              <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                              </svg>
+                            }
+                          </div>
+                        </div>
+                        <div class="prose max-w-none">
+                          <p class="text-gray-700">@lesson.Content</p>
+                          @if (!string.IsNullOrEmpty(lesson.Objectives))
+                          {
+                            <h3 class="text-xl font-semibold mt-6 mb-3">Learning Objectives</h3>
+                            <ul class="list-disc pl-5 space-y-1">
+                              @foreach (var obj in lesson.Objectives.Split('\n'))
+                              {
+                                <li>@obj</li>
+                              }
+                            </ul>
+                          }
+                          @if (lesson.Resources != null && lesson.Resources.Any())
+                          {
+                            <h3 class="text-xl font-semibold mt-6 mb-3">Resources</h3>
+                            <div class="space-y-3">
+                              @foreach (var res in lesson.Resources)
+                              {
+                                <div class="flex items-center p-3 border border-gray-200 rounded-lg">
+                                  <div class="w-10 h-10 rounded-lg @(res.ResourceType == "Video" ? "bg-red-100" : res.ResourceType == "Document" ? "bg-blue-100" : "bg-green-100") flex items-center justify-center mr-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 @(res.ResourceType == "Video" ? "text-red-600" : res.ResourceType == "Document" ? "text-blue-600" : "text-green-600")" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                  </div>
+                                  <div>
+                                    <p class="font-medium text-gray-800">@res.ResourceName</p>
+                                    <p class="text-sm text-gray-500">@res.ResourceType</p>
+                                  </div>
+                                  <a href="@res.ResourceUrl" target="_blank" class="ml-auto bg-primary text-white px-3 py-1 rounded-md text-sm">
+                                    @(res.ResourceType == "Video" ? "Watch" : "Download")
+                                  </a>
+                                </div>
+                              }
+                            </div>
+                          }
+                        </div>
+                      </div>
+                      <div class="flex justify-between items-center pt-4 border-t border-gray-200">
+                        <button class="flex items-center text-gray-600 hover:text-primary" onclick="document.getElementById('modal-@lesson.LessonID').classList.add('hidden');document.getElementById('modal-@Model.Lessons.OrderBy(l=>l.StratDate).LastOrDefault(x=>x.StratDate<lesson.StratDate)?.LessonID')?.classList.remove('hidden');">
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                          </svg>
+                          Previous Lesson
+                        </button>
+                        <button class="bg-primary text-white px-6 py-2 rounded-lg font-medium">Mark as Complete</button>
+                        <button class="flex items-center text-gray-600 hover:text-primary" onclick="document.getElementById('modal-@lesson.LessonID').classList.add('hidden');document.getElementById('modal-@Model.Lessons.OrderBy(l=>l.StratDate).FirstOrDefault(x=>x.StratDate>lesson.StratDate)?.LessonID')?.classList.remove('hidden');">
+                          Next Lesson
+                          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                }
+            }
+@section Scripts {
+<script type="text/javascript">
+    // Hiển thị modal theo id lesson
+    function showLessonDetails(id) {
+        var modal = document.getElementById('modal-' + id);
+        if (!modal) {
+            console.warn('Modal not found for lesson', id);
+            return;
+        }
+        modal.classList.remove('hidden');
+        // khóa scroll trang
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Đóng modal cụ thể
+     function closeLessonModal(id) {
+        var modal = document.getElementById('modal-' + id);
+        if (!modal) return;
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Đóng modal khi click ra ngoài vùng content (modal root có id="modal-<id>")
+    document.addEventListener('click', function (e) {
+        var target = e.target;
+        if (target && target.classList && target.classList.contains('modal-overlay')) {
+            target.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // Đóng tất cả modal khi nhấn Escape
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            document.querySelectorAll('.modal-overlay').forEach(function (m) {
+                if (!m.classList.contains('hidden')) m.classList.add('hidden');
+            });
+            document.body.style.overflow = 'auto';
+        }
+    });
+</script>
+}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
+
+
+
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+<script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

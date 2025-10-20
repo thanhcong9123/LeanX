@@ -1,108 +1,708 @@
-@using LearnX_ModelView.Catalog.Messages
-@model List<ViewMessage>
-
-@{
-    ViewData["Title"] = "Chat";
-    var userId = (Guid)ViewBag.UserId;
-}
-
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"]</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nhắn tin - LearX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
-    <div class="container mt-4">
-        <h2>@ViewData["Title"]</h2>
+    <style>
+        body {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            height: 100vh;
+            overflow: hidden;
+        }
 
-        <div id="messageList" class="border p-3 mb-3" style="height: 300px; overflow-y: auto;">
-            @foreach (var msg in Model.OrderBy(m => m.SentAt))
-            {
-                <div class="mb-2">
-                    <strong>@(msg.SenderId == userId ? "You" : msg.SenderEmail):</strong>
-                    <span>@msg.Content</span>
-                    <small class="text-muted" style="font-size: 0.8em;">@msg.SentAt.ToString("HH:mm:ss")</small>
-                </div>
+        .chat-container {
+            display: flex;
+            height: 100vh;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Sidebar - Danh sách cuộc trò chuyện */
+        .chat-sidebar {
+            width: 350px;
+            background: white;
+            border-right: 1px solid #e2e8f0;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 25px 20px;
+            border-bottom: 1px solid #e2e8f0;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .sidebar-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .search-box {
+            margin: 20px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 14px;
+            background: #f8fafc;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667EEA;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 16px;
+        }
+
+        .conversations-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px 0;
+        }
+
+        .conversation-item {
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .conversation-item:hover {
+            background: #f8fafc;
+        }
+
+        .conversation-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667EEA;
+        }
+
+        .user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+
+        .conversation-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0 0 5px 0;
+            font-size: 15px;
+        }
+
+        .last-message {
+            color: #64748b;
+            font-size: 13px;
+            margin: 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .message-time {
+            color: #94a3b8;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        /* Main Chat Area */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #fafbfc;
+        }
+
+        .chat-header {
+            padding: 20px 25px;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .current-user-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+        }
+
+        .user-status {
+            color: #48bb78;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: #48bb78;
+            border-radius: 50%;
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message.received {
+            align-self: flex-start;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .message-content {
+            background: white;
+            padding: 12px 16px;
+            border-radius: 18px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+
+        .message.sent .message-content {
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .message-text {
+            margin: 0;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-time-stamp {
+            font-size: 11px;
+            color: #94a3b8;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .message.sent .message-time-stamp {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        /* Message Input */
+        .message-input-container {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .message-input-form {
+            display: flex;
+            gap: 15px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            padding: 12px 20px;
+            border: 2px solid #e2e8f0;
+            border-radius: 25px;
+            font-size: 14px;
+            resize: none;
+            min-height: 20px;
+            max-height: 100px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-button {
+            width: 45px;
+            height: 45px;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Empty State */
+        .empty-chat {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .empty-icon {
+            width: 80px;
+            height: 80px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667EEA;
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .empty-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0 0 10px 0;
+        }
+
+        .empty-description {
+            font-size: 14px;
+            color: #64748b;
+        }
+
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .chat-container {
+                height: 100vh;
             }
+
+            .chat-sidebar {
+                width: 100%;
+                position: absolute;
+                z-index: 10;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .chat-sidebar.show {
+                transform: translateX(0);
+            }
+
+            .chat-main {
+                width: 100%;
+            }
+
+            .message {
+                max-width: 85%;
+            }
+        }
+
+        /* Scrollbar Styling */
+        .conversations-list::-webkit-scrollbar,
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .conversations-list::-webkit-scrollbar-track,
+        .messages-container::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .conversations-list::-webkit-scrollbar-thumb,
+        .messages-container::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .conversations-list::-webkit-scrollbar-thumb:hover,
+        .messages-container::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+
+    <div class="chat-container">
+        <!-- Sidebar -->
+        <div class="chat-sidebar" id="chatSidebar">
+            <div class="sidebar-header">
+                <h2 class="sidebar-title">
+                    <i class="fas fa-comments"></i>
+                    Tin nhắn
+                </h2>
+            </div>
+
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Tìm kiếm cuộc trò chuyện..." id="searchConversations">
+            </div>
+
+            <div class="conversations-list" id="conversationsList">
+                <!-- Sample conversations -->
+                <div class="conversation-item active" data-user-id="user1" data-user-name="Nguyễn Văn An">
+                    <div class="user-avatar">NA</div>
+                    <div class="conversation-info">
+                        <h4 class="user-name">Nguyễn Văn An</h4>
+                        <p class="last-message">Chào bạn, mình có thể hỏi về bài tập không?</p>
+                    </div>
+                    <div class="message-time">10:30</div>
+                </div>
+
+                <div class="conversation-item" data-user-id="user2" data-user-name="Trần Thị Bình">
+                    <div class="user-avatar">TB</div>
+                    <div class="conversation-info">
+                        <h4 class="user-name">Trần Thị Bình</h4>
+                        <p class="last-message">Cảm ơn bạn đã giúp đỡ!</p>
+                    </div>
+                    <div class="message-time">09:15</div>
+                </div>
+
+                <div class="conversation-item" data-user-id="user3" data-user-name="Lê Minh Cường">
+                    <div class="user-avatar">LC</div>
+                    <div class="conversation-info">
+                        <h4 class="user-name">Lê Minh Cường</h4>
+                        <p class="last-message">Bài giảng hôm nay rất hay</p>
+                    </div>
+                    <div class="message-time">Hôm qua</div>
+                </div>
+
+                <div class="conversation-item" data-user-id="user4" data-user-name="Phạm Thu Hà">
+                    <div class="user-avatar">PH</div>
+                    <div class="conversation-info">
+                        <h4 class="user-name">Phạm Thu Hà</h4>
+                        <p class="last-message">Mình đã hoàn thành bài tập rồi</p>
+                    </div>
+                    <div class="message-time">2 ngày</div>
+                </div>
+            </div>
         </div>
 
-        <form id="chatForm" class="d-flex gap-2">
-            <input type="text" class="form-control" id="ReceiverId" placeholder="Receiver Email" required />
-            <input type="text" class="form-control" id="MessageContent" placeholder="Type a message..." required />
-            <button type="submit" id="btnSend" class="btn btn-primary">Send</button>
-        </form>
+        <!-- Main Chat Area -->
+        <div class="chat-main">
+            <div class="chat-header" id="chatHeader">
+                <div class="user-avatar">NA</div>
+                <div>
+                    <h3 class="current-user-name" id="currentUserName">Nguyễn Văn An</h3>
+                    <div class="user-status">
+                        <div class="status-dot"></div>
+                        Đang hoạt động
+                    </div>
+                </div>
+            </div>
+
+            <div class="messages-container" id="messagesContainer">
+                <!-- Sample messages -->
+                <div class="message received">
+                    <div class="message-avatar">NA</div>
+                    <div class="message-content">
+                        <p class="message-text">Chào bạn! Mình có thể hỏi về bài tập hôm nay không?</p>
+                        <div class="message-time-stamp">10:25</div>
+                    </div>
+                </div>
+
+                <div class="message sent">
+                    <div class="message-avatar">T</div>
+                    <div class="message-content">
+                        <p class="message-text">Chào bạn! Tất nhiên rồi, bạn cần hỗ trợ gì?</p>
+                        <div class="message-time-stamp">10:26</div>
+                    </div>
+                </div>
+
+                <div class="message received">
+                    <div class="message-avatar">NA</div>
+                    <div class="message-content">
+                        <p class="message-text">Mình không hiểu phần về thuật toán sắp xếp, bạn có thể giải thích thêm không?</p>
+                        <div class="message-time-stamp">10:28</div>
+                    </div>
+                </div>
+
+                <div class="message sent">
+                    <div class="message-avatar">T</div>
+                    <div class="message-content">
+                        <p class="message-text">Được thôi! Thuật toán sắp xếp có nhiều loại như Bubble Sort, Quick Sort... Bạn muốn tìm hiểu loại nào trước?</p>
+                        <div class="message-time-stamp">10:30</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <form class="message-input-form" id="messageForm">
+                    <textarea class="message-input" id="messageInput" placeholder="Nhập tin nhắn..." rows="1"></textarea>
+                    <button type="submit" class="send-button" id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
 
-    @section Scripts {
-        <script>
-            $(document).ready(function () {
-                const connection = new signalR.HubConnectionBuilder()
-                    .withUrl("/chatHub")
-                    .build();
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const conversationItems = document.querySelectorAll('.conversation-item');
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageForm = document.getElementById('messageForm');
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const currentUserName = document.getElementById('currentUserName');
+            const searchInput = document.getElementById('searchConversations');
 
-                connection.on("ReceiveMessage", function (sender, message, time) {
-                    $('#messageList').append(`
-                        <div class="mb-2">
-                            <strong>${sender}:</strong>
-                            <span>${message}</span>
-                            <small class="text-muted" style="font-size: 0.8em;">${time}</small>
-                        </div>
-                    `);
-                    let box = document.getElementById('messageList');
-                    box.scrollTop = box.scrollHeight;
-                });
+            let currentReceiverId = 'user1';
+            const currentSenderId = 'current-user'; // This would come from your authentication system
 
-                connection.start().then(function () {
-                    console.log("Connected to chatHub");
-                }).catch(function (err) {
-                    console.error(err.toString());
-                });
-                $(document).ready(function () {
-                    $('#chatForm').submit(function (e) {
-                        e.preventDefault();
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            });
 
-                        var obj = {
-                            receiverId: $('#ReceiverId').val(),
-                            content: $('#MessageContent').val()
-                        };
-
-
-                        $.ajax({
-                            url: '@Url.Action("SendFromChat", "Messages")',
-                            data: JSON.stringify(obj),
-                            method: 'POST',
-                            contentType: 'application/json; charset=utf-8',
-                            dataType: 'json',
-                            success: function (response) {
-                                if (response.success) {
-                                    $('#messageList').append(`
-                                                    <div class="mb-2">
-                                                        <strong>You:</strong>
-                                                        <span>${obj.content}</span>
-                                                        <small class="text-muted" style="font-size: 0.8em;">now</small>
-                                                    </div>
-                                                `);
-                                    $('#MessageContent').val('');
-                                } else {
-                                    alert(response.message || "Send failed");
-                                }
-                            },
-                            error: function () {
-                                alert("Error sending message.");
-                            }
-                        });
-                    });
+            // Search conversations
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                conversationItems.forEach(item => {
+                    const userName = item.querySelector('.user-name').textContent.toLowerCase();
+                    const lastMessage = item.querySelector('.last-message').textContent.toLowerCase();
+                    
+                    if (userName.includes(searchTerm) || lastMessage.includes(searchTerm)) {
+                        item.style.display = 'flex';
+                    } else {
+                        item.style.display = 'none';
+                    }
                 });
             });
-        </script>
-    }
-</body>
 
+            // Switch conversations
+            conversationItems.forEach(item => {
+                item.addEventListener('click', function() {
+                    // Remove active class from all items
+                    conversationItems.forEach(i => i.classList.remove('active'));
+                    
+                    // Add active class to clicked item
+                    this.classList.add('active');
+                    
+                    // Update current user info
+                    const userName = this.dataset.userName;
+                    const userId = this.dataset.userId;
+                    currentReceiverId = userId;
+                    
+                    currentUserName.textContent = userName;
+                    
+                    // Update avatar in header
+                    const headerAvatar = document.querySelector('.chat-header .user-avatar');
+                    headerAvatar.textContent = userName.split(' ').map(n => n[0]).join('').toUpperCase();
+                    
+                    // Load messages for this conversation (in real app, this would be an API call)
+                    loadMessagesForUser(userId);
+                });
+            });
+
+            // Send message
+            messageForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const messageText = messageInput.value.trim();
+                if (!messageText) return;
+                
+                // Create message object
+                const messageData = {
+                    SenderId: currentSenderId,
+                    ReceiverId: currentReceiverId,
+                    Content: messageText
+                };
+                
+                // Add message to UI
+                addMessageToUI(messageText, true);
+                
+                // Clear input
+                messageInput.value = '';
+                messageInput.style.height = 'auto';
+                
+                // In a real application, you would send this to your API
+                sendMessageToAPI(messageData);
+                
+                // Simulate response (remove this in real implementation)
+                setTimeout(() => {
+                    addMessageToUI("Cảm ơn bạn đã nhắn tin! Tôi sẽ trả lời sớm nhất có thể.", false);
+                }, 1000);
+            });
+
+            // Add message to UI
+            function addMessageToUI(text, isSent) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
+                
+                const currentTime = new Date().toLocaleTimeString('vi-VN', { 
+                    hour: '2-digit', 
+                    minute: '2-digit' 
+                });
+                
+                const avatarText = isSent ? 'T' : currentUserName.textContent.split(' ').map(n => n[0]).join('').toUpperCase();
+                
+                messageDiv.innerHTML = `
+                    <div class="message-avatar">${avatarText}</div>
+                    <div class="message-content">
+                        <p class="message-text">${text}</p>
+                        <div class="message-time-stamp">${currentTime}</div>
+                    </div>
+                `;
+                
+                messagesContainer.appendChild(messageDiv);
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                
+                // Update last message in sidebar
+                updateLastMessage(text);
+            }
+
+            // Update last message in conversation list
+            function updateLastMessage(text) {
+                const activeConversation = document.querySelector('.conversation-item.active');
+                if (activeConversation) {
+                    const lastMessageElement = activeConversation.querySelector('.last-message');
+                    const timeElement = activeConversation.querySelector('.message-time');
+                    
+                    lastMessageElement.textContent = text.length > 30 ? text.substring(0, 30) + '...' : text;
+                    timeElement.textContent = new Date().toLocaleTimeString('vi-VN', { 
+                        hour: '2-digit', 
+                        minute: '2-digit' 
+                    });
+                }
+            }
+
+            // Load messages for specific user (placeholder function)
+            function loadMessagesForUser(userId) {
+                // In a real application, this would make an API call to load messages
+                // For now, we'll just clear the messages and show a loading state
+                messagesContainer.innerHTML = `
+                    <div class="empty-chat">
+                        <div class="empty-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h3 class="empty-title">Bắt đầu cuộc trò chuyện</h3>
+                        <p class="empty-description">Gửi tin nhắn đầu tiên để bắt đầu trò chuyện</p>
+                    </div>
+                `;
+            }
+
+            // Send message to API (placeholder function)
+            function sendMessageToAPI(messageData) {
+                // In a real application, this would make an API call
+                console.log('Sending message:', messageData);
+                
+                // Example API call:
+                /*
+                fetch('/api/messages/send', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(messageData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Message sent successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error sending message:', error);
+                });
+                */
+            }
+
+            // Enable/disable send button based on input
+            messageInput.addEventListener('input', function() {
+                sendButton.disabled = !this.value.trim();
+            });
+
+            // Send message with Enter key (Shift+Enter for new line)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    messageForm.dispatchEvent(new Event('submit'));
+                }
+            });
+
+            // Auto-scroll to bottom on page load
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f0c1caf15bdd36',t:'MTc2MDU0NjQxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

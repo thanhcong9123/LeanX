@@ -1,123 +1,122 @@
-    @using LearnX_ModelView.System.User
-    @model Login
-    @{
-        Layout = null;
+@using LearnX_ModelView.System.User
+@model Login
+@{
+    Layout = null;
+}
+
+<style>
+    input {
+        border: none;
+        border-bottom: 2px solid #00bcd4;
+        outline: none;
+
     }
 
-    <style>
-        input {
-            border: none;
-            border-bottom: 2px solid #00bcd4;
-            outline: none;
+    input:focus {
+        border-bottom: 2px solid #ff4081;
+        /* Màu gạch chân khi focus */
+    }
 
-        }
+    .input-box {
+        position: relative;
+    }
 
-        input:focus {
-            border-bottom: 2px solid #ff4081;
-            /* Màu gạch chân khi focus */
-        }
+    .input-box input {
+        border: none;
+        border-bottom: 2px solid #00bcd4;
+        outline: none;
+        width: 100%;
+     
+        padding: 8px 0;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
 
-        .input-box {
-            position: relative;
-        }
+    .input-box label {
+        position: absolute;
+        top: 50%;
+        left: 0;
+        transform: translateY(-50%);
+        font-size: 16px;
+        color: #aaa;
+        pointer-events: none;
+        transition: all 0.3s ease;
 
-        .input-box input {
-            border: none;
-            border-bottom: 2px solid #00bcd4;
-            outline: none;
-            width: 100%;
-            using LearnX_ModelView.System.User;
-            using LearnX_ModelView.System.User;
-            using LearnX_ModelView.System.User;
-            padding: 8px 0;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
+    }
 
-        .input-box label {
-            position: absolute;
-            top: 50%;
-            left: 0;
-            transform: translateY(-50%);
-            font-size: 16px;
-            color: #aaa;
-            pointer-events: none;
-            transition: all 0.3s ease;
+    .input-box input:focus~label,
+    .input-box input:valid~label {
+        top: -10px;
+        font-size: 12px;
+        color: #00bcd4;
+    }
 
-        }
+    .input-box input:focus {
+        border-bottom: 2px solid #00bcd4;
+    }
 
-        .input-box input:focus~label,
-        .input-box input:valid~label {
-            top: -10px;
-            font-size: 12px;
-            color: #00bcd4;
-        }
+    /* Nút đăng nhập */
+    .btn-gradient {
+        background: linear-gradient(to right, #ff00ff, #00bcd4);
+        color: black;
+        border: none;
+        border-radius: 30px;
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background 0.9s ease;
+    }
 
-        .input-box input:focus {
-            border-bottom: 2px solid #00bcd4;
-        }
+    .btn-gradient:hover {
+        background: linear-gradient(to right, #00bcd4, #ff00ff);
+        /* Đảo ngược màu khi hover */
+    }
+</style>
 
-        /* Nút đăng nhập */
-        .btn-gradient {
-            background: linear-gradient(to right, #ff00ff, #00bcd4);
-            color: black;
-            border: none;
-            border-radius: 30px;
-            padding: 10px 20px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.9s ease;
-        }
+<!DOCTYPE html>
+<html lang="en">
 
-        .btn-gradient:hover {
-            background: linear-gradient(to right, #00bcd4, #ff00ff);
-            /* Đảo ngược màu khi hover */
-        }
-    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/LearnX_App.styles.css" asp-append-version="true" />
+    <title>Login</title>
+</head>
 
-    <!DOCTYPE html>
-    <html lang="en">
+<body>
+    <section class="section d-flex justify-content-center align-items-center vh-100 ">
+        <form asp-action="Login" method="post" class="bg-white shadow-lg p-4 rounded w-25 h-75 ">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-        <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-        <link rel="stylesheet" href="~/LearnX_App.styles.css" asp-append-version="true" />
-        <title>Login</title>
-    </head>
-
-    <body>
-        <section class="section d-flex justify-content-center align-items-center vh-100 ">
-            <form asp-action="Login" class="bg-white shadow-lg p-4 rounded w-25 h-75 ">
-                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-
-                <h2 class="p-4 justify-content-center align-items-center d-flex fw-bold mb-5">
-                    Đăng nhập
-                </h2>
-                <div class="container justify-content-center align-items-center">
-                    <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                        <input asp-for="UserName" type="text" class="w-100 " required>
-                        <label asp-for="UserName">Tên người dùng</label>
-                    </div>
-                    <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                        <input asp-for="Password" type="password" class="w-100 " required>
-                        <label asp-for="Password">Mật khẩu</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="form2Example31" checked />
-                        <label class="form-check-label" asp-for="RememberMe" for="form2Example31"> Remember me </label>
-                    </div>  
-                    <div class="button-login d-flex align-items-center justify-content-center mt-5">
-                        <button class="w-75 btn-gradient" id="login-submit" type="submit">
-                            Đăng nhập
-                        </button>
-                    </div>
+            <h2 class="p-4 justify-content-center align-items-center d-flex fw-bold mb-5">
+                Đăng nhập
+            </h2>
+            <div class="container justify-content-center align-items-center">
+                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
+                    <input asp-for="UserName" type="text" class="w-100 " required>
+                    <label asp-for="UserName">Tên người dùng</label>
                 </div>
-                <a href="/User/Register">Register</a>
-            </form>
-        </section>
+                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
+                    <input asp-for="Password" type="password" class="w-100 " required>
+                    <label asp-for="Password">Mật khẩu</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" asp-for="RememberMe" id="form2Example31" checked />
+                    <label class="form-check-label" asp-for="RememberMe" for="form2Example31"> Remember me </label>
+                </div>
+                <div class="button-login d-flex align-items-center justify-content-center mt-5">
+                    <button class="w-75 btn-gradient" id="login-submit" type="submit">
+                        Đăng nhập
+                    </button>
+                </div>
+            </div>
+            <a href="/User/Register">Register</a>
+        </form>
+    </section>
 
-    </body>
+</body>
 
-    </html>
+</html>

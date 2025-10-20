@@ -79,6 +79,18 @@ namespace MyApp.Namespace
 
             return Ok(exercises);
         }
+        public class SubmitExerciseResult
+        {
+            public int Score { get; set; }
+        }
+        [HttpPost("submit")]
+        public async Task<ActionResult<List<Exercise>>> SubmitExercise([FromBody] SubmitExerciseRequest request)
+        {
+            var reponse = await _exerciseService.SubmitExerciseAsync(request.Questions, request.UserId, request.ExerciseId);
+            
+
+            return Ok(new SubmitExerciseResult { Score = reponse });
+        }
     }
 
 }

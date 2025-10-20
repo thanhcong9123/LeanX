@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.EBook;
@@ -15,10 +16,14 @@ namespace LearnX_Application.Comman
     {
         public LearnXDbContext _context;
         private readonly IWebHostEnvironment _environment;
+        private readonly IMapper _mapper;
 
-        public EBookService(LearnXDbContext context)
+
+        public EBookService(LearnXDbContext context, IWebHostEnvironment environment, IMapper mapper)
         {
             _context = context;
+            _environment = environment;
+            _mapper = mapper;
         }
 
         public async Task<bool> DeleteBookAsync(int id)
@@ -43,30 +48,15 @@ namespace LearnX_Application.Comman
                 return null;
             }
 
-            return new EBook
-            {
-                Id = book.Id,
-                Title = book.Title,
-                Description = book.Description,
-                FilePath = book.FilePath,
-                UploadedAt = book.UploadedAt,
-                LinkYoutube = book.LinkYoutube,
-                imgPath = book.imgPath
-            };
+            return book;
         }
         public async Task<bool> AddEvaluateAsync(EvaluateBookRequest request)
         {
             try
             {
-                var evaluate = new EvaluateBook
-                {
-                    BookId = request.BookId,
-                    UserId = request.UserId,
-                    Rating = request.Rating,
-                    Comment = request.Comment,
-                    CreatedAt = DateTime.UtcNow
-                };
-                _context.EvaluateBooks.Add(evaluate);
+                var evaluate = _mapper.Map<EvaluateBook>(request);
+                evaluate.CreatedAt = DateTime.Now;
+                await _context.EvaluateBooks.AddAsync(evaluate);
                 await _context.SaveChangesAsync();
                 return true;
             }
@@ -85,23 +75,9 @@ namespace LearnX_Application.Comman
         {
             try
             {
-                // Save file to wwwroot/files
-
-
                 // Save book details to database
-                var book = new EBook
-                {
-                    Title = eBookRequest.Title,
-                    imgPath = eBookRequest.imgPath,
-                    Description = eBookRequest.Description,
-                    FilePath = eBookRequest.FilePath, // Save relative path
-                    UploadedAt = DateTime.Now,
-                    LinkYoutube = eBookRequest.LinkYoutube,
-                    CountPages = eBookRequest.CountPages,
-                    Author = eBookRequest.Author,
-                    Status = eBookRequest.Status,
-                    NameCategory = eBookRequest.NameCategory
-                };
+                var book = _mapper.Map<EBook>(eBookRequest);
+                book.UploadedAt = DateTime.Now;
                 _context.EBooks.Add(book);
                 await _context.SaveChangesAsync();
 

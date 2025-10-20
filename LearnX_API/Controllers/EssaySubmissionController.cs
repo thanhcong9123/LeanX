@@ -54,7 +54,7 @@ namespace LearnX_API.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateEssaySubmission(CreateEssaySubmissionRequest request)
+        public async Task<IActionResult> CreateEssaySubmission([FromBody]CreateEssaySubmissionRequest request)
         {
             try
             {

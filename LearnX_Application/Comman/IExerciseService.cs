@@ -10,12 +10,15 @@ namespace LearnX_Application.Comman
     public interface IExerciseService
     {
         Task<IEnumerable<ExerciseRequest>> GetAllExercisesAsync();
-        Task<ExerciseRequest?> GetExerciseByIdAsync(int id);
+        Task<Exercise> GetExerciseByIdAsync(int id);
         Task<List<Exercise>> GetExerciseByIdcourseAsync(int id);
         Task<List<Question>> GetQuestionByIdExerciseAsync(int id);
         Task<int> AddExerciseAsync(ExerciseRequestWrapper exerciseRequest);
         Task<int> UpdateExerciseAsync(ExerciseRequest exerciseDto);
         Task<int> DeleteExerciseAsync(int id);
         Task<List<Exercise>> GetExercisesForUserAsync(Guid userId);
+        Task<int> SubmitExerciseAsync(List<QuestionSumit> questions, Guid userId, int exerciseId);
+
+
     }
 }

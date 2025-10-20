@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Exercise;
@@ -13,30 +14,22 @@ namespace LearnX_Application.Comman
     public class ScoreService : IScoreService
     {
         public LearnXDbContext _context;
-        public ScoreService(LearnXDbContext context)
+        private readonly IMapper    _mapper;
+        public ScoreService(LearnXDbContext context, IMapper mapper)
         {
+            _mapper = mapper;
             _context = context;
         }
 
         public async Task<int> Create(ScoreRequest courseRequest)
         {
-            Console.WriteLine("dsad" + courseRequest.IsPassed);
             var score1 = await _context.Scores.FirstOrDefaultAsync(n => n.IdUser == courseRequest.IdUser && n.ExerciseId == courseRequest.ExerciseId);
             if (score1 != null)
             {
                 _context.Scores.Remove(score1);
-
                 await _context.SaveChangesAsync();
             }
-            var course = new Scores()
-            {
-                IdUser = courseRequest.IdUser,
-                ExerciseId = courseRequest.ExerciseId,
-                DateCompleted = courseRequest.DateCompleted,
-                Score = courseRequest.Score,
-                IsPassed = courseRequest.IsPassed
-            };
-            Console.WriteLine(courseRequest.IdUser + "Id uer     ");
+            var course = _mapper.Map<Scores>(courseRequest);
             await _context.Scores.AddAsync(course);
             await _context.SaveChangesAsync();
             return course.Id;
@@ -55,7 +48,6 @@ namespace LearnX_Application.Comman
                                     IsPassed = score.IsPassed,
                                     DateCompleted = score.DateCompleted
                                 }).ToListAsync();
-
             return result;
         }
     }

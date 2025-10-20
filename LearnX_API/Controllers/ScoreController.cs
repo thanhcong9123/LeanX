@@ -22,9 +22,8 @@ namespace MyApp.Namespace
             var score = await _context.GetAll(idUser);
             return Ok(score);
         }
-         [HttpPost]
-        [Consumes("multipart/form-data")]
-        public async Task<IActionResult> AddLesson([FromForm] ScoreRequest lesson)
+        [HttpPost]
+        public async Task<IActionResult> AddScore([FromBody] ScoreRequest lesson)
         {
             if (lesson == null)
                 return BadRequest(new { Message = "Invalid lesson data." });

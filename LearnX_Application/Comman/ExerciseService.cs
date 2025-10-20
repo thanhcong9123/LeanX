@@ -15,8 +15,6 @@ namespace LearnX_Application.Comman
     {
         private readonly LearnXDbContext _context;
         private readonly IMapper _mapper;
-
-
         public ExerciseService(LearnXDbContext context, IMapper mapper)
         {
             _context = context;
@@ -41,50 +39,32 @@ namespace LearnX_Application.Comman
                 AnswerFile = e.AnswerFile,
                 Describe = e.Describe,
                 Instruct = e.Instruct
-                // Questions = e.Questions?.Select(q => new QuestionRequest
-                // {
-                //     QuestionId = q.QuestionId,
-                //     QuestionText = q.QuestionText,
-                //     Answers = q.Answers?.Select(a => new AnswerRequest
-                //     {
-                //         AnswerId = a.AnswerId,
-                //         AnswerText = a.AnswerText,
-                //         IsCorrect = a.IsCorrect
-                //     }).ToList()
-                // }).ToList()
+
             });
         }
 
-        public async Task<ExerciseRequest?> GetExerciseByIdAsync(int id)
+        public async Task<Exercise> GetExerciseByIdAsync(int id)
         {
             var exercise = await _context.Exercises
+                .AsNoTracking()
                 .Include(e => e.Questions)
                 .ThenInclude(q => q.Answers)
                 .FirstOrDefaultAsync(e => e.ExerciseId == id);
 
             if (exercise == null) return null;
-
-            return new ExerciseRequest
+            if (exercise.Questions != null)
             {
-                ExerciseId = exercise.ExerciseId,
-                Title = exercise.Title,
-                CourseId = exercise.CourseId,
-                Category = exercise.Category,
-                AnswerFile = exercise.AnswerFile,
-                Describe = exercise.Describe,
-                Instruct = exercise.Instruct
-                // Questions = exercise.Questions?.Select(q => new QuestionRequest
-                // {
-                //     QuestionId = q.QuestionId,
-                //     QuestionText = q.QuestionText,
-                //     Answers = q.Answers?.Select(a => new AnswerRequest
-                //     {
-                //         AnswerId = a.AnswerId,
-                //         AnswerText = a.AnswerText,
-                //         IsCorrect = a.IsCorrect
-                //     }).ToList()
-                // }).ToList()
-            };
+                foreach (var q in exercise.Questions)
+                {
+                    if (q.Answers == null) continue;
+                    foreach (var a in q.Answers)
+                    {
+                        a.IsCorrect = false;
+                    }
+                }
+            }
+
+            return exercise;
         }
 
         public async Task<int> AddExerciseAsync(ExerciseRequestWrapper exerciseRequest)
@@ -93,9 +73,7 @@ namespace LearnX_Application.Comman
             // Tạo mới Exercise
             if (exerciseRequest == null) throw new ArgumentNullException(nameof(exerciseRequest));
 
-            // Map toàn bộ wrapper -> entity (bao gồm Exercise + Questions + Answers)
             var exercise = _mapper.Map<Exercise>(exerciseRequest);
-            Console.WriteLine($"{exercise}");
             _context.Exercises.Add(exercise);
             await _context.SaveChangesAsync();
 
@@ -166,5 +144,26 @@ namespace LearnX_Application.Comman
 
             return exercises;
         }
+        public async Task<int> SubmitExerciseAsync(List<QuestionSumit> questions, Guid userId, int exerciseId)
+        {
+            int score = 0;
+            foreach (var q in questions)
+            {
+                var chekck = await _context.Answers
+                    .Where(a => a.QuestionId == q.QuestionId && a.AnswerId == q.SelectedAnswerId && a.IsCorrect == true)
+                    .FirstOrDefaultAsync();
+                if (chekck != null)
+                {
+                    score++;
+                }
+            }
+            var countQuestion = await _context.Questions.Where(q => q.ExerciseId == exerciseId).CountAsync();
+            if(countQuestion == 0 || score == 0 ) return 0;
+            var result =  (score * 10) / countQuestion;
+
+            
+            return result;
+        }
+       
     }
 }

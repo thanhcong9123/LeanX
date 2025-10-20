@@ -12,8 +12,8 @@ namespace LearnX_Data.Entities
         public int CourseID { get; set; }
         public string? CourseName { get; set; }
         public string? Description { get; set; }
-        public Guid InstructorID { get; set; }  // Foreign key to AppUser (Instructor)
-        public AppUser? Instructor { get; set; }  // Navigation property to AppUser
+        public Guid InstructorID { get; set; }  
+        public AppUser? Instructor { get; set; }  
 
         public int CategoryID { get; set; }
         public Category? Category { get; set; }
@@ -22,8 +22,6 @@ namespace LearnX_Data.Entities
         public decimal Price { get; set; }
         public string? Prerequisites { get; set; } 
         
-
-
         // Navigation properties
         public ICollection<Lesson>? Lessons { get; set; }
         public ICollection<Enrollment>? Enrollments { get; set; }

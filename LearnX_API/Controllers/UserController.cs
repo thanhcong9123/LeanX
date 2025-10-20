@@ -35,6 +35,7 @@ namespace LearnX_API.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> Authenticate([FromBody] Login request)
         {
+          
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 

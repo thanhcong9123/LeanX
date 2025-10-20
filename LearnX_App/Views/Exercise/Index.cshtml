@@ -1,48 +1,712 @@
 @using LearnX_Data.Entities
-@model IEnumerable<Exercise> 
-
+@model IEnumerable<Exercise>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Index</title>
+    <title>Danh sách Bài tập - LearX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="container">
-    <h3>Bài tập của bạn</h3>
-    <table class="table table-bordered table-hover">
-        <thead class="thead-dark">
-            <tr>
-                <th>#</th>
-                <th>Tiêu đề</th>
-                <th>Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @if (Model != null && Model.Any())
-            {
-                int index = 1;
-                foreach (var exercise in Model)
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            margin: 0;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #374151;
+            font-weight: 500;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-link:hover {
+            background: #4f46e5;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.1);
+        }
+
+        .page-title {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.1rem;
+            margin: 15px 0 0 75px;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 20px 12px 50px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667EEA;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .filter-select {
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            background: white;
+            color: #2d3748;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+            text-decoration: none;
+        }
+
+        .exercises-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .exercise-card {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 126, 234, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .exercise-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+        }
+
+        .exercise-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        }
+
+        .exercise-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .exercise-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0;
+            line-height: 1.3;
+            flex: 1;
+        }
+
+        .exercise-id {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667EEA;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 15px;
+        }
+
+        .exercise-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .meta-icon {
+            width: 20px;
+            height: 20px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667EEA;
+            font-size: 12px;
+        }
+
+        .category-badge {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .exercise-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .exercise-stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .stats-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .stats-number {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        .exercise-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667EEA;
+        }
+
+        .btn-view:hover {
+            background: #667EEA;
+            color: white;
+        }
+
+        .btn-edit {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .btn-edit:hover {
+            background: #ffc107;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 25px;
+            color: #667EEA;
+            font-size: 48px;
+        }
+
+        .empty-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .empty-description {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .pagination-wrapper {
+            display: flex;
+            justify-content: center;
+            margin-top: 40px;
+        }
+
+        .pagination {
+            background: white;
+            border-radius: 15px;
+            padding: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .page-link {
+            border: none;
+            color: #64748b;
+            padding: 10px 15px;
+            margin: 0 2px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .page-link:hover,
+        .page-item.active .page-link {
+            background: #667EEA;
+            color: white;
+        }
+
+        @@media (max-width: 768px) {
+            .exercises-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .controls-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-box {
+                max-width: none;
+            }
+
+            .filter-section {
+                justify-content: space-between;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .exercise-meta {
+                flex-direction: column;
+                gap: 10px;
+            }
+        }
+    </style>
+
+    <div class="container mt-2">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                Danh sách Bài tập
+            </h1>
+            <p class="page-subtitle">Quản lý và theo dõi các bài tập trong hệ thống</p>
+        </div>
+
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="search-box">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Tìm kiếm bài tập..." id="searchInput">
+            </div>
+            
+            <div class="filter-section">
+                <select class="filter-select" id="categoryFilter">
+                    <option value="">Tất cả danh mục</option>
+                    <option value="Lập trình">Lập trình</option>
+                    <option value="Toán học">Toán học</option>
+                    <option value="Tiếng Anh">Tiếng Anh</option>
+                    <option value="Khoa học">Khoa học</option>
+                </select>
+                
+                <select class="filter-select" id="courseFilter">
+                    <option value="">Tất cả khóa học</option>
+                    @if (Model != null)
+                    {
+                        @foreach (var course in Model.Where(e => e.Course != null).Select(e => e.Course).Distinct())
+                        {
+                            <option value="@course.CourseID">@course.CourseName</option>
+                        }
+                    }
+                </select>
+                
+                <a href="#" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Thêm bài tập
+                </a>
+            </div>
+        </div>
+
+        <!-- Exercises Grid -->
+        @if (Model != null && Model.Any())
+        {
+            <div class="exercises-grid" id="exercisesGrid">
+                @foreach (var exercise in Model)
                 {
-                    <tr>
-                        <td>@index</td>
-                        <td>@exercise.Title</td>
-                        <td>
-                            <a class="btn btn-info btn-sm" asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Làm bài tập</a>
-                        </td>
-                    </tr>
-                    index++;
+                    <div class="exercise-card" data-category="@exercise.Category" data-course="@exercise.CourseId">
+                        <div class="exercise-header">
+                            <h3 class="exercise-title">@(exercise.Title ?? "Bài tập không có tiêu đề")</h3>
+                            <span class="exercise-id">#@exercise.ExerciseId</span>
+                        </div>
+
+                        <div class="exercise-meta">
+                            <div class="meta-item">
+                                <div class="meta-icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <span>@(exercise.Course?.CourseName ?? "Chưa có khóa học")</span>
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(exercise.Category))
+                            {
+                                <div class="category-badge">@exercise.Category</div>
+                            }
+                        </div>
+
+                        @if (!string.IsNullOrEmpty(exercise.Describe))
+                        {
+                            <div class="exercise-description">
+                                @exercise.Describe
+                            </div>
+                        }
+
+                        <div class="exercise-stats">
+                            <div class="stats-item">
+                                <i class="fas fa-question-circle"></i>
+                                <span class="stats-number">@(exercise.Questions?.Count ?? 0)</span>
+                                <span>câu hỏi</span>
+                            </div>
+                            
+                            <div class="stats-item">
+                                <i class="fas fa-file-alt"></i>
+                                <span class="stats-number">@(exercise.EssaySubmissions?.Count ?? 0)</span>
+                                <span>bài nộp</span>
+                            </div>
+
+                          
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="empty-title">Chưa có bài tập nào</h3>
+                <p class="empty-description">Hệ thống chưa có bài tập nào. Hãy thêm bài tập đầu tiên để bắt đầu!</p>
+                <a href="#" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Thêm bài tập đầu tiên
+                </a>
+            </div>
+        }
+
+        <!-- Pagination -->
+        @if (Model != null && Model.Count() > 12)
+        {
+            <div class="pagination-wrapper">
+                <nav>
+                    <ul class="pagination">
+                        <li class="page-item">
+                            <a class="page-link" href="#"><i class="fas fa-chevron-left"></i></a>
+                        </li>
+                        <li class="page-item active">
+                            <a class="page-link" href="#">1</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">2</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#">3</a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="#"><i class="fas fa-chevron-right"></i></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+        }
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const courseFilter = document.getElementById('courseFilter');
+            const exercisesGrid = document.getElementById('exercisesGrid');
+            const exerciseCards = document.querySelectorAll('.exercise-card');
+
+            // Search and filter functionality
+            function filterExercises() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+                const selectedCourse = courseFilter.value;
+
+                exerciseCards.forEach(card => {
+                    const title = card.querySelector('.exercise-title').textContent.toLowerCase();
+                    const description = card.querySelector('.exercise-description')?.textContent.toLowerCase() || '';
+                    const category = card.dataset.category || '';
+                    const course = card.dataset.course || '';
+
+                    const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
+                    const matchesCourse = !selectedCourse || course === selectedCourse;
+
+                    if (matchesSearch && matchesCategory && matchesCourse) {
+                        card.style.display = 'block';
+                        card.style.animation = 'fadeIn 0.3s ease-in';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Check if no results
+                const visibleCards = Array.from(exerciseCards).filter(card => card.style.display !== 'none');
+                if (visibleCards.length === 0 && exercisesGrid) {
+                    if (!document.querySelector('.no-results')) {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'no-results empty-state';
+                        noResults.innerHTML = `
+                            <div class="empty-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="empty-title">Không tìm thấy kết quả</h3>
+                            <p class="empty-description">Không có bài tập nào phù hợp với tiêu chí tìm kiếm của bạn.</p>
+                        `;
+                        exercisesGrid.appendChild(noResults);
+                    }
+                } else {
+                    const noResults = document.querySelector('.no-results');
+                    if (noResults) {
+                        noResults.remove();
+                    }
                 }
             }
-            else
-            {
-                <tr>
-                    <td colspan="3" class="text-center">Không có bài tập nào được tìm thấy.</td>
-                </tr>
+
+            // Event listeners
+            if (searchInput) {
+                searchInput.addEventListener('input', filterExercises);
             }
-        </tbody>
-    </table>
-</div>
+            
+            if (categoryFilter) {
+                categoryFilter.addEventListener('change', filterExercises);
+            }
+            
+            if (courseFilter) {
+                courseFilter.addEventListener('change', filterExercises);
+            }
+
+            // Action buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.exercise-card');
+                    const exerciseId = card.querySelector('.exercise-id').textContent.replace('#', '');
+                    // Redirect to view page
+                    window.location.href = `/Exercise/Details/${exerciseId}`;
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.exercise-card');
+                    const exerciseId = card.querySelector('.exercise-id').textContent.replace('#', '');
+                    // Redirect to edit page
+                    window.location.href = `/Exercise/Edit/${exerciseId}`;
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.exercise-card');
+                    const exerciseTitle = card.querySelector('.exercise-title').textContent;
+                    const exerciseId = card.querySelector('.exercise-id').textContent.replace('#', '');
+                    
+                    // Custom confirmation dialog
+                    if (confirm(`Bạn có chắc chắn muốn xóa bài tập "${exerciseTitle}"?`)) {
+                        // Add loading state
+                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        this.disabled = true;
+                        
+                        // Simulate delete request
+                        setTimeout(() => {
+                            card.style.animation = 'fadeOut 0.3s ease-out';
+                            setTimeout(() => {
+                                card.remove();
+                            }, 300);
+                        }, 1000);
+                    }
+                });
+            });
+        });
+
+        // CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @@keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
 </body>
-</html>  
+</html>

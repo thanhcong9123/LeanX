@@ -10,7 +10,7 @@ namespace LearnX_ApiIntegration
     public interface ICourseApiClient
     {
         Task<List<Course>> GetAll();
-        Task<Course> GetbyID(Guid id);
+        Task<Course> GetbyId(int id);
         Task<bool> Create(CourseRequest course);
         Task<bool> Delete(int id);
         Task<bool> Edit(Guid id, Course course);

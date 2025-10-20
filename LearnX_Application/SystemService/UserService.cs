@@ -18,7 +18,7 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace LearnX_Application.SystemService
 {
-    public class UserService : EntityBaseRepository<AppUser> ,IUserService
+    public class UserService : EntityBaseRepository<AppUser>, IUserService
     {
         private readonly UserManager<AppUser> _userManager;
 
@@ -37,7 +37,7 @@ namespace LearnX_Application.SystemService
             _config = config;
             _userInManager = userInManager;
         }
-        
+
         public async Task AppRoleFOrUser(string userName, string id)
         {
             var users = await _userInManager.FindByIdAsync(userName);
@@ -60,15 +60,15 @@ namespace LearnX_Application.SystemService
             var user = await _userManager.FindByNameAsync(request.UserName!);
             if (user == null) return new ApiErrorResult<string>("Tài khoản không tồn tại");
             var result = await _signInManager.PasswordSignInAsync(user, request.Password!, request.RememberMe, true);
-            // Console.WriteLine(request.Password);
             if (!result.Succeeded)
             {
                 return new ApiErrorResult<string>("Đăng nhập không đúng");
             }
+
             var roles = await _userManager.GetRolesAsync(user);
             var claims = new[]
             {
-                
+
                 new Claim(ClaimTypes.Email,user.Email),
                 new Claim(ClaimTypes.Role, string.Join(";",roles)),
                 new Claim(ClaimTypes.Name, request.UserName),
@@ -76,13 +76,12 @@ namespace LearnX_Application.SystemService
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-
+        
             var token = new JwtSecurityToken(_config["Tokens:Issuer"],
                 _config["Tokens:Issuer"],
                 claims,
                 expires: DateTime.Now.AddHours(3),
                 signingCredentials: creds);
-
             return new ApiSuccessResult<string>(new JwtSecurityTokenHandler().WriteToken(token));
 
         }
@@ -138,7 +137,7 @@ namespace LearnX_Application.SystemService
             {
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
-            
+
             user = new AppUser()
             {
                 Email = request.Email,

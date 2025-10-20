@@ -1,73 +1,885 @@
 @using LearnX_Data.Entities
-@model List<EBook>
-
+@model IEnumerable<EBook>
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Sách Điện Tử</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css">
+    <title>Thư viện Sách điện tử - LearX</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
     <style>
-        .book-card {
+        body {
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px 0;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 25px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
             position: relative;
-            text-align: center;
-            border: 1px solid #ddd;
-            border-radius: 10px;
             overflow: hidden;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .page-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667EEA 0%, #764ba2 50%, #f093fb 100%);
+        }
+
+        .page-title {
+            color: #2d3748;
+            font-weight: 700;
+            font-size: 2.8rem;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .title-icon {
+            width: 70px;
+            height: 70px;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .page-subtitle {
+            color: #64748b;
+            font-size: 1.2rem;
+            margin: 20px 0 0 90px;
+            font-weight: 400;
+        }
+
+        .stats-bar {
+            background: rgba(102, 126, 234, 0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 25px 0 0 90px;
+            display: flex;
+            gap: 30px;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #64748b;
+            font-size: 14px;
+        }
+
+        .stat-number {
+            font-weight: 700;
+            color: #667EEA;
+            font-size: 18px;
+        }
+
+        .controls-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+        }
+
+        .controls-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .search-filters {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            max-width: 800px;
+        }
+
+        .search-box {
+            position: relative;
+            flex: 2;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 15px 25px 15px 55px;
+            border: 2px solid #e2e8f0;
+            border-radius: 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #667EEA;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #64748b;
+            font-size: 18px;
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .filter-select {
+            padding: 12px 18px;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            background: white;
+            color: #2d3748;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 140px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667EEA;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .view-controls {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .view-btn {
+            width: 45px;
+            height: 45px;
+            border: 2px solid #e2e8f0;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #64748b;
+        }
+
+        .view-btn.active,
+        .view-btn:hover {
+            border-color: #667EEA;
+            background: #667EEA;
+            color: white;
+        }
+
+        .add-btn {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .add-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(72, 187, 120, 0.4);
+            color: white;
+            text-decoration: none;
+        }
+
+        .books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .books-list {
+            display: none;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            position: relative;
+            border: 1px solid rgba(102, 126, 234, 0.1);
         }
 
         .book-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
         }
 
-        .book-card img {
+        .book-image {
+            position: relative;
+            height: 280px;
+            overflow: hidden;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .book-img {
             width: 100%;
-            height: auto;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
         }
 
-        .book-info {
+        .book-card:hover .book-img {
+            transform: scale(1.05);
+        }
+
+        .book-status {
             position: absolute;
+            top: 15px;
+            right: 15px;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-free {
+            background: rgba(72, 187, 120, 0.9);
+            color: white;
+        }
+
+        .status-premium {
+            background: rgba(255, 193, 7, 0.9);
+            color: white;
+        }
+
+        .book-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
             bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            color: #fff;
+            background: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.7) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+        .book-card:hover .book-overlay {
+            opacity: 1;
+        }
+
+        .quick-actions {
+            display: flex;
+            gap: 10px;
             width: 100%;
+        }
+
+        .quick-btn {
+            flex: 1;
             padding: 10px;
-            text-align: left;
+            border: none;
+            border-radius: 8px;
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-read {
+            background: rgba(102, 126, 234, 0.9);
+        }
+
+        .btn-download {
+            background: rgba(72, 187, 120, 0.9);
+        }
+
+        .btn-youtube {
+            background: rgba(255, 0, 0, 0.9);
+        }
+
+        .book-content {
+            padding: 25px;
+        }
+
+        .book-header {
+            margin-bottom: 15px;
+        }
+
+        .book-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0 0 8px 0;
+            line-height: 1.4;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-author {
+            color: #667EEA;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #64748b;
+            font-size: 13px;
+        }
+
+        .meta-icon {
+            width: 18px;
+            height: 18px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #667EEA;
+            font-size: 10px;
+        }
+
+        .book-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .book-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .book-rating {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .star {
+            color: #ffc107;
+            font-size: 14px;
+        }
+
+        .rating-text {
+            color: #64748b;
+            font-size: 13px;
         }
 
         .book-actions {
-            margin-top: 10px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            width: 35px;
+            height: 35px;
+            border: none;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667EEA;
+        }
+
+        .btn-view:hover {
+            background: #667EEA;
+            color: white;
+        }
+
+        .btn-edit {
+            background: rgba(255, 193, 7, 0.1);
+            color: #ffc107;
+        }
+
+        .btn-edit:hover {
+            background: #ffc107;
+            color: white;
+        }
+
+        .btn-delete {
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+
+        .btn-delete:hover {
+            background: #dc3545;
+            color: white;
+        }
+
+        /* List View Styles */
+        .book-list-item {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            display: flex;
+            gap: 25px;
+            align-items: center;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+        }
+
+        .book-list-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .list-book-image {
+            width: 80px;
+            height: 100px;
+            border-radius: 10px;
+            overflow: hidden;
+            flex-shrink: 0;
+        }
+
+        .list-book-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .list-book-content {
+            flex: 1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .list-book-info {
+            flex: 1;
+        }
+
+        .list-book-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin: 0 0 8px 0;
+        }
+
+        .list-book-meta {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 10px;
+        }
+
+        .list-book-description {
+            color: #64748b;
+            font-size: 14px;
+            line-height: 1.5;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .empty-icon {
+            width: 150px;
+            height: 150px;
+            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 30px;
+            color: white;
+            font-size: 60px;
+        }
+
+        .empty-title {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+
+        .empty-description {
+            color: #64748b;
+            font-size: 16px;
+            margin-bottom: 30px;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        @@media (max-width: 768px) {
+            .books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 20px;
+            }
+
+            .controls-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-filters {
+                flex-direction: column;
+                max-width: none;
+            }
+
+            .filter-group {
+                justify-content: space-between;
+            }
+
+            .page-title {
+                font-size: 2.2rem;
+            }
+
+            .stats-bar {
+                margin-left: 0;
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .book-list-item {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .list-book-content {
+                flex-direction: column;
+                gap: 20px;
+            }
         }
     </style>
-</head>
 
-<body>
-    <div class="container mt-5">
-        <h2 class="mb-4">Danh Sách Sách Điện Tử</h2>
-        <a class="btn btn-primary mb-3" href="@Url.Action("Upload", "EBook")">Thêm Sách Mới</a>
+    <div class="container">
+        <!-- Page Header -->
+        <div class="page-header">
+            <h1 class="page-title">
+                <div class="title-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                Thư viện Sách điện tử
+            </h1>
+            <p class="page-subtitle">Khám phá kho tàng tri thức với hàng ngàn cuốn sách điện tử chất lượng cao</p>
+            
+            @if (Model != null && Model.Any())
+            {
+                <div class="stats-bar">
+                    <div class="stat-item">
+                        <i class="fas fa-books"></i>
+                        <span class="stat-number">@Model.Count()</span>
+                        <span>cuốn sách</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-eye"></i>
+                        <span class="stat-number">@Model.Sum(b => b.View)</span>
+                        <span>lượt xem</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-crown"></i>
+                        <span class="stat-number">@Model.Count(b => b.Status == "Free")</span>
+                        <span>sách miễn phí</span>
+                    </div>
+                    <div class="stat-item">
+                        <i class="fas fa-tags"></i>
+                        <span class="stat-number">@Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b => b.NameCategory).Distinct().Count()</span>
+                        <span>danh mục</span>
+                    </div>
+                </div>
+            }
+        </div>
 
+        <!-- Controls Section -->
+        <div class="controls-section">
+            <div class="controls-row">
+                <div class="search-filters">
+                    <div class="search-box">
+                        <i class="fas fa-search search-icon"></i>
+                        <input type="text" class="search-input" placeholder="Tìm kiếm sách theo tên, tác giả..." id="searchInput">
+                    </div>
+                    
+                    <div class="filter-group">
+                        <select class="filter-select" id="categoryFilter">
+                            <option value="">Tất cả danh mục</option>
+                            @if (Model != null)
+                            {
+                                @foreach (var category in Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b => b.NameCategory).Distinct())
+                                {
+                                    <option value="@category">@category</option>
+                                }
+                            }
+                        </select>
+                        
+                        <select class="filter-select" id="statusFilter">
+                            <option value="">Tất cả trạng thái</option>
+                            <option value="Free">Miễn phí</option>
+                            <option value="Premium">Premium</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="view-controls">
+                    <button class="view-btn active" id="gridView" title="Xem dạng lưới">
+                        <i class="fas fa-th"></i>
+                    </button>
+                    <button class="view-btn" id="listView" title="Xem dạng danh sách">
+                        <i class="fas fa-list"></i>
+                    </button>
+                    <a href="#" class="add-btn">
+                        <i class="fas fa-plus"></i>
+                        Thêm sách mới
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Books Grid View -->
         @if (Model != null && Model.Any())
         {
-            <div class="row">
+            <div class="books-grid" id="booksGrid">
                 @foreach (var book in Model)
                 {
-                    <div class="col-md-4 mb-4">
-                        <div class="book-card">
-                            <img src="@book.imgPath" alt="@book.Title">
-                            <div class="book-info">
-                                <h5 class="mb-1">@book.Title</h5>
-                                <p class="mb-1">@book.Description</p>
-                                <div class="book-actions">
-                                    <a class="btn btn-info btn-sm" href="@Url.Action("Details", "EBook", new { id = book.Id })">Chi Tiết</a>
-                                    <form method="post" action="@Url.Action("Delete", "EBook", new { id = book.Id })" style="display: inline;">
-                                        <button class="btn btn-danger btn-sm" type="submit">Xóa</button>
-                                    </form>
+                    <div class="book-card" data-category="@book.NameCategory" data-status="@book.Status">
+                        <div class="book-image">
+                            @if (!string.IsNullOrEmpty(book.imgPath))
+                            {
+                                <img src="@book.imgPath" alt="@book.Title" class="book-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMyMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTYwIDEyMEMxNzEuMDQ2IDEyMCAxODAgMTI4Ljk1NCAxODAgMTQwQzE4MCAxNTEuMDQ2IDE3MS4wNDYgMTYwIDE2MCAxNjBDMTQ4Ljk1NCAxNjAgMTQwIDE1MS4wNDYgMTQwIDE0MEMxNDAgMTI4Ljk1NCAxNDguOTU0IDEyMCAxNjAgMTIwWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSIzMjAiIHkyPSIyODAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzY2N0VFQSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3NjRiYTIiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K'; this.alt='Không có ảnh';">
+                            }
+                            else
+                            {
+                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                                    <i class="fas fa-book"></i>
                                 </div>
+                            }
+                            
+                            <div class="book-status @(book.Status == "Free" ? "status-free" : "status-premium")">
+                                @(book.Status == "Free" ? "Miễn phí" : "Premium")
+                            </div>
+                            
+                            <div class="book-overlay">
+                                <div class="quick-actions">
+                                    <button class="quick-btn btn-read">
+                                        <i class="fas fa-book-reader"></i>
+                                        Đọc
+                                    </button>
+                                    @if (!string.IsNullOrEmpty(book.FilePath))
+                                    {
+                                        <button class="quick-btn btn-download">
+                                            <i class="fas fa-download"></i>
+                                            Tải
+                                        </button>
+                                    }
+                                    @if (!string.IsNullOrEmpty(book.LinkYoutube))
+                                    {
+                                        <button class="quick-btn btn-youtube" onclick="window.open('@book.LinkYoutube', '_blank')">
+                                            <i class="fab fa-youtube"></i>
+                                            Video
+                                        </button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="book-content">
+                            <div class="book-header">
+                                <h3 class="book-title">@book.Title</h3>
+                                <div class="book-author">
+                                    <i class="fas fa-user-edit"></i>
+                                    @(book.Author ?? "Chưa có tác giả")
+                                </div>
+                            </div>
+                            
+                            <div class="book-meta">
+                                <div class="meta-item">
+                                    <div class="meta-icon">
+                                        <i class="fas fa-file-alt"></i>
+                                    </div>
+                                    <span>@book.CountPages trang</span>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon">
+                                        <i class="fas fa-eye"></i>
+                                    </div>
+                                    <span>@book.View lượt xem</span>
+                                </div>
+                                <div class="meta-item">
+                                    <div class="meta-icon">
+                                        <i class="fas fa-calendar"></i>
+                                    </div>
+                                    <span>@book.UploadedAt.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                            
+                            @if (!string.IsNullOrEmpty(book.Description))
+                            {
+                                <div class="book-description">
+                                    @book.Description
+                                </div>
+                            }
+                            
+                            <div class="book-footer">
+                                <div class="book-rating">
+                                    <div class="stars">
+                                        @for (int i = 1; i <= 5; i++)
+                                        {
+                                            <i class="fas fa-star star"></i>
+                                        }
+                                    </div>
+                                    <span class="rating-text">(@(book.EvaluateBooks?.Count ?? 0) đánh giá)</span>
+                                </div>
+                                
+                                <div class="book-actions">
+                                    <button class="action-btn btn-view" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn btn-edit" title="Chỉnh sửa">
+                                        <i class="fas fa-edit"></i>
+                                    </button>
+                                    <button class="action-btn btn-delete" title="Xóa">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!-- Books List View -->
+            <div class="books-list" id="booksList">
+                @foreach (var book in Model)
+                {
+                    <div class="book-list-item" data-category="@book.NameCategory" data-status="@book.Status">
+                        <div class="list-book-image">
+                            @if (!string.IsNullOrEmpty(book.imgPath))
+                            {
+                                <img src="@book.imgPath" alt="@book.Title" class="list-book-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNNDAgMzVDNDUuNTIyOCAzNSA1MCAzOS40NzcyIDUwIDQ1QzUwIDUwLjUyMjggNDUuNTIyOCA1NSA0MCA1NUMzNC40NzcyIDU1IDMwIDUwLjUyMjggMzAgNDVDMzAgMzkuNDc3MiAzNC40NzcyIDM1IDQwIDM1WiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSI4MCIgeTI9IjEwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjY3RUVBIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzc2NGJhMiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo='; this.alt='Không có ảnh';">
+                            }
+                            else
+                            {
+                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                            }
+                        </div>
+                        
+                        <div class="list-book-content">
+                            <div class="list-book-info">
+                                <h3 class="list-book-title">@book.Title</h3>
+                                <div class="list-book-meta">
+                                    <div class="meta-item">
+                                        <i class="fas fa-user-edit"></i>
+                                        <span>@(book.Author ?? "Chưa có tác giả")</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-file-alt"></i>
+                                        <span>@book.CountPages trang</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i class="fas fa-eye"></i>
+                                        <span>@book.View lượt xem</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <span class="book-status @(book.Status == "Free" ? "status-free" : "status-premium")">
+                                            @(book.Status == "Free" ? "Miễn phí" : "Premium")
+                                        </span>
+                                    </div>
+                                </div>
+                                @if (!string.IsNullOrEmpty(book.Description))
+                                {
+                                    <div class="list-book-description">
+                                        @book.Description
+                                    </div>
+                                }
+                            </div>
+                            
+                            <div class="book-actions">
+                                <button class="action-btn btn-view" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="action-btn btn-edit" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <button class="action-btn btn-delete" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -76,11 +888,171 @@
         }
         else
         {
-            <p>Không có sách nào.</p>
+            <div class="empty-state">
+                <div class="empty-icon">
+                    <i class="fas fa-book-open"></i>
+                </div>
+                <h3 class="empty-title">Chưa có sách điện tử nào</h3>
+                <p class="empty-description">Thư viện hiện tại chưa có cuốn sách nào. Hãy thêm sách đầu tiên để xây dựng kho tàng tri thức!</p>
+                <a href="#" class="add-btn">
+                    <i class="fas fa-plus"></i>
+                    Thêm sách đầu tiên
+                </a>
+            </div>
         }
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const statusFilter = document.getElementById('statusFilter');
+            const gridView = document.getElementById('gridView');
+            const listView = document.getElementById('listView');
+            const booksGrid = document.getElementById('booksGrid');
+            const booksList = document.getElementById('booksList');
+            const bookCards = document.querySelectorAll('.book-card, .book-list-item');
 
+            // View toggle functionality
+            gridView.addEventListener('click', function() {
+                gridView.classList.add('active');
+                listView.classList.remove('active');
+                booksGrid.style.display = 'grid';
+                booksList.style.display = 'none';
+            });
+
+            listView.addEventListener('click', function() {
+                listView.classList.add('active');
+                gridView.classList.remove('active');
+                booksGrid.style.display = 'none';
+                booksList.style.display = 'flex';
+            });
+
+            // Search and filter functionality
+            function filterBooks() {
+                const searchTerm = searchInput.value.toLowerCase();
+                const selectedCategory = categoryFilter.value;
+                const selectedStatus = statusFilter.value;
+
+                bookCards.forEach(card => {
+                    const title = card.querySelector('.book-title, .list-book-title').textContent.toLowerCase();
+                    const author = card.querySelector('.book-author, .list-book-meta .meta-item span')?.textContent.toLowerCase() || '';
+                    const description = card.querySelector('.book-description, .list-book-description')?.textContent.toLowerCase() || '';
+                    const category = card.dataset.category || '';
+                    const status = card.dataset.status || '';
+
+                    const matchesSearch = title.includes(searchTerm) || author.includes(searchTerm) || description.includes(searchTerm);
+                    const matchesCategory = !selectedCategory || category === selectedCategory;
+                    const matchesStatus = !selectedStatus || status === selectedStatus;
+
+                    if (matchesSearch && matchesCategory && matchesStatus) {
+                        card.style.display = 'block';
+                        card.style.animation = 'fadeIn 0.3s ease-in';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+
+                // Check if no results
+                const visibleCards = Array.from(bookCards).filter(card => card.style.display !== 'none');
+                const activeContainer = booksGrid.style.display !== 'none' ? booksGrid : booksList;
+                
+                if (visibleCards.length === 0 && activeContainer) {
+                    if (!document.querySelector('.no-results')) {
+                        const noResults = document.createElement('div');
+                        noResults.className = 'no-results empty-state';
+                        noResults.innerHTML = `
+                            <div class="empty-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h3 class="empty-title">Không tìm thấy kết quả</h3>
+                            <p class="empty-description">Không có sách nào phù hợp với tiêu chí tìm kiếm của bạn. Hãy thử với từ khóa khác.</p>
+                        `;
+                        activeContainer.appendChild(noResults);
+                    }
+                } else {
+                    const noResults = document.querySelector('.no-results');
+                    if (noResults) {
+                        noResults.remove();
+                    }
+                }
+            }
+
+            // Event listeners for search and filters
+            searchInput.addEventListener('input', filterBooks);
+            categoryFilter.addEventListener('change', filterBooks);
+            statusFilter.addEventListener('change', filterBooks);
+
+            // Action buttons
+            document.querySelectorAll('.btn-view').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.book-card, .book-list-item');
+                    const title = card.querySelector('.book-title, .list-book-title').textContent;
+                    // Redirect to view page
+                    console.log('Viewing book:', title);
+                });
+            });
+
+            document.querySelectorAll('.btn-edit').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.book-card, .book-list-item');
+                    const title = card.querySelector('.book-title, .list-book-title').textContent;
+                    // Redirect to edit page
+                    console.log('Editing book:', title);
+                });
+            });
+
+            document.querySelectorAll('.btn-delete').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.book-card, .book-list-item');
+                    const title = card.querySelector('.book-title, .list-book-title').textContent;
+                    
+                    if (confirm(`Bạn có chắc chắn muốn xóa sách "${title}"?`)) {
+                        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
+                        this.disabled = true;
+                        
+                        setTimeout(() => {
+                            card.style.animation = 'fadeOut 0.3s ease-out';
+                            setTimeout(() => {
+                                card.remove();
+                            }, 300);
+                        }, 1000);
+                    }
+                });
+            });
+
+            // Quick action buttons
+            document.querySelectorAll('.btn-read').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.book-card');
+                    const title = card.querySelector('.book-title').textContent;
+                    console.log('Reading book:', title);
+                });
+            });
+
+            document.querySelectorAll('.btn-download').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const card = this.closest('.book-card');
+                    const title = card.querySelector('.book-title').textContent;
+                    console.log('Downloading book:', title);
+                });
+            });
+        });
+
+        // CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @@keyframes fadeIn {
+                from { opacity: 0; transform: translateY(20px); }
+                to { opacity: 1; transform: translateY(0); }
+            }
+            
+            @@keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
 </html>

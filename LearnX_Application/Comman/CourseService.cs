@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using LearnX_Data.EF;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Courses;
@@ -13,22 +14,16 @@ namespace LearnX_Application.Comman
     public class CourseService : ICourseService
     {
         public LearnXDbContext _context;
-        public CourseService(LearnXDbContext context)
+        private readonly IMapper _mapper;
+
+        public CourseService(LearnXDbContext context, IMapper mapper)
         {
             _context = context;
+            _mapper = mapper;
         }
         public async Task<int> CreateCourse(CourseRequest course)
         {
-            Course course1 = new Course()
-            {
-                CourseName = course.CourseName,
-                Description = course.Description,
-                InstructorID = course.InstructorID,
-                CategoryID = course.CategoryID,
-                StartDate = course.StartDate,
-                EndDate = course.EndDate,
-                Price = course.Price
-            };
+            Course course1 = _mapper.Map<Course>(course);
             await _context.Courses.AddAsync(course1);
             await _context.SaveChangesAsync();
             return course1.CourseID;
@@ -37,7 +32,8 @@ namespace LearnX_Application.Comman
         public async Task<int> DeleteCourse(int id)
         {
             var course = await _context.Courses
-                              .Include(c => c.Enrollments) // Load related enrollments
+                              .Include(c => c.Enrollments)
+                              .Include(c => c.Lessons)
                               .FirstOrDefaultAsync(c => c.CourseID == id);
 
             if (course == null)
@@ -65,17 +61,27 @@ namespace LearnX_Application.Comman
         }
         public async Task<List<Course>> GetCourseSinged(Guid idUser)
         {
-            var courses = await _context.Enrollments
-                    .Where(e => e.UserID == idUser)
-                    .Include(e => e.Course) // Bao gồm thông tin khóa học
-                    .Select(e => e.Course) // Lấy đối tượng Course
-                    .ToListAsync();
+            var courses = await _context.Courses
+                .Include(c => c.Instructor)
+                .Include(c => c.Exercises)
+                .Include(c => c.Enrollments)
+                .Include(c => c.Category)
+                .Where(c => c.Enrollments.Any(e => e.UserID == idUser))
+                .ToListAsync();
+
             return courses;
         }
 
         public async Task<Course> GetByID(int id)
         {
-            var course = await _context.Courses.FindAsync(id);
+            var course = await _context.Courses
+                                .Where(c => c.CourseID == id)
+                                .Include(c => c.Instructor)
+                                .Include(c => c.Exercises)
+                                .Include(c => c.Enrollments).ThenInclude(e => e.User)
+                                .Include(c => c.Category )
+                                .Include(c => c.Lessons).ThenInclude(l => l.Resources)
+                                .FirstOrDefaultAsync();
             return course;
         }
 
@@ -86,10 +92,10 @@ namespace LearnX_Application.Comman
 
         public async Task<List<AppUser>> GetCourseUser(int id)
         {
-             var students = await _context.Enrollments
-            .Where(e => e.CourseID == id) // Tìm các enrollment có CourseID giống với khóa học
-            .Include(e => e.User) // Liên kết với AppUser
-            .Select(e => e.User).ToListAsync();
+            var students = await _context.Enrollments
+           .Where(e => e.CourseID == id) // Tìm các enrollment có CourseID giống với khóa học
+           .Include(e => e.User) // Liên kết với AppUser
+           .Select(e => e.User).ToListAsync();
             return students;
         }
     }

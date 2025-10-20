@@ -79,16 +79,16 @@ namespace LearnX_ApiIntegration
             throw new NotImplementedException();
         }
 
-        public Task<Course> GetbyID(Guid id)
+        public async Task<Course> GetbyId(int id)
         {
-            throw new NotImplementedException();
+            var data = await GetAsync<Course>($"api/Course/course/{id}");
+            return data;
         }
 
         public async Task<MyCourses> GetmyCourse(Guid id)
         {
             var data = await GetAsync<MyCourses>($"api/course/user/{id}");
             return data;
-
         }
         public async Task<List<AppUser>> GetUserCourse(int idCourse)
         {

@@ -17,12 +17,19 @@ namespace LearnX_App.Controllers
     public class CourseController : Controller
     {
         private readonly ICourseApiClient _context;
+        private readonly IScoreApiClient _scoreApiClient;
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IExerciseApiClient _exerciseApiClient;
+        private readonly IEssaySubmissionApiClient _essaySubmissionApiClient;
 
-        public CourseController(ICourseApiClient context, IHttpContextAccessor httpContextAccessor)
+        public CourseController(ICourseApiClient context, IHttpContextAccessor httpContextAccessor,
+         IScoreApiClient scoreApiClient, IExerciseApiClient exerciseApiClient, IEssaySubmissionApiClient essaySubmissionApiClient)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
+            _scoreApiClient = scoreApiClient;
+            _exerciseApiClient = exerciseApiClient;
+            this._essaySubmissionApiClient = essaySubmissionApiClient;
         }
         public IActionResult Home()
         {
@@ -44,16 +51,24 @@ namespace LearnX_App.Controllers
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var userIds);
-            var data = await _context.GetmyCourse(userIds);
-            Console.WriteLine(userIds);
-            if (data == null)
+            var courses = await _context.GetmyCourse(userIds);
+            if (courses == null)
             {
-                return View(); // Trả về View trống nếu không có khóa học
+                return View();
             }
-            var userName = User.Identity.Name; // Lấy FullName từ Claims
+            var exercises = await _exerciseApiClient.GetAll(userIds);
+            var essaySubmissions = await _essaySubmissionApiClient.GetEssaySubmissionsByUserAsync(userIds);
+            var scoers = await _scoreApiClient.GetScoreAsync(userIds);
+            var data = new LearnX_ModelView.Catalog.ViewApp.HomeModel
+            {
+                Courses = courses.CourseSinged,
+                Exercises = exercises,
+                ExercisesNotDone = exercises.Where(e => !scoers.Any(s => s.ExerciseId == e.ExerciseId)
+                && !essaySubmissions.Any(es => es.ExerciseId == e.ExerciseId)).ToList()
+            };
+            var userName = User.Identity?.Name; // Lấy FullName từ Claims
 
             ViewData["ActivePage"] = userName;
-
             return View(data);
 
 
@@ -67,10 +82,14 @@ namespace LearnX_App.Controllers
         }
         [Authorize]
         // GET: Course/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(int id)
         {
-
-            return View();
+            if ( id == 0)
+            {
+                return NotFound();
+            }
+            var course = await _context.GetbyId(id);
+            return View(course);
         }
         [HttpGet]
         public IActionResult Create()

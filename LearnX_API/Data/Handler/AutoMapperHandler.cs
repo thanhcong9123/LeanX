@@ -7,6 +7,8 @@ using AutoMapper;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Lessons;
 using LearnX_ModelView.Catalog.Exercise;
+using LearnX_Data.Migrations;
+using Microsoft.VisualStudio.Web.CodeGenerators.Mvc.Templates.Blazor;
 
 namespace LearnX_API.Data.Handler
 {
@@ -42,8 +44,22 @@ namespace LearnX_API.Data.Handler
                     }
                 });
             // ...existing code...
-
-
+            // COurse
+            CreateMap<Course, LearnX_ModelView.Catalog.Courses.CourseRequest>().ReverseMap();
+            //Ebook
+            CreateMap<EBook, LearnX_ModelView.Catalog.EBook.EBookRequest>().ReverseMap();
+            CreateMap<EvaluateBook, LearnX_ModelView.Catalog.EBook.EvaluateBookRequest>().ReverseMap();
+            //Enrollment
+            CreateMap<LearnX_Data.Entities.Enrollment, LearnX_ModelView.Catalog.Enrollment.EnrollmentRequest>().ReverseMap();
+            //EssaySubmission
+            CreateMap<LearnX_Data.Entities.EssaySubmissions, LearnX_ModelView.Catalog.EssaySubmission.CreateEssaySubmissionRequest>()
+                      .ForMember(dest => dest.AttachmentFileName,
+                                 opt => opt.MapFrom(src => string.IsNullOrEmpty(src.AttachmentFilePath) ? null : Path.GetFileName(src.AttachmentFilePath)))
+                      .ReverseMap()
+                      .ForMember(dest => dest.AttachmentFilePath,
+                                 opt => opt.MapFrom(src => src.AttachmentFileName)); // nếu cần path đầy đủ, prepend folder ở đây
+            //Score
+            CreateMap<LearnX_Data.Entities.Scores, LearnX_ModelView.Catalog.Scores.ScoreRequest>().ReverseMap();
         }
     }
 
