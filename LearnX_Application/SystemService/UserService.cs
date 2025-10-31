@@ -137,7 +137,10 @@ namespace LearnX_Application.SystemService
             {
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
-
+            if (request.Password != request.ConfirmPassword)
+            {
+                return new ApiErrorResult<bool>("Mật khẩu xác nhận không đúng");
+            }
             user = new AppUser()
             {
                 Email = request.Email,

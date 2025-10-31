@@ -1,0 +1,271 @@
+@using LearnX_ModelView.Catalog.Lessons
+@model LessonRequest
+@{
+    ViewData["Title"] = "Create Lesson";
+}
+<link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+
+<link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+<link rel="stylesheet" href="~/css/lesson/Create.css" />
+<div class="container">
+    <div class="form-header">
+        <div class="header-icon"><i class="fas fa-chalkboard-teacher"></i>
+        </div>
+        <h1 class="form-title">Tạo Bài Học Mới</h1>
+        <p class="form-subtitle">Tạo nội dung học tập chất lượng cho học viên</p>
+    </div>
+    <div class="form-container">
+        <div class="success-message" id="successMessage"><i class="fas fa-check-circle"></i> <span>Bài học đã được tạo
+                thành công!</span>
+        </div>
+
+        <!-- Minimal: use asp-for and let MVC model binder receive posted values; keep UI unchanged -->
+        <form id="lessonForm" asp-action="Create" asp-controller="Lesson" method="post">
+            @Html.AntiForgeryToken()
+            <!-- Thông tin cơ bản -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <div class="section-icon"><i class="fas fa-info-circle"></i>
+                    </div> Thông tin cơ bản
+                </h3>
+                <div class="form-row">
+                    <div class="form-group"><label for="courseId" class="form-label"> ID Khóa học <span
+                                class="required">*</span> </label>
+                        <input asp-for="CourseID" id="courseId" type="number" class="form-input" required />
+                    </div>
+                 
+                </div>
+                <div class="form-group"><label for="lessonTitle" class="form-label"> Tiêu đề bài học <span
+                            class="required">*</span> </label>
+                    <input asp-for="LessonTitle" id="lessonTitle" class="form-input" placeholder="Nhập tiêu đề bài học..."
+                        required />
+                </div>
+                <div class="form-group"><label for="objectives" class="form-label"> Mục tiêu bài học <span
+                            class="required">*</span> </label>
+                    <textarea asp-for="Objectives" id="objectives" class="form-textarea"
+                        placeholder="Mô tả mục tiêu và kết quả học tập mong đợi..." required></textarea>
+                </div>
+            </div><!-- Nội dung bài học -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <div class="section-icon"><i class="fas fa-file-alt"></i>
+                    </div> Nội dung bài học
+                </h3>
+                <div class="form-group"><label for="content" class="form-label"> Nội dung chi tiết <span
+                            class="required">*</span> </label>
+                    <textarea asp-for="Content" id="content" class="form-textarea" style="min-height: 150px;"
+                        placeholder="Nhập nội dung chi tiết của bài học..." required></textarea>
+                </div>
+                <div class="form-group"><label for="videoUrl" class="form-label"> URL Video bài giảng </label>
+                    <input asp-for="VideoUrl" id="videoUrl" type="url" class="form-input"
+                        placeholder="https://youtube.com/watch?v=..." />
+                </div>
+            </div><!-- Thời gian -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <div class="section-icon"><i class="fas fa-calendar-alt"></i>
+                    </div> Thời gian học
+                </h3>
+                <div class="form-row">
+                    <div class="form-group"><label for="startDate" class="form-label"> Ngày bắt đầu <span
+                                class="required">*</span> </label>
+                        <div class="datetime-input">
+                            <!-- keep id names for existing JS but bind with asp-for -->
+                            <input asp-for="StratDate" id="startDate" type="datetime-local" class="form-input" required />
+                            <i class="fas fa-calendar datetime-icon"></i>
+                        </div>
+                    </div>
+                    <div class="form-group"><label for="endDate" class="form-label"> Ngày kết thúc <span
+                                class="required">*</span> </label>
+                        <div class="datetime-input">
+                            <input asp-for="EndDate" id="endDate" type="datetime-local" class="form-input" required />
+                            <i class="fas fa-calendar datetime-icon"></i>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- Tài nguyên -->
+            <div class="form-section">
+                <h3 class="section-title">
+                    <div class="section-icon"><i class="fas fa-folder-open"></i>
+                    </div> Tài nguyên bài học
+                </h3>
+                <div class="resources-container">
+                    <div id="resourcesList"><!-- Resources will be added here dynamically -->
+                    </div><button type="button" class="add-resource-btn" id="addResourceBtn"> <i
+                            class="fas fa-plus"></i> Thêm tài nguyên </button>
+                </div>
+            </div><!-- Form Actions -->
+            <div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelBtn"> <i
+                        class="fas fa-times"></i> Hủy bỏ </button> <button type="submit" class="btn btn-primary"
+                    id="submitBtn"> <i class="fas fa-save"></i> Tạo bài học </button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('lessonForm');
+        const addResourceBtn = document.getElementById('addResourceBtn');
+        const resourcesList = document.getElementById('resourcesList');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const successMessage = document.getElementById('successMessage');
+
+        let resourceCount = 0;
+
+        // Add resource functionality
+        addResourceBtn.addEventListener('click', function () {
+            const index = resourceCount++;
+            const resourceItem = createResourceItem(index);
+            resourcesList.appendChild(resourceItem);
+        });
+
+        // Create resource item - names use Resources[index].Property for ASP.NET model binding
+        function createResourceItem(index) {
+            const div = document.createElement('div');
+            div.className = 'resource-item';
+            div.innerHTML = `
+                    <div class="resource-header">
+                        <h4 class="resource-title">Tài nguyên ${index + 1}</h4>
+                        <button type="button" class="remove-resource" onclick="removeResource(this)">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Tên tài nguyên <span class="required">*</span></label>
+                        <input type="text" name="Resources[${index}].ResourceName" class="form-input" 
+                               placeholder="Ví dụ: Slide bài giảng, Tài liệu tham khảo..." required>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Loại tài nguyên <span class="required">*</span></label>
+                            <select name="Resources[${index}].ResourceType" class="form-select" required>
+                                <option value="">Chọn loại tài nguyên</option>
+                                <option value="Video">Video</option>
+                                <option value="Document">Tài liệu</option>
+                                <option value="Link">Liên kết</option>
+                                <option value="Audio">Audio</option>
+                                <option value="Image">Hình ảnh</option>
+                                <option value="Presentation">Bài thuyết trình</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">URL/Đường dẫn <span class="required">*</span></label>
+                            <input type="url" name="Resources[${index}].ResourceUrl" class="form-input" 
+                                   placeholder="https://..." required>
+                        </div>
+                    </div>
+                `;
+            return div;
+        }
+
+        window.removeResource = function (button) {
+            const resourceItem = button.closest('.resource-item');
+            if (!resourceItem) return;
+            resourceItem.style.animation = 'fadeOut 0.3s ease-out';
+            setTimeout(() => {
+                resourceItem.remove();
+                // re-index remaining resources' name attributes so MVC model binder gets sequential indexes
+                Array.from(resourcesList.querySelectorAll('.resource-item')).forEach((item, i) => {
+                    item.querySelector('h4.resource-title').textContent = `Tài nguyên ${i + 1}`;
+                    const nameName = item.querySelector('input[name$=".ResourceName"]');
+                    const nameType = item.querySelector('select[name$=".ResourceType"]');
+                    const nameUrl = item.querySelector('input[name$=".ResourceUrl"]');
+                    if (nameName) nameName.name = `Resources[${i}].ResourceName`;
+                    if (nameType) nameType.name = `Resources[${i}].ResourceType`;
+                    if (nameUrl) nameUrl.name = `Resources[${i}].ResourceUrl`;
+                });
+                resourceCount = resourcesList.querySelectorAll('.resource-item').length;
+            }, 300);
+        };
+
+        // Form validation
+        function validateDates() {
+            const startVal = document.getElementById('startDate').value;
+            const endVal = document.getElementById('endDate').value;
+            if (!startVal || !endVal) return false;
+            const startDate = new Date(startVal);
+            const endDate = new Date(endVal);
+
+            if (startDate >= endDate) {
+                showError('Ngày kết thúc phải sau ngày bắt đầu!');
+                return false;
+            }
+            return true;
+        }
+
+        // Show error message
+        function showError(message) {
+            // Create temporary error message
+            const errorDiv = document.createElement('div');
+            errorDiv.style.cssText = `
+                    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+                    color: white;
+                    padding: 15px 20px;
+                    border-radius: 12px;
+                    margin-bottom: 20px;
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    animation: slideDown 0.3s ease-out;
+                `;
+            errorDiv.innerHTML = `
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <span>${message}</span>
+                `;
+
+            form.insertBefore(errorDiv, form.firstChild);
+
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // Form submission: allow normal POST so MVC model binder binds LessonRequest
+        form.addEventListener('submit', function (e) {
+            if (!validateDates()) {
+                e.preventDefault();
+                return;
+            }
+
+            // disable to avoid double submit and allow browser to post form
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài học...';
+            // do NOT preventDefault here -> controller will receive posted inputs (asp-for names)
+        });
+
+        // Cancel button
+        cancelBtn.addEventListener('click', function () {
+            if (confirm('Bạn có chắc chắn muốn hủy bỏ? Tất cả dữ liệu đã nhập sẽ bị mất.')) {
+                form.reset();
+                resourcesList.innerHTML = '';
+                resourceCount = 0;
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Set default dates (ids preserved)
+        const now = new Date();
+        const tomorrow = new Date(now);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const startEl = document.getElementById('startDate');
+        const endEl = document.getElementById('endDate');
+        if (startEl) startEl.value = now.toISOString().slice(0, 16);
+        if (endEl) endEl.value = tomorrow.toISOString().slice(0, 16);
+    });
+
+    // CSS animations
+    const style = document.createElement('style');
+    style.textContent = `
+            @@keyframes fadeOut {
+                from { opacity: 1; transform: scale(1); }
+                to { opacity: 0; transform: scale(0.8); }
+            }
+        `;
+    document.head.appendChild(style);
+</script>

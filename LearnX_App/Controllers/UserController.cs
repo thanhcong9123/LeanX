@@ -49,7 +49,7 @@ namespace LearnX_App.Controllers
             var result = await _context.Authenticate(request);
             if (result.ResultObj == null)
             {
-                ModelState.AddModelError("", "Login failure");
+                ModelState.AddModelError("", "Tên đăng nhập sai hoặc không đúng mật khẩu");
                 return View();
             }
             var userPrincipal = this.ValidateToken(result.ResultObj);
@@ -77,17 +77,28 @@ namespace LearnX_App.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(LearnX_ModelView.System.User.Register register)
         {
-
             if (!ModelState.IsValid)
             {
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError("", error.ErrorMessage);
+                    }
+                }
                 return View(register);
             }
             var result = await _context.Register(register);
             if (result.IsSuccessed)
             {
+                TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập để tiếp tục.";
+
                 return RedirectToAction("Login");
 
             }
+
+            ModelState.AddModelError("", result.Message);
+
             return View(register);
         }
         [HttpPost]

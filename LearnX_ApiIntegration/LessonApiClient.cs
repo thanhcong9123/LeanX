@@ -12,6 +12,7 @@ using LearnX_Data.Entities;
 using LearnX_Utilities.Constants;
 using LearnX_ModelView.Common;
 using System.Text;
+using LearnX_ModelView.Catalog.Lessons;
 
 namespace LearnX_ApiIntegration
 {
@@ -38,7 +39,7 @@ namespace LearnX_ApiIntegration
             return response;
         }
 
-        public async Task<bool> AddLessonAsync(Lesson lesson)
+        public async Task<bool> AddLessonAsync(LessonRequest lesson)
         {
             try
             {
@@ -57,6 +58,20 @@ namespace LearnX_ApiIntegration
                 requestContent.Add(new StringContent(lesson.CourseID.ToString()), "CourseID");
                 requestContent.Add(new StringContent(lesson.LessonTitle ?? string.Empty), "LessonTitle");
                 requestContent.Add(new StringContent(lesson.Content ?? string.Empty), "Content");
+                requestContent.Add(new StringContent(lesson.Objectives ?? string.Empty), "Objectives");
+                requestContent.Add(new StringContent(lesson.VideoUrl ?? string.Empty), "VideoUrl");
+                requestContent.Add(new StringContent(lesson.StratDate.ToString("o")), "StratDate");
+                requestContent.Add(new StringContent(lesson.EndDate.ToString("o")), "EndDate");
+                if (lesson.Resources != null && lesson.Resources.Count > 0)
+                {
+                    for (int i = 0; i < lesson.Resources.Count; i++)
+                    {
+                        var resource = lesson.Resources[i];
+                        requestContent.Add(new StringContent(resource.ResourceName ?? string.Empty), $"Resources[{i}].ResourceTitle");
+                        requestContent.Add(new StringContent(resource.ResourceUrl ?? string.Empty), $"Resources[{i}].ResourceUrl");
+                        requestContent.Add(new StringContent(resource.ResourceType ?? string.Empty), $"Resources[{i}].ResourceType");
+                    }
+                }
                 // Gửi yêu cầu POST tới API
                 var response = await client.PostAsync("api/Lesson", requestContent);
 

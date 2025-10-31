@@ -10,131 +10,280 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LearnX_App.styles.css" asp-append-version="true" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="~/css/auth/Register.css" />
+
     <title>Register</title>
 </head>
-<style>
-    input {
-        border: none;
-        border-bottom: 2px solid #00bcd4;
-        outline: none;
 
-    }
-
-    input:focus {
-        border-bottom: 2px solid #ff4081;
-        /* Màu gạch chân khi focus */
-    }
-
-    .input-box {
-        position: relative;
-    }
-
-    .input-box input {
-        border: none;
-        border-bottom: 2px solid #00bcd4;
-        outline: none;
-        width: 100%;
-
-        padding: 8px 0;
-        font-size: 16px;
-        transition: all 0.3s ease;
-    }
-
-    .input-box label {
-        position: absolute;
-        top: 50%;
-        left: 0;
-        transform: translateY(-50%);
-        font-size: 16px;
-        color: #aaa;
-        pointer-events: none;
-        transition: all 0.3s ease;
-
-    }
-
-    .input-box input:focus~label,
-    .input-box input:valid~label {
-        top: -10px;
-        font-size: 12px;
-        color: #00bcd4;
-    }
-
-    .input-box input:focus {
-        border-bottom: 2px solid #00bcd4;
-    }
-
-    /* Nút đăng nhập */
-    .btn-gradient {
-        background: linear-gradient(to right, #ff00ff, #00bcd4);
-        color: black;
-        border: none;
-        border-radius: 30px;
-        padding: 10px 20px;
-        cursor: pointer;
-        font-size: 16px;
-        transition: background 0.9s ease;
-    }
-
-    .btn-gradient:hover {
-        background: linear-gradient(to right, #00bcd4, #ff00ff);
-        /* Đảo ngược màu khi hover */
-    }
-</style>
 
 <body>
-    <section class="section d-flex justify-content-center align-items-center  ">
-        <form asp-action="Register" class="bg-white shadow-lg p-4 rounded w-25 h-75 ">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <section class="auth-section">
+        <div class="bg-animation">
+            <div class="floating-shape shape-1"></div>
+            <div class="floating-shape shape-2"></div>
+            <div class="floating-shape shape-3"></div>
+            <div class="floating-shape shape-4"></div>
+            <div class="floating-shape shape-5"></div>
+        </div>
+        <div class="forms-container">
+            <div class="auth-form">
+                <div class="header-form text-center mb-4">
+                    <div class="logo d-flex align-items-center justify-content-center ">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <h3>Tạo tài khoản mới
+                    </h3>
+                    <p>Điền thông tin để bắt đầu hành trình học tập</p>
+                </div>
+                <div class="form-body ">
+                    <form asp-action="Register" method="post" class="">
+                        @Html.AntiForgeryToken()
 
-            <h2 class="p-4 justify-content-center align-items-center d-flex fw-bold mb-5">
-                Đăng ký
-            </h2>
-            <div class="container justify-content-center align-items-center">
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="FirstName" type="text" class="w-100 " required>
-                    <label asp-for="FirstName">Họ</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="LastName" type="text" class="w-100 " required>
-                    <label asp-for="LastName">Tên</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="UserName" type="text" class="w-100 " required>
-                    <label asp-for="UserName">Tên người dùng</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="Email" type="text" class="w-100 " required>
-                    <label asp-for="Email">Email</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="Dob" type="date" class="w-100 " required>
-                    <label asp-for="Dob">Ngày sing</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="PhoneNumber" type="text" class="w-100 " required>
-                    <label asp-for="PhoneNumber">SĐT</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="Password" type="password" class="w-100 " required>
-                    <label asp-for="Password">Mật khẩu</label>
-                </div>
-                <div class="input-box mb-4 justify-content-center align-items-center d-flex">
-                    <input asp-for="ConfirmPassword" type="password" class="w-100 " required>
-                    <label asp-for="ConfirmPassword">Xác nhận mật khẩu</label>
-                </div>
-              
-                <div class="button-login d-flex align-items-center justify-content-center mt-5">
-                    <button class="w-75 btn-gradient" id="login-submit" type="submit">
-                        Đăng ký
-                    </button>
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <div class="form-grid">
+                            <div class="input-group">
+                                <div class="input-box w-100 position-relative">
+                                    <input asp-for="FirstName" type="text" id="firstname" name="firstname" required>
+                                    <label asp-for="FirstName" for="firstname">Họ</label>
+                                    <i class="fas fa-user input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <div class="input-box w-100 position-relative">
+                                    <input asp-for="LastName" type="text" id="lastname" name="lastname" required>
+                                    <label asp-for="LastName" for="lastname">Tên</label>
+                                    <i class="fas fa-user input-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-box w-100 position-relative">
+                                <input asp-for="UserName" type="text" id="username" name="username" required>
+                                <label asp-for="UserName" for="username">Tên người dùng</label>
+                                <i class="fas fa-at input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-box position-relative">
+                                <input asp-for="Email" type="email" id="email" name="email" required>
+                                <label asp-for="Email" for="email">Email</label>
+                                <i class="fas fa-envelope input-icon"></i>
+                            </div>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="input-group mb-3">
+                                <div class="input-box position-relative">
+                                    <input asp-for="Dob" type="date" id="dob" name="dob" required>
+                                    <label asp-for="Dob" for="dob">Ngày sinh</label>
+                                    <i class="fas fa-calendar input-icon"></i>
+                                </div>
+                            </div>
+
+                            <div class="input-group mb-3">
+                                <div class="input-box position-relative">
+                                    <input asp-for="PhoneNumber" type="text" id="phone" required />
+                                    <label asp-for="PhoneNumber" for="phone">Số điện thoại</label>
+                                    <i class="fas fa-phone input-icon"></i>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-box position-relative">
+                                <input asp-for="Password" type="password" id="password" name="password" required>
+                                <label asp-for="Password" for="password">Mật khẩu</label>
+                                <span class="text-danger field-validation-valid" data-valmsg-for="Password"
+                                    data-valmsg-replace="true"></span>
+                                <i class="fas fa-lock input-icon"></i>
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                            <div class="password-strength">
+                                <div class="strength-bar">
+                                    <div class="strength-fill"></div>
+                                </div>
+                                
+
+                                <span class="strength-text">Độ mạnh mật khẩu</span>
+                            </div>
+                        </div>
+
+                        <div class="input-group mb-3">
+                            <div class="input-box  position-relative">
+                                <input asp-for="ConfirmPassword" type="password" id="confirmPassword"
+                                    name="confirmPassword" required>
+                                <label asp-for="ConfirmPassword" for="confirmPassword">Xác nhận mật khẩu</label>
+                                <i class="fas fa-lock input-icon"></i>
+                                <button type="button" class="password-toggle"
+                                    onclick="togglePassword('confirmPassword')">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="checkbox-group mb-3">
+                            <label class="checkbox-container">
+                                <input type="checkbox" id="terms" required>
+                                <span class="checkmark"></span>
+                                Tôi đồng ý với <a href="#" class="link">Điều khoản sử dụng</a> và <a href="#"
+                                    class="link">Chính sách bảo mật</a>
+                            </label>
+                        </div>
+
+                        <button id="login-submit" type="submit" class="btn-primary">
+                            <span>Đăng ký ngay</span>
+                            <i class="fas fa-arrow-right"></i>
+                        </button>
+
+                        <div class="form-footer">
+                            <p>Đã có tài khoản? <a href="http://localhost:5184/User/Login" type="button"
+                                    class="link-btn" onclick="switchToLogin()">Đăng
+                                    nhập ngay</a></p>
+                        </div>
+                    </form>
                 </div>
             </div>
-        </form>
+        </div>
     </section>
 
+
 </body>
+<script>
+
+
+    function togglePassword(fieldId) {
+        const input = document.getElementById(fieldId);
+        if (!input) return;
+
+        // Tìm container và nút toggle/icon một cách an toàn
+        const box = input.closest('.input-box');
+        const btn = box ? box.querySelector('.password-toggle') : null;
+        const icon = btn ? btn.querySelector('i') : null;
+
+        if (input.type === 'password') {
+            input.type = 'text';
+            if (icon) {
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            }
+        } else {
+            input.type = 'password';
+            if (icon) {
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
+    }
+
+    function checkPasswordStrength(password) {
+        let strength = 0;
+        const checks = [
+            /.{8,}/, // At least 8 characters
+            /[a-z]/, // Lowercase
+            /[A-Z]/, // Uppercase
+            /[0-9]/, // Numbers
+            /[^A-Za-z0-9]/ // Special characters
+        ];
+
+        checks.forEach(check => {
+            if (check.test(password)) strength++;
+        });
+
+        return strength;
+    }
+
+    function updatePasswordStrength(password) {
+        const strength = checkPasswordStrength(password);
+        const strengthFill = document.querySelector('.strength-fill');
+        const strengthText = document.querySelector('.strength-text');
+
+        const strengthPercentage = (strength / 5) * 100;
+        strengthFill.style.width = strengthPercentage + '%';
+
+        const strengthLabels = ['Rất yếu', 'Yếu', 'Trung bình', 'Mạnh', 'Rất mạnh'];
+        strengthText.textContent = strengthLabels[strength - 1] || 'Độ mạnh mật khẩu';
+    }
+
+    function validatePhone(phone) {
+        const re = /^[0-9]{10,11}$/;
+        return re.test(phone.replace(/\s/g, ''));
+    }
+
+
+
+
+
+    document.getElementById('password').addEventListener('input', function () {
+        updatePasswordStrength(this.value);
+    });
+
+
+
+    // 🔹 KEYBOARD NAVIGATION
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Tab') {
+            // Add focus styles for keyboard navigation
+            document.body.classList.add('keyboard-navigation');
+        }
+    });
+
+    document.addEventListener('mousedown', function () {
+        document.body.classList.remove('keyboard-navigation');
+    });</script>
+<script>
+    (function () {
+        const form = document.getElementById('registerForm');
+        if (!form) return;
+
+        // same regex as server
+        const pwdRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
+
+        form.addEventListener('submit', function (e) {
+            const pwd = document.getElementById('password')?.value || '';
+            const confirm = document.getElementById('confirmPassword')?.value || '';
+
+            // clear previous messages
+            const setMsg = (fieldName, msg) => {
+                const span = document.querySelector(`[data-valmsg-for="${fieldName}"]`);
+                if (span) {
+                    span.textContent = msg;
+                }
+            };
+
+            let ok = true;
+
+            if (!pwdRegex.test(pwd)) {
+                setMsg('Password', 'Mật khẩu phải ít nhất 6 ký tự, có 1 chữ hoa, 1 số và 1 ký tự đặc biệt.');
+                ok = false;
+            } else {
+                setMsg('Password', '');
+            }
+
+            if (pwd !== confirm) {
+                setMsg('ConfirmPassword', 'Mật khẩu xác nhận không khớp.');
+                ok = false;
+            } else {
+                setMsg('ConfirmPassword', '');
+            }
+
+            if (!ok) {
+                e.preventDefault();
+                return false;
+            }
+            // nếu ok: submit form bình thường, server sẽ kiểm tra lần nữa
+        });
+    })();
+</script>
 
 </html>

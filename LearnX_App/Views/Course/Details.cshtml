@@ -1,5 +1,6 @@
 @model LearnX_Data.Entities.Course
 @using System.Globalization
+@using LearnX_Data.Entities
 @{
     ViewData["Title"] = "Details";
     string GetWeek(DateTime start, DateTime lessonStart) => $"Week {((lessonStart - start).Days / 7) + 1}";
@@ -33,180 +34,8 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-<style>
-    :root {
-        --primary: #4f46e5;
-        --secondary: #7c3aed;
-        --background: #667eea;
-        --background-secondary: #764ba2;
-        --white: #ffffff;
-        --gray-50: #f9fafb;
-        --gray-100: #f3f4f6;
-        --gray-200: #e5e7eb;
-        --gray-300: #d1d5db;
-        --gray-400: #9ca3af;
-        --gray-500: #6b7280;
-        --gray-600: #4b5563;
-        --gray-700: #374151;
-        --gray-800: #1f2937;
-        --gray-900: #111827;
-        --red: #ef4444;
-        --green: #10b981;
-        --blue: #3b82f6;
-        --purple: #8b5cf6;
-        --pink: #ec4899;
-        --yellow: #f59e0b;
-        --orange: #f97316;
-    }
-
-    * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            margin: 0;
-        }
-
-        .nav-link {
-            text-decoration: none;
-            color: #374151;
-            font-weight: 500;
-            padding: 0.5rem 1rem;
-            border-radius: 0.5rem;
-            transition: all 0.3s ease;s
-            position: relative;
-        }
-
-        .nav-link:hover {
-            background: #4f46e5;
-            color: white;
-            transform: translateY(-2px);
-        }
-
-    .card {
-        background-color: var(--white);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 16px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    .card-glass {
-        background-color: rgba(255, 255, 255, 0.95);
-        border-radius: 16px;
-        padding: 24px;
-        margin-bottom: 16px;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        backdrop-filter: blur(10px);
-    }
-
-    .sidebar-card {
-        background-color: var(--white);
-        border-radius: 12px;
-        padding: 16px;
-        margin-bottom: 8px;
-        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-    }
-
-    .btn-primary {
-        background-color: var(--primary);
-        padding: 12px 24px;
-        border-radius: 12px;
-        margin-right: 1%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        flex-direction: row;
-        color: var(--white);
-        font-weight: 700;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-        transition: all 0.2s ease;
-    }
-
-    .btn-primary:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    }
-
-    .lesson-card {
-        transition: all 0.3s ease;
-        cursor: pointer;
-    }
-
-    .lesson-card:hover {
-        transform: translateY(-4px);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-    }
-
-    .progress-bar {
-        height: 8px;
-        border-radius: 4px;
-        background-color: var(--gray-200);
-        overflow: hidden;
-    }
-
-    .progress-value {
-        height: 100%;
-        border-radius: 4px;
-        background: linear-gradient(90deg, var(--primary), var(--secondary));
-    }
-
-    .tab-active {
-        color: var(--primary);
-        border-bottom: 3px solid var(--primary);
-    }
-
-    .avatar {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        background-color: var(--primary);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        font-weight: bold;
-    }
-    .modal-overlay {
-    position: fixed;
-    inset: 0;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(0,0,0,0.5);
-    z-index: 99999 !important; /* cao hơn header */
-}
-
-.modal-card {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 24px;
-    max-width: 1024px;
-    width: 95%;
-    max-height: 90vh;
-    overflow-y: auto;
-    position: relative;
-    z-index: 100000 !important; /* nội dung modal cao hơn overlay */
-}
-.header, .nav-menu {
-    z-index: 10;
-    position: relative;
-}
-</style>
+    <link rel="stylesheet" href="~/css/course/Details.css" />
+  
 
  <div class="max-w-7xl mx-auto mt-2">
     <!-- Header -->
@@ -232,12 +61,12 @@
             </svg>
             Edit Course
           </button>
-          <button class="btn-primary">
+          <a href="http://localhost:5184/Lesson/Create/courseID?=@Model.CourseID" class="btn-primary">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
               <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
             </svg>
             Add Lesson
-          </button>
+          </a>
         </div>
       </div>
      
@@ -426,10 +255,13 @@
                           <div class="w-full h-64 bg-gray-200 rounded-lg flex items-center justify-center">
                             @if (!string.IsNullOrEmpty(lesson.VideoUrl))
                             {
-                              <video class="w-full h-full rounded-lg" controls>
-                                <source src="@lesson.VideoUrl" type="video/mp4" />
-                                Your browser does not support the video tag.
-                              </video>
+                              <iframe class="w-full h-64 rounded-lg"
+                                      src="@($"https://www.youtube.com/embed/{lesson.VideoUrl}?rel=0&modestbranding=1")"
+                                      title="YouTube video player"
+                                      frameborder="0"
+                                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                      allowfullscreen>
+                              </iframe>
                             }
                             else
                             {
@@ -445,12 +277,9 @@
                           @if (!string.IsNullOrEmpty(lesson.Objectives))
                           {
                             <h3 class="text-xl font-semibold mt-6 mb-3">Learning Objectives</h3>
-                            <ul class="list-disc pl-5 space-y-1">
-                              @foreach (var obj in lesson.Objectives.Split('\n'))
-                              {
-                                <li>@obj</li>
-                              }
-                            </ul>
+                            <div class="space-y-1">
+                                @Html.Raw(lesson.Objectives)
+                            </div>
                           }
                           @if (lesson.Resources != null && lesson.Resources.Any())
                           {

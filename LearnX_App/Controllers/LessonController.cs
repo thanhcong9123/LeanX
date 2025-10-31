@@ -27,12 +27,43 @@ namespace MyApp.Namespace
 
             return View(viewModel);
         }
-         [HttpPost]
-        public async Task<IActionResult> AddLesson(Lesson newLesson)
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddLesson(LessonRequest newLesson)
         {
 
             await _lessonService.AddLessonAsync(newLesson);
             return RedirectToAction("Index", new { id = newLesson.CourseID });
+        }
+        public async Task<IActionResult> Create(int courseID)
+        {
+            var lesson = new LessonRequest();
+            lesson.CourseID = courseID;
+            return View(lesson);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(LessonRequest request)
+        {
+            if (!ModelState.IsValid)
+            {
+                Console.WriteLine("ModelState is not valid");
+                return View(request);
+            }
+
+            try
+            {
+                Console.WriteLine("Creating lesson: " + request.Content);
+                // gọi service để lưu LessonRequest vào DB (thay bằng implementation của bạn)
+                await _lessonService.AddLessonAsync(request); // ví dụ
+                TempData["SuccessMessage"] = "Tạo bài học thành công.";
+                return RedirectToAction("Index");
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Lỗi khi tạo bài học: " + ex.Message);
+                return View(request);
+            }
         }
 
         [HttpGet]

@@ -53,13 +53,18 @@ namespace LearnX_App.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var userIds);
             var courses = await _context.GetmyCourse(userIds);
-            if (courses == null)
+            if (courses.CourseSinged == null || !courses.CourseSinged.Any())
             {
-                return View();
+                var course = new LearnX_ModelView.Catalog.ViewApp.HomeModel
+                {
+
+                };
+                return View(course);
             }
             var exercises = await _exerciseApiClient.GetAll(userIds);
             var essaySubmissions = await _essaySubmissionApiClient.GetEssaySubmissionsByUserAsync(userIds);
             var scoers = await _scoreApiClient.GetScoreAsync(userIds);
+
             var data = new LearnX_ModelView.Catalog.ViewApp.HomeModel
             {
                 Courses = courses.CourseSinged,
@@ -85,7 +90,7 @@ namespace LearnX_App.Controllers
         // GET: Course/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            if ( id == 0)
+            if (id == 0)
             {
                 return NotFound();
             }

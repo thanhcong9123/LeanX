@@ -10,10 +10,12 @@ namespace LearnX_ModelView.System.User
     {
         [Required]
         [Display(Name = "Tên")]
+        [RegularExpression(@"^[a-zA-ZÀ-ỹ\s]+$", ErrorMessage = "Tên chỉ được chứa chữ cái và khoảng trắng, không bao gồm số hoặc ký tự đặc biệt.")]
         public string FirstName { get; set; }
 
-        [Display(Name = "Họ")]
         [Required]
+        [Display(Name = "Họ")]
+        [RegularExpression(@"^[a-zA-ZÀ-ỹ\s]+$", ErrorMessage = "Họ chỉ được chứa chữ cái và khoảng trắng, không bao gồm số hoặc ký tự đặc biệt.")]
         public string LastName { get; set; }
 
         [Display(Name = "Ngày sinh")]
@@ -36,6 +38,8 @@ namespace LearnX_ModelView.System.User
         [Display(Name = "Mật khẩu")]
         [Required]
         [DataType(DataType.Password)]
+        [RegularExpression(@"^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$",
+            ErrorMessage = "Mật khẩu phải có ít nhất 6 ký tự, 1 chữ hoa, 1 số và 1 ký tự đặc biệt.")]
         public string Password { get; set; }
 
         [Display(Name = "Xác nhận mật khẩu")]
