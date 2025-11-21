@@ -13,4 +13,6 @@ Write your name on line 6, save it, and then head back to GitHub Desktop.
 - git push
 ### if push with brach
 - git push origin branch-name
+- Check my branch -git branch --show-current
+
 
