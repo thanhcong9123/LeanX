@@ -1,57 +1,7 @@
-  * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-  }
 
-  body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      min-height: 100vh;
-      overflow-x: hidden;
-  }
 
-  .nav-menu {
-      display: flex;
-      list-style: none;
-      gap: 2rem;
-      margin: 0;
-  }
+  
 
-  .nav-link {
-      text-decoration: none;
-      color: #374151;
-      font-weight: 500;
-      padding: 0.5rem 1rem;
-      border-radius: 0.5rem;
-      transition: all 0.3s ease;
-      position: relative;
-  }
-
-  .nav-link:hover {
-      background: #4f46e5;
-      color: white;
-      transform: translateY(-2px);
-  }
-
-  .user-profile {
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-  }
-
-  .profile-img {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #4f46e5;
-      transition: transform 0.3s ease;
-  }
-
-  .profile-img:hover {
-      transform: scale(1.1);
-  }
 
   /* Main Container */
   .container {

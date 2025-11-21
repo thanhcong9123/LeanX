@@ -2,7 +2,9 @@ using LearnX_ApiIntegration;
 using LearnX_ApiIntegration.FileService;
 using LearnX_ApiIntegration.SystemService;
 using LearnX_App.Hubs;
+using LearnX_App.Models;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -35,9 +37,19 @@ builder.Services.AddTransient<IMessageApiClient, MessageApiClient>();
 builder.Services.AddTransient<IEBookApiClient, EBookApiClient>();
 builder.Services.AddTransient<IEssaySubmissionApiClient, EssaySubmissionApiClient>();
 builder.Services.AddTransient<IFileUpLoadServices,LoaclFileUpLoadService>();
+builder.Services.AddTransient<ICategoryApiClient, CategoryApiClient>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
+builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("Cloudinary"));
+builder.Services.AddSingleton(provider =>
+{
+    var cfg = provider.GetRequiredService<IOptions<CloudinarySettings>>().Value;
+    var acc = new CloudinaryDotNet.Account(cfg.CloudName, cfg.ApiKey, cfg.ApiSecret);
+    var cloud = new CloudinaryDotNet.Cloudinary(acc) { Api = { Secure = true } };
+    return cloud;
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

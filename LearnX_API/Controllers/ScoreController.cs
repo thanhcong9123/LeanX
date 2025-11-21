@@ -23,7 +23,7 @@ namespace MyApp.Namespace
             return Ok(score);
         }
         [HttpPost]
-        public async Task<IActionResult> AddScore([FromBody] ScoreRequest lesson)
+        public async Task<IActionResult> AddScore(ScoreRequest lesson)
         {
             if (lesson == null)
                 return BadRequest(new { Message = "Invalid lesson data." });

@@ -1,0 +1,94 @@
+@using LearnX_ModelView.Catalog.Courses
+@model MyCourses
+
+<link rel="stylesheet" href="~/css/course/mycourse.css" />
+<div class="container">
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="card-icon">
+                <i class="fa-solid fa-book"></i>
+            </div>
+            <div class="card-info">
+                <p>@Model.MyCourse?.Count()</p>
+                <h3>Khoá học của tôi</h3>
+            </div>
+        </div>
+        <div class="stat-card">
+            <div class="card-icon">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <div class="card-info">
+                <p>@Model.CourseSinged?.Count()</p>
+                <h3>Đã đăng ký</h3>
+            </div>
+        </div>
+    </div>
+    <nav class="course-tab">
+        <div class="nav nav-tabs" id="nav-tab" role="tablist">
+            <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab" data-bs-target="#nav-home"
+                type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+                <i class="fas fa-chalkboard-teacher"></i>
+                <span>Khoá học của tôi</span>
+            </button>
+            <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">
+                <i class="fas fa-user-graduate"></i>
+                <span>Đã đăng ký</span>
+            </button>
+
+        </div>
+    </nav>
+    <div class="wp-section-header">
+        <h2>
+            <i class="fas fa-chalkboard-teacher"></i>
+            Khóa học của tôi
+        </h2>
+        <a class="wp-btn wp-btn-primary text-decoration-none" asp-controller="Course" asp-action="Create" id="create-course-btn">
+            <i class="fas fa-plus"></i>
+            Tạo khóa học mới
+        </a>
+    </div>
+    <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show d-flex flex-wrap gap-3 justify-content-between  active" id="nav-home"
+            role="tabpanel" aria-labelledby="nav-home-tab">
+            @foreach (var course in Model.MyCourse)
+            {
+                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID" class="course-item text-decoration-none">
+                    <div class="course-info-basic">
+                        <h2 class="course-name">@course.CourseName</h2>
+                        <p class="course-instruc d-flex align-items-center gap-1"><i
+                                class="fa-solid fa-chalkboard-user mg-3"></i>@course.Instructor?.UserName</p>
+                    </div>
+                    <div class="course-info-des">
+                        <p class="course-dp">@course.Description</p>
+                        <div class="d-flex justify-content-between">
+                            <p class="course-pri">@course.Price</p>
+                            <div class="course-date">@course.StartDate.ToString("dd/MM/yyyy") -
+                                @course.EndDate.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+                </a>
+            }
+        </div>
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+            @foreach (var course in Model.CourseSinged)
+            {
+                <div class="course-item">
+                    <div class="course-info-basic">
+                        <h2 class="course-name">@course.CourseName</h2>
+                        <h5 class="course-instruc">@course.Instructor?.UserName</h5>
+                    </div>
+                    <div class="course-info-des">
+                        <p class="course-dp">@course.Description</p>
+                        <div>
+                            <p class="course-pri">@course.Price</p>
+                            <div class="course-date">@course.StartDate.ToString("dd/MM/yyyy") -
+                                @course.EndDate.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>

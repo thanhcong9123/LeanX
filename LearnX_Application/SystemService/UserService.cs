@@ -146,7 +146,8 @@ namespace LearnX_Application.SystemService
                 Email = request.Email,
                 UserName = request.UserName,
                 PhoneNumber = request.PhoneNumber,
-                EmailConfirmed = true
+                EmailConfirmed = true,
+                
             };
             var result = await _userManager.CreateAsync(user, request.Password);
             if (result.Succeeded)

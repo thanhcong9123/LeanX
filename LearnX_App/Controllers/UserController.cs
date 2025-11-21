@@ -63,7 +63,6 @@ namespace LearnX_App.Controllers
 
             // Lưu các thông tin cần thiết vào session
             HttpContext.Session.SetString(SystemConstants.AppSettings.Token, result.ResultObj);
-
             // Thực hiện đăng nhập
 
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, userPrincipal, authProperties);

@@ -1,127 +1,416 @@
 @using LearnX_Data.Entities
 @model IEnumerable<Exercise>
-
-<!DOCTYPE html>
-<html lang="en">
+@{
+    ViewData["Title"] = "Danh Sách Bài Tập";
+    var courseTitle = ViewBag.CourseTitle ?? "Lập Trình Web Nâng Cao";
+    var courseId = ViewBag.CourseId ?? 1;
+}
+<html lang="vi">
 
 <head>
+    <script src="/_sdk/data_sdk.js"></script>
+    <script src="/_sdk/element_sdk.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>@ViewData["Title"] - LearX</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/fsont-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="~/css/exercise/details.css">
 </head>
 
 <body>
-    <div class="container mt-5">
-        <h2 class="text-center mb-4">Danh sách bài tập của khóa học</h2>
-        @{
-            var IsOwner = ViewBag.isInMyCourse ?? false; // Nếu ViewBag.IsOwner là null, mặc định là false
-            var IsEnrolled = ViewBag.isInCourseSigned ?? false; // Nếu ViewBag.IsEnrolled là null, mặc định là false
-        }
-        <!-- Hiển thị thông báo nếu không thuộc khóa học -->
-        @if (!IsOwner && !IsEnrolled)
+    <div class="container-table">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div class="header-content">
+                <div class="header-info">
+                    <h1 class="course-title">
+                        <div class="course-icon">
+                            <i class="fas fa-graduation-cap"></i>
+                        </div>
+                        <div>
+                            <div>@courseTitle</div>
+                            <div class="course-subtitle">Danh sách bài tập và kiểm tra</div>
+                        </div>
+                    </h1>
+                </div>
+
+                <div class="header-actions">
+                    <a href="@Url.Action("Create", "Exercise", new { courseid = courseId })"
+                        class="action-btn btn-quiz">
+                        <i class="fas fa-plus-circle"></i> Thêm Bài Tập Trắc Nghiệm
+                    </a>
+
+                    <a asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@courseId"
+                        class="action-btn btn-essay">
+                        <i class="fas fa-pen-fancy"></i> Thêm Bài Tập Tự Luận
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages -->
+        @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-warning text-center">
-                <p>Bạn không thuộc khóa học này. Vui lòng kiểm tra lại.</p>
-                <a href="/courses" class="btn btn-primary mt-3">Quay lại danh sách khóa học</a>
+            <div class="message success" style="display: flex;">
+                <i class="fas fa-check-circle"></i>
+                <span>@TempData["SuccessMessage"]</span>
             </div>
         }
 
-        <!-- Giao diện cho người tạo khóa học -->
-        @if (IsOwner)
+        @if (TempData["ErrorMessage"] != null)
         {
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h3>Quản lý bài tập</h3>
-                <div>
-                    <a class="btn btn-primary" asp-action="CreateExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập trắc nghiệm</a>
-                    <a class="btn btn-success" asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@ViewBag.CourseId">Thêm bài tập tự luận</a>
+            <div class="message error" style="display: flex;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>@TempData["ErrorMessage"]</span>
+            </div>
+        }
+
+        <div class="controls-section">
+            <div class="controls-header">
+                <h3 class="controls-title"><i class="fas fa-filter"></i> Lọc và tìm kiếm</h3>
+
+                <div class="exercise-count" id="exerciseCount">
+                    @{
+                        var totalCount = Model.Count();
+                        var quizCount = Model.Count(e => e.Questions != null && e.Questions.Any());
+                        var essayCount = totalCount - quizCount;
+                    }
+
+                    Tổng: @totalCount bài tập (@quizCount trắc nghiệm, @essayCount tự luận)
                 </div>
             </div>
 
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Tiêu đề</th>
-                        <th>Loại bài tập</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var exercise in Model)
-                    {
-                        <tr>
-                            <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
-                            <td>@exercise.Title</td>
-                            <td>
-                                @if (exercise.Questions == null || !exercise.Questions.Any())
-                                {
-                                    <span class="badge badge-info">Tự luận</span>
-                                }
-                                else
-                                {
-                                    <span class="badge badge-primary">Trắc nghiệm</span>
-                                }
-                            </td>
-                            <td>
-                                <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Xem
-                                    chi tiết</a>
-                                @if (exercise.Questions == null || !exercise.Questions.Any())
-                                {
-                                    <a class="btn btn-secondary btn-sm" asp-controller="EssaySubmission" asp-action="ViewSubmissions" asp-route-exerciseId="@exercise.ExerciseId" asp-route-showAll="true">Xem bài nộp</a>
-                                }
-                                <button class="btn btn-warning btn-sm" onclick="editExercise(@exercise.ExerciseId)">Sửa</button>
-                                <a class="btn btn-danger btn-sm"
-                                   href="@Url.Action("Delete", "Exercise", new { id = exercise.ExerciseId ,idCourse =exercise.CourseId})">Xóa</a>
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
-        }
+            <div class="controls-content">
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="searchInput" class="search-input" placeholder="Tìm kiếm bài tập...">
+                </div>
 
-        <!-- Giao diện cho người đã đăng ký -->
-        @if (IsEnrolled && !IsOwner)
+                <select id="categoryFilter" class="filter-select">
+                    <option value="">Tất cả danh mục</option>
+                    <option value="Multiple choice">Trắc nghiệm</option>
+                    <option value="Essay">Tự luận</option>
+                </select>
+
+                <select id="sortSelect" class="sort-select">
+                    <option value="newest">Mới nhất</option>
+                    <option value="oldest">Cũ nhất</option>
+                    <option value="title">Tiêu đề A-Z</option>
+                    <option value="title-desc">Tiêu đề Z-A</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Exercises Grid -->
+        @if (Model.Any())
         {
-            <h3>Bài tập của bạn</h3>
-            <table class="table table-bordered table-hover">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>#</th>
-                        <th>Tiêu đề</th>
-                        <th>Loại bài tập</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var exercise in Model)
-                    {
-                        <tr>
-                            <td>@(Model.ToList().IndexOf(exercise) + 1)</td>
-                            <td>@exercise.Title</td>
-                            <td>
-                                @if (exercise.Questions == null || !exercise.Questions.Any())
+            <div class="exercises-grid" id="exercisesGrid">
+                @foreach (var exercise in Model)
+                {
+                    var isQuiz = exercise.Questions != null && exercise.Questions.Any();
+                    var questionCount = exercise.Questions?.Count ?? 0;
+                    var submissionCount = exercise.EssaySubmissions?.Count ?? 0;
+
+                    <div class="exercise-card" data-exercise-id="@exercise.ExerciseId" data-category="@exercise.Category"
+                        data-title="@exercise.Title" data-description="@exercise.Describe">
+
+                        <div class="exercise-header">
+                            <div class="exercise-type @(isQuiz ? "type-quiz" : "type-essay")">
+                                @(isQuiz ? "Trắc nghiệm" : "Tự luận")
+                            </div>
+
+                            <div class="exercise-menu">
+                                <button class="menu-btn" onclick="toggleMenu(@exercise.ExerciseId)">
+                                    <i class="fas fa-ellipsis-v"></i>
+                                </button>
+                            </div>
+                        </div>
+
+                        <h3 class="exercise-title">@exercise.Title</h3>
+                        <p class="exercise-description">@exercise.Describe</p>
+
+                        <div class="exercise-meta">
+                            <div class="exercise-stats">
+
+                                @if (isQuiz)
                                 {
-                                    <span class="badge badge-info">Tự luận</span>
+                                    <div class="stat-item">
+                                        <div class="stat-icon"><i class="fas fa-question"></i></div>
+                                        <span>@questionCount câu hỏi</span>
+                                    </div>
+                                }
+
+                                <div class="stat-item">
+                                    <div class="stat-icon"><i class="fas fa-users"></i></div>
+                                    <span>@submissionCount bài nộp</span>
+                                </div>
+
+                                <div class="stat-item">
+                                    @{
+                                        bool hasAnswer = !string.IsNullOrEmpty(exercise.AnswerFile);
+                                    }
+                                    <div class="stat-icon">
+                                        <i class="fas fa-@(hasAnswer ? "check" : "times")"></i>
+                                    </div>
+                                    <span>@(hasAnswer ? "Có đáp án" : "Chưa có đáp án")</span>
+                                </div>
+                            </div>
+
+                            <div class="exercise-actions">
+                                @if (User.IsInRole("Student"))
+                                {
+                                    <a href="@Url.Action("DoExercise", "Exercise", new { exerciseId = exercise.ExerciseId })"
+                                        class="action-icon-btn btn-view" title="Làm bài tập">
+                                        <i class="fas fa-play"></i>
+                                    </a>
+
                                 }
                                 else
                                 {
-                                    <span class="badge badge-primary">Trắc nghiệm</span>
+                                    <a href="@Url.Action("DoExercise", "Exercise", new { exerciseId = exercise.ExerciseId })"
+                                        class="action-icon-btn btn-view" title="Xem chi tiết">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <button class="action-icon-btn btn-delete"
+                                        onclick="deleteExercise(@exercise.ExerciseId, '@exercise.Title')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
                                 }
-                            </td>
-                            <td>
-                                <a class="btn btn-info btn-sm"  asp-controller="Exercise" asp-action="DoExercise" asp-route-exerciseId="@exercise.ExerciseId">Làm
-                                    bài tập</a>
-                                @if (exercise.Questions == null || !exercise.Questions.Any())
-                                {
-                                    <a class="btn btn-secondary btn-sm" asp-controller="EssaySubmission" asp-action="ViewSubmissions" asp-route-exerciseId="@exercise.ExerciseId">Xem bài nộp của tôi</a>
-                                }
-                            </td>
-                        </tr>
-                    }
-                </tbody>
-            </table>
+
+
+
+                            </div>
+                        </div>
+
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-clipboard-list"></i></div>
+                <h3 class="empty-title">Chưa có bài tập nào</h3>
+                <p class="empty-description">Hãy bắt đầu tạo bài tập đầu tiên cho lớp học.</p>
+
+                <div class="empty-actions">
+                    <a href="@Url.Action("CreateQuiz", "Exercise", new { courseid = courseId })"
+                        class="action-btn btn-quiz">
+                        <i class="fas fa-plus-circle"></i> Tạo Bài Tập Trắc Nghiệm
+                    </a>
+
+                    <a href="@Url.Action("CreateEssay", "Exercise", new { courseid = courseId })"
+                        class="action-btn btn-essay">
+                        <i class="fas fa-pen-fancy"></i> Tạo Bài Tập Tự Luận
+                    </a>
+                </div>
+            </div>
         }
     </div>
+    @{
+        // serialize minimal DTO to avoid sending EF navigation cycles
+        var exercisesDto = Model.Select(e => new
+        {
+            exerciseId = e.ExerciseId,
+            title = e.Title,
+            describe = e.Describe,
+            category = e.Category ?? "",
+            questionCount = e.Questions?.Count ?? 0,
+            submissionCount = e.EssaySubmissions?.Count ?? 0,
+            hasAnswer = !string.IsNullOrEmpty(e.AnswerFile),
+            // use ISO format for safe parsing in JS
+        }).ToList();
+
+        var jsonOptions = new System.Text.Json.JsonSerializerOptions
+        {
+            PropertyNamingPolicy =
+        System.Text.Json.JsonNamingPolicy.CamelCase
+        };
+        var exercisesJson = System.Text.Json.JsonSerializer.Serialize(exercisesDto, jsonOptions);
+    }
+    @Html.AntiForgeryToken()
+
+    <!-- Script của bạn giữ nguyên -->
+    <script>
+         const exercises = @Html.Raw(exercisesJson);
+    let filteredExercises = exercises.slice();
+    const viewSubmissionsUrlTemplate = '@Url.Action("ViewSubmissions","EssaySubmission", new { exerciseId = "REPLACE_ID" })';
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const exercisesGrid = document.getElementById('exercisesGrid');
+        const emptyState = document.getElementById('emptyState');
+        const loadingState = document.getElementById('loadingState');
+        const exerciseCount = document.getElementById('exerciseCount');
+        const searchInput = document.getElementById('searchInput');
+        const categoryFilter = document.getElementById('categoryFilter');
+        const sortSelect = document.getElementById('sortSelect');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const infoMessage = document.getElementById('infoMessage');
+
+        // ensure safe defaults if elements missing
+        const safeShowLoading = () => { if (loadingState) loadingState.style.display = 'grid'; if (exercisesGrid) exercisesGrid.style.display = 'none'; if (emptyState) emptyState.style.display = 'none'; };
+        const safeHideLoading = () => { if (loadingState) loadingState.style.display = 'none'; if (exercisesGrid) exercisesGrid.style.display = 'grid'; };
+
+        // Initialize page
+        function init() {
+            safeShowLoading();
+            setTimeout(() => {
+                safeHideLoading();
+                filterExercises(); // use filtering to render initial set
+                updateExerciseCount();
+            }, 300);
+        }
+
+        // Render exercises (unchanged markup)
+        function renderExercises() {
+            if (!exercisesGrid) return;
+            if (filteredExercises.length === 0) {
+                exercisesGrid.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'block';
+                return;
+            }
+            
+
+            exercisesGrid.style.display = 'grid';
+            if (emptyState) emptyState.style.display = 'none';
+
+            exercisesGrid.innerHTML = filteredExercises.map(exercise => {
+            // build view link using template replacement
+            const viewUrl = viewSubmissionsUrlTemplate.replace('REPLACE_ID', encodeURIComponent(exercise.exerciseId));
+            // Or for query string:
+            // const viewUrl = `${viewSubmissionsBase}?exerciseId=${encodeURIComponent(exercise.exerciseId)}`;
+
+            return `
+                <div class="exercise-card" data-exercise-id="${exercise.exerciseId}">
+                    <div class="exercise-header">
+                        <div class="exercise-type ${exercise.questionCount > 0 ? 'type-quiz' : 'type-essay'}">
+                            ${exercise.questionCount > 0 ? 'Trắc nghiệm' : 'Tự luận'}
+                        </div>
+
+                        <div class="exercise-menu">
+                            <button class="menu-btn" onclick="toggleMenu(${exercise.exerciseId})">
+                                <i class="fas fa-ellipsis-v"></i>
+                            </button>
+                        </div>
+                    </div>
+
+                    <h3 class="exercise-title">${escapeHtml(exercise.title)}</h3>
+                    <p class="exercise-description">${escapeHtml(exercise.describe)}</p>
+
+                    <div class="exercise-meta">
+                        <div class="exercise-stats">
+                            ${exercise.questionCount > 0 ? `
+                                <div class="stat-item">
+                                    <div class="stat-icon"><i class="fas fa-question"></i></div>
+                                    <span>${exercise.questionCount} câu hỏi</span>
+                                </div>` : ''}
+
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="fas fa-users"></i></div>
+                                <span>${exercise.submissionCount} bài nộp</span>
+                            </div>
+
+                            <div class="stat-item">
+                                <div class="stat-icon"><i class="fas fa-calendar"></i></div>
+                                <span>${formatDate(exercise.createdDate)}</span>
+                            </div>
+                        </div>
+
+                        <div class="exercise-actions">
+                            <a href="${viewUrl}" class="action-icon-btn btn-view" title="Xem chi tiết">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <button class="action-icon-btn btn-delete" onclick="deleteExercise(${exercise.exerciseId}, '${escapeAttr(exercise.title)}')">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        }
+
+        // simple HTML escape helpers
+        function escapeHtml(s) {
+            if (!s) return '';
+            return s.replace(/[&<>"'`]/g, function (c) {
+                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#x60;'}[c];
+            });
+        }
+        function escapeAttr(s) {
+            return escapeHtml(s).replace(/"/g, '&quot;');
+        }
+
+        // Update exercise count
+        function updateExerciseCount() {
+            if (!exerciseCount) return;
+            const total = filteredExercises.length;
+            const quizCount = filteredExercises.filter(e => e.questionCount > 0).length;
+            const essayCount = total - quizCount;
+            exerciseCount.textContent = `Tổng: ${total} bài tập (${quizCount} trắc nghiệm, ${essayCount} tự luận)`;
+        }
+
+        // Filter and search functions — correctly distinguish quiz vs essay by questionCount
+        function filterExercises() {
+            const searchTerm = (searchInput ? searchInput.value.toLowerCase() : '').trim();
+            const categoryValue = (categoryFilter ? categoryFilter.value : '').trim();
+            const sortValue = (sortSelect ? sortSelect.value : 'newest');
+
+            filteredExercises = exercises.filter(exercise => {
+                const matchesSearch = !searchTerm ||
+                    (exercise.title && exercise.title.toLowerCase().includes(searchTerm)) ||
+                    (exercise.describe && exercise.describe.toLowerCase().includes(searchTerm));
+
+                const matchesCategory = !categoryValue || (exercise.questionCount > 0 ? 'Multiple choice' : 'Essay') === categoryValue || exercise.category === categoryValue;
+
+                return matchesSearch && matchesCategory;
+            });
+
+            // Sort exercises
+            switch (sortValue) {
+                case 'newest':
+                    filteredExercises.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+                    break;
+                case 'oldest':
+                    filteredExercises.sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate));
+                    break;
+                case 'title':
+                    filteredExercises.sort((a, b) => a.title.localeCompare(b.title));
+                    break;
+                case 'title-desc':
+                    filteredExercises.sort((a, b) => b.title.localeCompare(a.title));
+                    break;
+                case 'category':
+                    filteredExercises.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+                    break;
+            }
+
+            renderExercises();
+            updateExerciseCount();
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return isNaN(date.getTime()) ? '' : date.toLocaleDateString('vi-VN');
+        }
+
+        // wire events if controls exist
+        if (searchInput) searchInput.addEventListener('input', filterExercises);
+        if (categoryFilter) categoryFilter.addEventListener('change', filterExercises);
+        if (sortSelect) sortSelect.addEventListener('change', filterExercises);
+
+        // Initialize
+        init();
+    });
+    </script>
 
 </body>
 

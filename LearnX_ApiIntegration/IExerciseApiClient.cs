@@ -17,6 +17,7 @@ namespace LearnX_ApiIntegration
         Task<List<Question>> getQuestion(int id);
         Task<bool> IsEssayExercise(int exerciseId);
         Task<Exercise?> GetExerciseByIdAsync(int exerciseId);
+        Task<int> SubmitExerciseAsync(SubmitExerciseRequest request);
 
 
 

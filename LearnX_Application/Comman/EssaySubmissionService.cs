@@ -115,7 +115,7 @@ namespace LearnX_Application.Comman
                 .FirstOrDefaultAsync(es => es.IdUser == request.IdUser && es.ExerciseId == request.ExerciseId);
             if (exerciseUserSunmided != null)
             {
-                request.AttemptNumber = exerciseUserSunmided.AttemptNumber + exerciseUserSunmided.AttemptNumber;
+                request.AttemptNumber = exerciseUserSunmided.AttemptNumber+1;
                 _context.EssaySubmissions.Remove(exerciseUserSunmided);
                 await _context.SaveChangesAsync();
             }

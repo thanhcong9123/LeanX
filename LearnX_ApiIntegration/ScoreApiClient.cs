@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Exercise;
@@ -10,6 +11,7 @@ using LearnX_ModelView.Common;
 using LearnX_Utilities.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace LearnX_ApiIntegration
 {
@@ -30,26 +32,17 @@ namespace LearnX_ApiIntegration
             try
             {
                 // Lấy Token từ Session (nếu có)
-                 var sessions = _httpContextAccessor
-               .HttpContext
-               .Session
-               .GetString(SystemConstants.AppSettings.Token);
                 var client = _httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-                client.BaseAddress = new Uri("http://localhost:5041");
-                var requestContent = new MultipartFormDataContent();
-        
-                // Tạo nội dung yêu cầu để gửi tới API
-                requestContent.Add(new StringContent(scoreRequest.IdUser.ToString()), "IdUser");
-                requestContent.Add(new StringContent(scoreRequest.ExerciseId.ToString()), "ExerciseId");
-                requestContent.Add(new StringContent(scoreRequest.DateCompleted.ToString("yyyy-MM-ddTHH:mm:ss")), "DateCompleted");
-                requestContent.Add(new StringContent(scoreRequest.Score.ToString()), "Score");
-                requestContent.Add(new StringContent(scoreRequest.IsPassed.ToString()), "IsPassed");
 
-                // Gửi yêu cầu POST tới API
-                var response = await client.PostAsync("api/Score", requestContent);
-                // Kiểm tra kết quả trả về
+                var sessions = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+
+                var json = JsonConvert.SerializeObject(scoreRequest);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/api/Score", httpContent);
+
+                var responseString = await response.Content.ReadAsStringAsync();
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

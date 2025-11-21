@@ -1,65 +1,303 @@
-@using LearnX_ModelView.Catalog.Exercise
-@model DoExerciseViewModel
 
-<!DOCTYPE html>
-<html lang="en">
+  @using LearnX_ModelView.Catalog.Exercise
+@model LearnX_ModelView.Catalog.Exercise.DoExerciseViewModel
 
+@{
+    ViewData["Title"] = "Làm Bài Tập Trắc Nghiệm";
+    var courseTitle = ViewBag.CourseTitle ?? "Khóa học";
+    var exerciseTitle = ViewBag.ExerciseTitle ?? "Bài tập trắc nghiệm";
+    var timeLimit = (int?)(ViewBag.TimeLimit) ?? 0;
+}
+
+<!doctype html>
+<html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] - LearnX</title>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com" defer></script>
+    <link rel="stylesheet" href="~/css/exercise/doExercise.css" />
+    <style>
+        /* --- styles (kept from original, corrected) --- */
+   
+    </style>
 </head>
-
 <body>
-
-    <div class="container mt-5">
-        <h1 class="text-center mb-4">Làm Bài Tập</h1>
-
-        @if (Model.Questions.Count == 0)
+    <div class="quiz-container">
+        @if (Model.Questions == null || Model.Questions.Count == 0)
         {
-            <div class="alert alert-info text-center">
-                Không có câu hỏi nào trong bài tập này.
+            <!-- Empty State -->
+            <div class="empty-state">
+                <div class="empty-icon"><i class="fas fa-inbox"></i></div>
+                <h2 class="empty-title">Không có câu hỏi nào</h2>
+                <p class="empty-message">Bài tập này chưa có câu hỏi nào. Vui lòng liên hệ giảng viên hoặc quay lại sau.</p>
+                <a href="@Url.Action("Index", "Exercise", new { courseId = Model.CourseId })" class="empty-button">
+                    <i class="fas fa-arrow-left"></i> Quay lại danh sách bài tập
+                </a>
             </div>
         }
         else
         {
-            <form   asp-action="SubmitAnswers" method="post">
+            <!-- Header -->
+            <div class="quiz-header">
+                <div class="header-info">
+                    <h1 class="quiz-title">
+                        <div class="quiz-icon"><i class="fas fa-clipboard-list"></i></div>
+                        @exerciseTitle
+                    </h1>
+                    <p class="quiz-subtitle">@courseTitle</p>
+                </div>
+
+                <div class="quiz-stats">
+                    <div class="stat-item">
+                        <div class="stat-icon"><i class="fas fa-question-circle"></i></div>
+                        <div class="stat-content">
+                            <p class="stat-label">Tổng số câu</p>
+                            <p class="stat-value">@Model.Questions.Count</p>
+                        </div>
+                    </div>
+
+                    @if (timeLimit > 0)
+                    {
+                        <div class="timer-container" id="timerContainer">
+                            <div class="timer-icon"><i class="fas fa-clock"></i></div>
+                            <div class="timer-content">
+                                <p class="timer-label">Thời gian còn lại</p>
+                                <p class="timer-value" id="timerDisplay">@($"{timeLimit}:00")</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-section">
+                <div class="progress-header">
+                    <span class="progress-label">Tiến độ làm bài</span>
+                    <span class="progress-percentage" id="progressText">0/@Model.Questions.Count (0%)</span>
+                </div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <form asp-action="SubmitAnswers" method="post" id="quizForm">
+                @Html.AntiForgeryToken()
                 <input type="hidden" name="ExerciseId" value="@Model.ExerciseId" />
+                <input type="hidden" name="CourseId" value="@Model.CourseId" />
                 <input type="hidden" name="Submitted" value="true" />
 
-                <div class="row">
-                    @foreach (var question in Model.Questions)
-                    {
-                        <div class="col-md-6 mb-4">
-                            <div class="card shadow-sm h-100">
-                                <div class="card-body">
-                                    <h5 class="card-title">@question.QuestionText</h5>
+                <div class="quiz-layout">
+                    <!-- Questions Section -->
+                    <div class="questions-section">
+                        @for (int i = 0; i < Model.Questions.Count; i++)
+                        {
+                             var question = Model.Questions[i]; 
+                            <div class="question-card" id="question-@question.QuestionId" style="animation-delay:@(i * 0.1)s">
+                                <div class="question-header">
+                                    <div class="question-number">@(i + 1)</div>
+                                    <h3 class="question-text">@question.QuestionText</h3>
+                                </div>
+
+                                <div class="answers-list">
                                     @foreach (var answer in question.Answers)
                                     {
-                                        <div class="form-check">
-                                            <input type="radio" class="form-check-input"
-                                                id="answer-@question.QuestionId-@answer.AnswerId"
-                                                name="UserAnswers[@question.QuestionId]" value="@answer.AnswerId" />
-                                            <label class="form-check-label" for="answer-@question.QuestionId-@answer.AnswerId">
-                                                @answer.AnswerText
+                                        <div class="answer-option">
+                                            <input type="radio" id="answer-@question.QuestionId-@answer.AnswerId" name="UserAnswers[@question.QuestionId]" value="@answer.AnswerId" data-question="@question.QuestionId" />
+                                            <label class="answer-label" for="answer-@question.QuestionId-@answer.AnswerId">
+                                                <div class="answer-indicator"></div>
+                                                <span class="answer-text">@answer.AnswerText</span>
                                             </label>
                                         </div>
                                     }
                                 </div>
                             </div>
-                        </div>
-                    }
-                </div>
+                        }
+                    </div>
 
-                <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-primary px-5">
-                        Nộp Bài
-                    </button>
+                    <!-- Sidebar -->
+                    <div class="sidebar">
+                        <!-- Question Navigator -->
+                        <div class="sidebar-card">
+                            <div>
+                                <h3 class="sidebar-title">
+                                    <div class="sidebar-icon"><i class="fas fa-th"></i></div> Danh sách câu hỏi
+                                </h3>
+
+                                <div class="question-nav" id="questionNav">
+                                    @for (int i = 0; i < Model.Questions.Count; i++)
+                                    {
+                                         var q = Model.Questions[i]; 
+                                        <button type="button" class="nav-button @(i == 0 ? "current" : "")" data-question="@q.QuestionId" onclick="scrollToQuestion(@q.QuestionId)">@((i + 1))</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Legend -->
+                        <div class="sidebar-card">
+                            <h3 class="sidebar-title">
+                                <div class="sidebar-icon"><i class="fas fa-info-circle"></i></div> Chú thích
+                            </h3>
+                            <div class="legend-list">
+                                <div class="legend-item"><div class="legend-color answered"></div><span class="legend-text">Đã trả lời</span></div>
+                                <div class="legend-item"><div class="legend-color unanswered"></div><span class="legend-text">Chưa trả lời</span></div>
+                                <div class="legend-item"><div class="legend-color current"></div><span class="legend-text">Câu hiện tại</span></div>
+                            </div>
+                        </div>
+
+                        <!-- Submit Section -->
+                        <div class="sidebar-card submit-section">
+                            <div class="submit-warning" id="submitWarning" style="display:none;">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                <div><strong>Chú ý:</strong> Bạn còn <span id="unansweredCount">0</span> câu chưa trả lời!</div>
+                            </div>
+
+                            <button type="button" class="submit-button" id="submitBtn" onclick="showConfirmModal()">
+                                <i class="fas fa-paper-plane"></i> Nộp bài
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </form>
+
+            <!-- Confirmation Modal -->
+            <div class="modal-overlay" id="confirmModal">
+                <div class="modal-content">
+                    <div class="modal-icon"><i class="fas fa-question-circle"></i></div>
+                    <h2 class="modal-title">Xác nhận nộp bài</h2>
+                    <p class="modal-message">Bạn có chắc chắn muốn nộp bài tập này? Sau khi nộp, bạn sẽ không thể thay đổi câu trả lời.</p>
+                    <div class="modal-stats">
+                        <div class="modal-stat"><p class="modal-stat-value" id="modalAnswered">0</p><p class="modal-stat-label">Đã trả lời</p></div>
+                        <div class="modal-stat"><p class="modal-stat-value" id="modalUnanswered">0</p><p class="modal-stat-label">Chưa trả lời</p></div>
+                    </div>
+                    <div class="modal-actions">
+                        <button type="button" class="modal-button cancel" onclick="hideConfirmModal()"><i class="fas fa-times"></i> Hủy</button>
+                        <button type="button" class="modal-button confirm" onclick="submitQuiz()"><i class="fas fa-check"></i> Nộp bài</button>
+                    </div>
+                </div>
+            </div>
         }
     </div>
 
-</body>
+    <script>
+        const totalQuestions = @Model.Questions.Count;
+        const timeLimit = @timeLimit;
+        let answeredQuestions = new Set();
+        let remainingTime = timeLimit * 60;
+        let timerInterval;
 
+        document.addEventListener('DOMContentLoaded', function () {
+            setupAnswerListeners();
+            if (timeLimit > 0) startTimer();
+            updateProgress();
+            setupScrollSpy();
+        });
+
+        function setupAnswerListeners() {
+            const radioButtons = document.querySelectorAll('input[type="radio"]');
+            radioButtons.forEach(radio => radio.addEventListener('change', function () {
+                const questionId = this.getAttribute('data-question');
+                handleAnswerChange(questionId);
+            }));
+        }
+
+        function handleAnswerChange(questionId) {
+            answeredQuestions.add(questionId);
+            const questionCard = document.getElementById('question-' + questionId);
+            if (questionCard) questionCard.classList.add('answered');
+            const navButton = document.querySelector(`.nav-button[data-question="${questionId}"]`);
+            if (navButton) navButton.classList.add('answered');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = answeredQuestions.size;
+            const unanswered = totalQuestions - answered;
+            const percentage = totalQuestions === 0 ? 0 : Math.round((answered / totalQuestions) * 100);
+            const progressBar = document.getElementById('progressBar');
+            if (progressBar) progressBar.style.width = percentage + '%';
+            const progressText = document.getElementById('progressText');
+            if (progressText) progressText.textContent = `${answered}/${totalQuestions} (${percentage}%)`;
+            const submitWarning = document.getElementById('submitWarning');
+            const unansweredCount = document.getElementById('unansweredCount');
+            if (unanswered > 0) { submitWarning.style.display = 'flex'; unansweredCount.textContent = unanswered; } else { submitWarning.style.display = 'none'; }
+        }
+
+        function scrollToQuestion(questionId) {
+            const questionCard = document.getElementById('question-' + questionId);
+            if (questionCard) {
+                questionCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('current'));
+                const currentButton = document.querySelector(`.nav-button[data-question="${questionId}"]`);
+                if (currentButton) currentButton.classList.add('current');
+            }
+        }
+
+        function setupScrollSpy() {
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const questionId = entry.target.id.replace('question-', '');
+                        document.querySelectorAll('.nav-button').forEach(btn => btn.classList.remove('current'));
+                        const currentButton = document.querySelector(`.nav-button[data-question="${questionId}"]`);
+                        if (currentButton) currentButton.classList.add('current');
+                    }
+                });
+            }, { threshold: 0.5 });
+
+            document.querySelectorAll('.question-card').forEach(card => observer.observe(card));
+        }
+
+        function startTimer() {
+            timerInterval = setInterval(function () {
+                remainingTime--;
+                updateTimerDisplay();
+                if (remainingTime <= 0) { clearInterval(timerInterval); autoSubmitQuiz(); }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(remainingTime / 60);
+            const seconds = remainingTime % 60;
+            const display = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            const timerDisplay = document.getElementById('timerDisplay');
+            if (timerDisplay) timerDisplay.textContent = display;
+        }
+
+        function autoSubmitQuiz() {
+            const form = document.getElementById('quizForm');
+            if (form) form.submit();
+        }
+
+        function showConfirmModal() {
+            const answered = answeredQuestions.size;
+            const unanswered = totalQuestions - answered;
+            document.getElementById('modalAnswered').textContent = answered;
+            document.getElementById('modalUnanswered').textContent = unanswered;
+            document.getElementById('confirmModal').classList.add('active');
+        }
+
+        function hideConfirmModal() {
+            document.getElementById('confirmModal').classList.remove('active');
+        }
+
+        function submitQuiz() {
+            if (timerInterval) clearInterval(timerInterval);
+            const submitBtn = document.querySelector('.modal-button.confirm');
+            if (submitBtn) { submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang nộp bài...'; submitBtn.disabled = true; }
+            setTimeout(() => { document.getElementById('quizForm').submit(); }, 500);
+        }
+
+        window.addEventListener('beforeunload', function (e) {
+            const form = document.getElementById('quizForm');
+            if (answeredQuestions.size > 0 && form && !form.submitted) { e.preventDefault(); e.returnValue = ''; }
+        });
+
+        document.getElementById('quizForm')?.addEventListener('submit', function () { this.submitted = true; });
+    </script>
+</body>
 </html>

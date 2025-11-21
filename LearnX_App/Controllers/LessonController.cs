@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using LearnX_ApiIntegration;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Lessons;
@@ -9,7 +10,7 @@ namespace MyApp.Namespace
     [Authorize]
     public class LessonController : Controller
     {
-          private readonly ILessonApiClient _lessonService;
+        private readonly ILessonApiClient _lessonService;
 
         public LessonController(ILessonApiClient lessonService)
         {
@@ -27,14 +28,8 @@ namespace MyApp.Namespace
 
             return View(viewModel);
         }
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddLesson(LessonRequest newLesson)
-        {
 
-            await _lessonService.AddLessonAsync(newLesson);
-            return RedirectToAction("Index", new { id = newLesson.CourseID });
-        }
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(int courseID)
         {
             var lesson = new LessonRequest();
@@ -51,13 +46,14 @@ namespace MyApp.Namespace
                 return View(request);
             }
 
+
             try
             {
-                Console.WriteLine("Creating lesson: " + request.Content);
                 // gọi service để lưu LessonRequest vào DB (thay bằng implementation của bạn)
                 await _lessonService.AddLessonAsync(request); // ví dụ
                 TempData["SuccessMessage"] = "Tạo bài học thành công.";
-                return RedirectToAction("Index");
+                return RedirectToAction("Details", "Course", new { id = request.CourseID });
+
             }
             catch (Exception ex)
             {
@@ -69,18 +65,18 @@ namespace MyApp.Namespace
         [HttpGet]
         public async Task<IActionResult> DeleteLesson(int lessonID)
         {
-              try
+            try
             {
                 if (!ModelState.IsValid)
                 {
                     return Json(new { success = false, message = "Invalid course data." });
                 }
-                              Console.WriteLine("Id"+lessonID);
+                Console.WriteLine("Id" + lessonID);
 
                 // Logic để xử lý lưu course
                 // Ví dụ: lưu vào database hoặc gọi một API
                 bool isSaved = await _lessonService.DeleteLessonAsync(lessonID);
-            
+
                 if (isSaved != false)
                 {
                     return Json(new { success = true, message = "Course Delete successfully!" });
@@ -94,7 +90,7 @@ namespace MyApp.Namespace
             {
                 return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
             }
-            
+
         }
 
     }

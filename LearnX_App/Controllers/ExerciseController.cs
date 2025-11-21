@@ -3,6 +3,7 @@ using LearnX_ApiIntegration;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Exercise;
 using LearnX_ModelView.Catalog.Scores;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MyApp.Namespace
@@ -17,8 +18,8 @@ namespace MyApp.Namespace
 
         [ActivatorUtilitiesConstructor]
         public ExerciseController(
-            IExerciseApiClient exerciseService, 
-            ICourseApiClient courseApiClient, 
+            IExerciseApiClient exerciseService,
+            ICourseApiClient courseApiClient,
             IScoreApiClient scoreService,
             IEssaySubmissionApiClient essaySubmissionService)
         {
@@ -27,7 +28,8 @@ namespace MyApp.Namespace
             _scoreService = scoreService;
             _essaySubmissionService = essaySubmissionService;
         }
-        public IActionResult CreateExercise(int CourseId)
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Create(int CourseId)
         {
             var model = new ExerciseRequestWrapper
             {
@@ -37,6 +39,28 @@ namespace MyApp.Namespace
                 }
             };
             return View(model);
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(ExerciseRequestWrapper model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+            try
+            {
+                // gọi service để lưu ExerciseRequest vào DB (thay bằng implementation của bạn)
+                var result = await _exerciseService.AddExerciseAsync(model);
+                TempData["SuccessMessage"] = "Tạo bài tập thành công.";
+                return RedirectToAction("Details", "Exercise", new { id = model.ExerciseRequest.CourseId });
+
+            }
+            catch (Exception ex)
+            {
+                ModelState.AddModelError(string.Empty, "Lỗi khi tạo bài tập: " + ex.Message);
+                return View(model);
+            }
         }
 
         // GET: ExerciseController
@@ -51,7 +75,6 @@ namespace MyApp.Namespace
                 {
                     return View(lessons);
                 }
-
             }
 
             return View();
@@ -84,23 +107,18 @@ namespace MyApp.Namespace
             if (courseDetails == null)
             {
                 TempData["Error"] = "Không tìm thấy khóa học.";
-                 return View();
+                return View();
             }
             ViewBag.CourseId = id;
             return View(courseDetails);
         }
+        [Authorize]
         public async Task<ActionResult> DoExercise(int exerciseId)
         {
-            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                // Nếu chưa đăng nhập, chuyển hướng về danh sách khóa học
-                return RedirectToAction("Index", "Course");
-            }
 
             // Kiểm tra loại bài tập
             var isEssayExercise = await _exerciseService.IsEssayExercise(exerciseId);
-            
+
             if (isEssayExercise)
             {
                 // Chuyển hướng đến action làm bài tự luận
@@ -141,8 +159,13 @@ namespace MyApp.Namespace
                 ViewBag.Error = "Dữ liệu không hợp lệ.";
                 return RedirectToAction("Index", "Course");
             }
-
-            // Tải lại danh sách câu hỏi từ cơ sở dữ liệu nếu Questions trống
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid.TryParse(userId, out var userIds);
+            if (string.IsNullOrEmpty(userId))
+            {
+                ViewBag.Error = "Bạn cần đăng nhập để nộp bài tập.";
+                return RedirectToAction("Index", "Course");
+            }
             if (model.Questions == null || !model.Questions.Any())
             {
                 var questions = await _exerciseService.getQuestion(model.ExerciseId);
@@ -158,25 +181,24 @@ namespace MyApp.Namespace
                     }).ToList()
                 }).ToList();
             }
-
-            // Kiểm tra đáp án
-            var results = model.Questions.Select(q =>
+            var modelSubmit = new SubmitExerciseRequest()
             {
-                var correctAnswer = q.Answers.FirstOrDefault(a => a.IsCorrect);
-                var selectedAnswerId = model.UserAnswers.ContainsKey(q.QuestionId) ? model.UserAnswers[q.QuestionId] : 0;
-
-                return new
+                ExerciseId = model.ExerciseId,
+                UserId = userIds,
+                Questions = model.Questions.Select(ua => new QuestionSumit
                 {
-                    QuestionId = q.QuestionId,
-                    IsCorrect = correctAnswer?.AnswerId == selectedAnswerId
-                };
-            }).ToList();
-            var totalQuestions = model.Questions.Count;
-            var correctAnswers = model.Questions.Count(q =>
-                q.Answers.Any(a => a.AnswerId == model.UserAnswers[q.QuestionId] && a.IsCorrect));
+                    QuestionId = ua.QuestionId,
+                    SelectedAnswerId = model.UserAnswers[ua.QuestionId]
+                }).ToList()
 
-
-            var score = (decimal)correctAnswers / totalQuestions * 10;  // Ví dụ: điểm số tối đa là 10
+            };
+            foreach (var item in modelSubmit.Questions)
+            {
+                Console.WriteLine("Keets quar " + item.SelectedAnswerId);
+            }
+            // Gửi dữ liệu nộp bài tập đến service để xử lý
+            var result = await _exerciseService.SubmitExerciseAsync(modelSubmit);
+            var score = result;
             var isPassed = score >= 5;
             // Cập nhật điểm số và trạng thái
             ViewBag.Score = score;
@@ -189,15 +211,11 @@ namespace MyApp.Namespace
                 Score = score,
                 IsPassed = isPassed
             };
-
             // Lưu điểm số qua API
             bool isScoreSaved = await _scoreService.AddScoreAsync(scoreRequest);
-
             if (!isScoreSaved)
             {
-                Console.WriteLine("dsad" + scoreRequest.ExerciseId, scoreRequest.DateCompleted, scoreRequest.Score, scoreRequest.IsPassed);
 
-                Console.WriteLine("Lưu điểm số thất bại.");
                 ViewBag.Error = "Lưu điểm số thất bại.";
                 return RedirectToAction("Index", "Exercise");
             }
@@ -205,33 +223,7 @@ namespace MyApp.Namespace
             model.Submitted = true;
             return View("Results", model);
         }
-        [HttpPost]
-        // Xử lý tạo bài tập
-        public async Task<IActionResult> Create([FromBody] ExerciseRequestWrapper model)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    return Json(new { success = false, message = "Invalid course data.sadsad" });
-                }
-                var result = await _exerciseService.AddExerciseAsync(model);
 
-                // Console.WriteLine(course.CourseName+course.CategoryID+course.Description+course.InstructorID);
-                if (result.IsSuccessed != false)
-                {
-                    return Json(new { success = true, message = "Course created successfully!" });
-                }
-                else
-                {
-                    return Json(new { success = false, message = "Failed to create course." });
-                }
-            }
-            catch (Exception ex)
-            {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
-            }
-        }
 
 
         [HttpGet("Delete/{id}/{idCourse}")]
@@ -247,6 +239,6 @@ namespace MyApp.Namespace
                 return RedirectToAction("Details", "Exercise", new { id = idCourse });
             }
         }
-       
+
     }
 }

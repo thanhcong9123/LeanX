@@ -1,0 +1,119 @@
+@using LearnX_Data.Entities
+@using LearnX_ModelView.Catalog.Courses
+@model CourseRequest
+@{
+    ViewData["Title"] = "Create Course";
+}
+@{
+    var listCategory = ViewBag.Category as List<Category>;
+}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="~/css/course/create.css" />
+<div class="container container-create d-block align-items-center justify-content-center">
+    <div class="hearder-table d-block text-center  mt-4">
+        <i class="fas fa-user-graduate"></i>
+        <h2 class="hearder-title">Tạo khoá học mới</h2>
+        <p>Chia sẻ kiến thức và tạo ra những trải nghiệm học tập tuyệt vời</p>
+    </div>
+    <div class="form-table">
+        <form asp-action="Create" method="post">
+            @Html.AntiForgeryToken()
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <h3 class="section-title">
+                <div class="section-icon"><i class="fas fa-info-circle"></i>
+                </div> Thông tin cơ bản
+            </h3>
+            <div class="form-group">
+                <label asp-for="CourseName" name="courseName" class="form-label"> Tên khóa học <span
+                        class="required">*</span> </label>
+                <input asp-for="CourseName" type="text" id="courseName" name="CourseName" class="form-input"
+                    placeholder="Nhập tên khóa học..." required>
+            </div>
+            <div class="form-group">
+                <label asp-for="Description" class="form-label">Mô tả khoá học<span class="required">*</span></label>
+                <input type="text" asp-for="Description" class="form-input"
+                    placeholder="Mô tả chi tiết về nội dụng và mục tiêu của khoá học..." required>
+            </div>
+            <div>
+                <div class="form-group">
+                    <label asp-for="InstructorID" class="form-label">ID Giảng viên<span
+                            class="required">*</span></label>
+                    <input asp-for="InstructorID" class="form-input" type="text" required>
+                </div>
+                <div class="form-group"><label asp-for="CategoryID" class="form-label"> Danh mục <span
+                            class="required">*</span> </label> <select id="categoryId" asp-for="CategoryID"
+                        name="CategoryID" class="form-select category-select" required>
+                        <option value="">Chọn danh mục</option>
+                        @{
+                            foreach (var category in listCategory)
+                            {
+                                <option value="@category.CategoryID">@category.CategoryName</option>
+                            }
+                        }
+                    </select>
+                </div>
+            </div>
+            <h3 class="section-title">
+                <div class="section-icon"><i class="fa-solid fa-calendar-days"></i></div>Thời gian và giá cả
+            </h3>
+            <div class="form-date d-flex justify-content-between gap-5">
+                <div class="form-group">
+                    <label asp-for="StartDate" class="form-label">Ngày bắt đầu<span class="required">*</span></label>
+                    <input class="form-input" type="datetime-local" name="startDate" id="startDate" asp-for="StartDate"
+                        required>
+                </div>
+                <div class="form-group">
+                    <label asp-for="StartDate" class="form-label">Ngày kết thúc<span class="required">*</span></label>
+                    <input class="form-input" type="datetime-local" name="endDate" id="endDate" asp-for="EndDate"
+                        required>
+                </div>
+            </div>
+            <div class="form-group">
+                <label asp-for="Price" class="form-label">Giá khóa học (VNĐ)<span class="required">*</span></label>
+                <div class="price-input-wrapper"><span class="price-symbol">₫</span>
+                    <input asp-for="Price" class="form-input price-input" placeholder="0" min="0" step="1000"
+                        type="number">
+                </div>
+            </div>
+            <h3 class="section-title">
+                <div class="section-icon"><i class="fas fa-list-check"></i>
+                </div> Yêu cầu tiên quyết
+            </h3>
+            <div class="form-group"><label asp-for="Prerequisites" class="form-label"> Điều kiện tham gia khóa học
+                </label>
+                <div class="prerequisites-editor">
+                    <div class="editor-toolbar"><button type="button" class="editor-btn" data-command="bold"> <i
+                                class="fas fa-bold"></i> <span>Đậm</span> </button> <button type="button"
+                            class="editor-btn" data-command="italic"> <i class="fas fa-italic"></i> <span>Nghiêng</span>
+                        </button> <button type="button" class="editor-btn" data-command="underline"> <i
+                                class="fas fa-underline"></i> <span>Gạch chân</span> </button> <button type="button"
+                            class="editor-btn" data-command="insertUnorderedList"> <i class="fas fa-list-ul"></i>
+                            <span>Danh sách</span> </button> <button type="button" class="editor-btn"
+                            data-command="insertOrderedList"> <i class="fas fa-list-ol"></i> <span>Số thứ tự</span>
+                        </button>
+                    </div>
+                    <div class="editor-content" contenteditable="true" id="prerequisitesEditor"></div>
+                </div><input asp-for="Prerequisites" type="hidden" id="prerequisites" name="Prerequisites" required>
+            </div>
+            <div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelBtn"> <i
+                        class="fas fa-times"></i> Hủy bỏ </button> <button type="submit" class="btn btn-primary"
+                    id="submitBtn"> <i class="fas fa-save"></i> Tạo khóa học </button>
+        </form>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        console.log("Hello");
+        const prerequisitesEditor = document.getElementById('prerequisitesEditor');
+        const prerequisitesHidden = document.getElementById('prerequisites');
+        prerequisitesEditor.addEventListener('input', function () {
+            console.log("Changed");
+            prerequisitesHidden.value = this.innerHTML;
+        });
+    });
+
+</script>
