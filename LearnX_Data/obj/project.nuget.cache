@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "PV1PxL2d1Ng=",
+  "dgSpecHash": "jsWf1PEmtIY=",
   "success": true,
   "projectFilePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
   "expectedPackageFiles": [
@@ -208,5 +208,15 @@
     "C:\\Users\\CONGGGG\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\CONGGGG\\.nuget\\packages\\system.windows.extensions\\7.0.0\\system.windows.extensions.7.0.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
+      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+      "warningLevel": 1,
+      "filePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+      "targetGraphs": []
+    }
+  ]
 }
