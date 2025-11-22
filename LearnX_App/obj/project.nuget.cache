@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "/2zaYwYmsDA=",
+  "dgSpecHash": "nwCsKKWRYKE=",
   "success": true,
-  "projectFilePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
+  "projectFilePath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\CONGGGG\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\CONGGGG\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
@@ -281,24 +281,5 @@
     "C:\\Users\\CONGGGG\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\CONGGGG\\.nuget\\packages\\system.windows.extensions\\7.0.0\\system.windows.extensions.7.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "Undefined",
-      "level": "Warning",
-      "message": "Problem reading the cache file c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
-      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
-      "warningLevel": 1,
-      "filePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
-      "targetGraphs": []
-    },
-    {
-      "code": "NU1900",
-      "level": "Warning",
-      "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
-      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
-      "warningLevel": 1,
-      "filePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_App\\LearnX_App.csproj",
-      "targetGraphs": []
-    }
-  ]
+  "logs": []
 }
