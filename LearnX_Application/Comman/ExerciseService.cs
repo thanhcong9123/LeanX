@@ -127,7 +127,8 @@ namespace LearnX_Application.Comman
 
         public async Task<List<Exercise>> GetExerciseByIdcourseAsync(int id)
         {
-            return await _context.Exercises.Where(c => c.CourseId == id).ToListAsync();
+            return await _context.Exercises.Include(e=> e.Questions).ThenInclude(q=>q.Answers).Where(c => c.CourseId == id)
+                                            .ToListAsync();
         }
 
         public async Task<List<Question>> GetQuestionByIdExerciseAsync(int id)
@@ -136,11 +137,11 @@ namespace LearnX_Application.Comman
         }
         public async Task<List<Exercise>> GetExercisesForUserAsync(Guid userId)
         {
-            // Tìm tất cả các bài tập liên quan đến các khóa học mà người dùng đã đăng ký
+          
             var exercises = await _context.Enrollments
-                .Where(e => e.UserID == userId)  // Lọc các enrollment của người dùng
-                .SelectMany(e => e.Course.Exercises)  // Lấy các bài tập của các khóa học mà người dùng đã tham gia
-                .ToListAsync();  // Chuyển đổi thành danh sách
+                .Where(e => e.UserID == userId) 
+                .SelectMany(e => e.Course.Exercises).Include(e => e.Questions).Include(e => e.Course)
+                .ToListAsync();  
 
             return exercises;
         }
@@ -160,8 +161,6 @@ namespace LearnX_Application.Comman
             var countQuestion = await _context.Questions.Where(q => q.ExerciseId == exerciseId).CountAsync();
             if(countQuestion == 0 || score == 0 ) return 0;
             var result =  (score * 10) / countQuestion;
-
-            
             return result;
         }
        

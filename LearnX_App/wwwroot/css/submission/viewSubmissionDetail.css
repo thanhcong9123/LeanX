@@ -1,0 +1,135 @@
+/* Theme-aligned styles for essay submission detail page */
+
+:root{
+    --primary-1: #5b6be6;
+    --primary-2: #7b4bd6;
+    --accent: #10b981;
+    --muted: #64748b;
+    --card-bg: #ffffff;
+    --surface: #f8fafc;
+    --shadow: rgba(2,6,23,0.06);
+}
+
+.app-container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+    color: #0f172a;
+}
+
+/* Cards */
+.card {
+    border-radius: 12px;
+    background: var(--card-bg);
+    border: 1px solid #eef2f7;
+    box-shadow: 0 12px 30px var(--shadow);
+    overflow: hidden;
+}
+
+.shadow-card { box-shadow: 0 14px 36px rgba(15,23,42,0.06); }
+
+.gradient-primary {
+    background: linear-gradient(90deg, var(--primary-1) 0%, var(--primary-2) 100%);
+    padding: 14px 18px;
+}
+
+.gradient-secondary {
+    background: linear-gradient(90deg, #0ea5a3 0%, #06b6d4 100%);
+    padding: 10px 14px;
+}
+
+.gradient-success {
+    background: linear-gradient(90deg, #059669 0%, #10b981 100%);
+    padding: 10px 14px;
+}
+
+.card-header h4, .card-header h5 {
+    margin: 0;
+    font-weight: 700;
+}
+
+.info-card {
+    background: linear-gradient(180deg, #ffffff, #fbfcff);
+    border: 1px solid #eef2f7;
+    padding: 14px;
+    border-radius: 10px;
+}
+
+/* File info */
+.file-info .icon-file {
+    width: 52px;
+    height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    background: #f1f5f9;
+    border: 1px solid #e6eef6;
+    box-shadow: 0 6px 18px rgba(2,6,23,0.03);
+}
+
+/* Badges */
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-weight: 700;
+    color: #fff;
+    font-size: 0.95rem;
+}
+
+.badge-lg { font-size: 1rem; padding: 0.5rem 0.9rem; }
+
+.badge-warning { background: linear-gradient(90deg,#f59e0b,#fb923c); }
+.badge-success { background: linear-gradient(90deg,#10b981,#059669); }
+.badge-accent { background: linear-gradient(90deg,#7b4bd6,#5b6be6); }
+.badge-secondary { background: #6b7280; }
+
+/* Buttons */
+.btn-action {
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform .12s ease, box-shadow .12s ease;
+}
+
+.btn-action:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(11,30,60,0.06); }
+
+.btn-outline-primary {
+    color: var(--primary-1);
+    border: 1px solid rgba(91,107,230,0.16);
+    background: linear-gradient(180deg,#fff,#fbfdff);
+}
+
+.btn-outline-info {
+    color: #0ea5a3;
+    border: 1px solid rgba(14,165,163,0.12);
+    background: #fff;
+}
+
+.btn-secondary {
+    background: #f8fafc;
+    color: #475569;
+    border: 1px solid #e6eef6;
+}
+
+/* Small helpers */
+.text-muted { color: var(--muted); font-style: italic; }
+.me-2 { margin-right: 0.5rem !important; }
+.me-3 { margin-right: 1rem !important; }
+.ms-2 { margin-left: 0.5rem !important; }
+
+.inner-card { border-radius: 10px; overflow: hidden; }
+
+/* Responsive */
+@media (max-width: 768px) {
+    .app-container { padding: 12px; }
+    .file-info { flex-direction: column; align-items: flex-start; gap: 8px; }
+    .card { margin-bottom: 12px; }
+}

@@ -60,6 +60,8 @@ namespace LearnX_API.Data.Handler
                                  opt => opt.MapFrom(src => src.AttachmentFileName)); // nếu cần path đầy đủ, prepend folder ở đây
             //Score
             CreateMap<LearnX_Data.Entities.Scores, LearnX_ModelView.Catalog.Scores.ScoreRequest>().ReverseMap();
+            //Category
+            CreateMap<LearnX_Data.Entities.Category, LearnX_ModelView.Catalog.Category.CategoryRequest>().ReverseMap();
         }
     }
 

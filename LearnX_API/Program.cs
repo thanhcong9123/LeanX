@@ -84,6 +84,7 @@ builder.Services.AddScoped<IScoreService, ScoreService>();
 builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IEBookService, EBookService>();
 builder.Services.AddScoped<IEssaySubmissionService, EssaySubmissionService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 builder.Services.AddCors(options =>
 {

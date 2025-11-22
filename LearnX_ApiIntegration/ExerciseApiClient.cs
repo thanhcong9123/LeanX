@@ -100,8 +100,35 @@ namespace LearnX_ApiIntegration
         // Method để lấy thông tin exercise đầy đủ
         public async Task<Exercise?> GetExerciseByIdAsync(int exerciseId)
         {
-            var data = await GetAsync<Exercise>($"/api/Exercise/{exerciseId}");
+            var data = await GetAsync<Exercise>($"http://localhost:5041/api/Exercise/{exerciseId}");
             return data;
+        }
+        public async Task<int> SubmitExerciseAsync(SubmitExerciseRequest request)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient();
+                client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
+
+                var sessions = _httpContextAccessor.HttpContext.Session.GetString("Token");
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
+
+                var json = JsonConvert.SerializeObject(request);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/api/Exercise/submit", httpContent);
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                if (response.IsSuccessStatusCode)
+                {
+                    var result = JsonConvert.DeserializeObject<int>(responseString);
+                    return result;
+                }
+                return 0;
+            }
+            catch (Exception)
+            {
+                return 0;
+            }
         }
     }
 }

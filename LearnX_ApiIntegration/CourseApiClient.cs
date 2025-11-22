@@ -47,6 +47,7 @@ namespace LearnX_ApiIntegration
                 requestContent.Add(new StringContent(course.StartDate.ToString("o")), nameof(course.StartDate)); // ISO 8601 format
                 requestContent.Add(new StringContent(course.EndDate.ToString("o")), nameof(course.EndDate));
                 requestContent.Add(new StringContent(course.Price.ToString("F2")), nameof(course.Price)); // Format decimal to 2 decimal places
+                requestContent.Add(new StringContent(course.Prerequisites.ToString()), nameof(course.Prerequisites));
 
                 // Gửi yêu cầu POST tới API
                 var response = await client.PostAsync("api/course", requestContent);

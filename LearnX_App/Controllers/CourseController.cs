@@ -22,15 +22,17 @@ namespace LearnX_App.Controllers
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IExerciseApiClient _exerciseApiClient;
         private readonly IEssaySubmissionApiClient _essaySubmissionApiClient;
+        private readonly ICategoryApiClient _categoryApiClient;
 
         public CourseController(ICourseApiClient context, IHttpContextAccessor httpContextAccessor,
-         IScoreApiClient scoreApiClient, IExerciseApiClient exerciseApiClient, IEssaySubmissionApiClient essaySubmissionApiClient)
+         IScoreApiClient scoreApiClient, IExerciseApiClient exerciseApiClient, IEssaySubmissionApiClient essaySubmissionApiClient, ICategoryApiClient categoryApiClient)
         {
             _context = context;
             _httpContextAccessor = httpContextAccessor;
             _scoreApiClient = scoreApiClient;
             _exerciseApiClient = exerciseApiClient;
             this._essaySubmissionApiClient = essaySubmissionApiClient;
+            _categoryApiClient = categoryApiClient;
         }
         public IActionResult Home()
         {
@@ -79,13 +81,7 @@ namespace LearnX_App.Controllers
 
 
         }
-        [Authorize]
-        public async Task<IActionResult> Exercise()
-        {
-            ViewData["ActivePage"] = "Exercise";
 
-            return View();
-        }
         [Authorize]
         // GET: Course/Details/5
         public async Task<IActionResult> Details(int id)
@@ -97,42 +93,62 @@ namespace LearnX_App.Controllers
             var course = await _context.GetbyId(id);
             return View(course);
         }
-        [HttpGet]
-        public IActionResult Create()
+        public async Task<IActionResult> MyCourse()
         {
-            return PartialView("_CreateCourseForm");
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            Guid.TryParse(userId, out var userIds);
+            var courses = await _context.GetmyCourse(userIds);
+            return View(courses);
         }
         [HttpGet]
-        public async Task<IActionResult> CreateCourse(CourseRequest course)
+        public async Task<IActionResult> Create()
+        {
+            var model = new CourseRequest();
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid.TryParse(userId, out var UserIds);
+            model.InstructorID = UserIds;
+            ViewBag.Category = await _categoryApiClient.GetAll();
+            return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> Create(CourseRequest course)
         {
             try
             {
                 if (!ModelState.IsValid)
                 {
-                    return Json(new { success = false, message = "Invalid course data." });
-                }
-                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                Guid.TryParse(userId, out var userIds);
-                if (userId != null)
-                {
-                    course.InstructorID = userIds;
+                    foreach (var modelState in ModelState.Values)
+                    {
+                        foreach (var error in modelState.Errors)
+                        {
+                            ModelState.AddModelError("", error.ErrorMessage);
+                        }
+                    }
+                    return View(course);
                 }
                 // Logic để xử lý lưu course
                 // Ví dụ: lưu vào database hoặc gọi một API
-                bool isSaved = await _context.Create(course);
-                // Console.WriteLine(course.CourseName+course.CategoryID+course.Description+course.InstructorID);
-                if (isSaved != false)
+                var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                Guid.TryParse(userId, out var UserIds);
+                course.InstructorID = UserIds;
+                var isSaved = await _context.Create(course);
+                if (isSaved)
                 {
-                    return Json(new { success = true, message = "Course created successfully!" });
+                    return RedirectToAction("Index", "Course");
                 }
                 else
                 {
-                    return Json(new { success = false, message = "Failed to create course." });
+                    Console.WriteLine(isSaved);
+                    ViewBag.Category = await _categoryApiClient.GetAll();
+                    ModelState.AddModelError("", "Failed to create course.");
+                    return View(course);
                 }
             }
             catch (Exception ex)
             {
-                return Json(new { success = false, message = $"An error occurred: {ex.Message}" });
+                ModelState.AddModelError("", $"An error occurred: {ex.Message}");
+                return View(course);
             }
 
         }

@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "oP1pwS2KUOI=",
+  "dgSpecHash": "QGXt4qD3IIU=",
   "success": true,
-  "projectFilePath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+  "projectFilePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\CONGGGG\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\CONGGGG\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
@@ -212,12 +212,21 @@
   ],
   "logs": [
     {
+      "code": "Undefined",
+      "level": "Warning",
+      "message": "Problem reading the cache file c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\obj\\project.nuget.cache : '<' is an invalid start of a property name. Expected a '\"'. Path: $ | LineNumber: 2 | BytePositionInLine: 0.",
+      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "warningLevel": 1,
+      "filePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "targetGraphs": []
+    },
+    {
       "code": "NU1900",
       "level": "Warning",
       "message": "Error occurred while getting package vulnerability data: Unable to load the service index for source https://api.nuget.org/v3/index.json.",
-      "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
       "warningLevel": 1,
-      "filePath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "filePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
       "targetGraphs": []
     }
   ]

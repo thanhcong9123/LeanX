@@ -1,0 +1,488 @@
+@using LearnX_ModelView.Catalog.Exercise
+@model ExerciseRequestWrapper
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
+    rel="stylesheet">
+
+<link rel="stylesheet" href="/css/exercise/create.css">
+<div class="container-table">
+    <div class="form-wrapper">
+        <div class="form-header">
+            <div class="header-icon"><i class="fas fa-tasks"></i>
+            </div>
+            <h1 class="form-title">Tạo Bài Tập Mới</h1>
+            <p class="form-subtitle">Tạo bài tập với câu hỏi trắc nghiệm để kiểm tra kiến thức học viên</p>
+        </div>
+        <div class="form-container">
+            <div class="message success" id="successMessage"><i class="fas fa-check-circle"></i> <span>Bài tập đã được
+                    tạo thành công!</span>
+            </div>
+            <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span
+                    id="errorText">Có lỗi xảy ra, vui lòng thử lại!</span>
+            </div>
+            <form id="exerciseForm" asp-controller="Exercise" asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <!-- Thông tin bài tập -->
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <div class="section-icon"><i class="fas fa-info-circle"></i>
+                        </div> Thông tin bài tập
+                    </h3>
+                    <div class="form-group"><label asp-for="ExerciseRequest.Title" class="form-label"> Tiêu đề bài tập
+                            <span class="required">*</span> </label>
+                        <input type="text" asp-for="ExerciseRequest.Title" id="title" name="ExerciseRequest.Title"
+                            class="form-input" placeholder="Nhập tiêu đề bài tập..." required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group"><label asp-for="ExerciseRequest.CourseId" class="form-label"> ID Khóa
+                                học <span class="required">*</span> </label>
+                            <input asp-for="ExerciseRequest.CourseId" type="number" id="courseId"
+                                name="ExerciseRequest.CourseId" class="form-input" placeholder="Nhập ID khóa học..."
+                                required min="1">
+                        </div>
+                        <div class="form-group"><label asp-for="ExerciseRequest.Category" class="form-label"> Danh mục
+                                <span class="required">*</span> </label> <select asp-for="ExerciseRequest.Category"
+                                id="category" name="ExerciseRequest.Category" class="form-select" required>
+                                <option value="">Chọn danh mục</option>
+                                <option value="Trắc nghiệm">Trắc nghiệm</option>
+                                <option value="Tự luận">Tự luận</option>
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group"><label asp-for="ExerciseRequest.Describe" class="form-label"> Mô tả bài tập
+                            <span class="required">*</span> </label> <textarea asp-for="ExerciseRequest.Describe"
+                            id="describe" name="ExerciseRequest.Describe" class="form-textarea"
+                            placeholder="Mô tả chi tiết về bài tập, mục tiêu và yêu cầu..." required></textarea>
+                    </div>
+                    <div class="form-group"><label asp-for="ExerciseRequest.Instruct" class="form-label"> Hướng dẫn làm
+                            bài </label>
+                        <textarea asp-for="ExerciseRequest.Instruct" id="instruct" name="ExerciseRequest.Instruct"
+                            class="form-textarea" placeholder="Hướng dẫn chi tiết cách thực hiện bài tập..."></textarea>
+                    </div>
+                    <div class="form-group"><label asp-for="ExerciseRequest.AnswerFile" class="form-label"> File đáp án
+                            (tùy chọn) </label>
+                        <div class="file-upload-wrapper"><input asp-for="ExerciseRequest.AnswerFile" type="file"
+                                id="answerFile" name="AnswerFile" class="file-upload-input"
+                                accept=".pdf,.doc,.docx,.txt,.zip"> <label asp-for="ExerciseRequest.AnswerFile"
+                                class="file-upload-label"> <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
+                                <span>Chọn file đáp án hoặc kéo thả vào đây</span> </label>
+                            <div class="file-name" id="fileName"></div>
+                        </div>
+                    </div>
+                </div><!-- Câu hỏi trắc nghiệm -->
+                <div class="questions-section">
+                    <div class="questions-header">
+                        <h3 class="questions-title"><i class="fas fa-question-circle"></i> Câu hỏi trắc nghiệm</h3>
+                        <button type="button" class="add-question-btn" id="addQuestionBtn"> <i class="fas fa-plus"></i>
+                            Thêm câu hỏi </button>
+                    </div>
+                    <div id="questionsContainer">
+                        <div class="empty-questions"><i class="fas fa-question-circle"></i>
+                            <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
+                        </div>
+                    </div>
+                </div><!-- Form Actions -->
+                <div class="form-actions"><button type="button" class="btn btn-secondary" id="cancelBtn"> <i
+                            class="fas fa-times"></i> Hủy bỏ </button> <button type="submit" class="btn btn-primary"
+                        id="submitBtn"> <i class="fas fa-save"></i> Tạo bài tập </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('exerciseForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const successMessage = document.getElementById('successMessage');
+        const errorMessage = document.getElementById('errorMessage');
+        const errorText = document.getElementById('errorText');
+        const questionsContainer = document.getElementById('questionsContainer');
+        const addQuestionBtn = document.getElementById('addQuestionBtn');
+        const answerFileInput = document.getElementById('answerFile');
+        const fileName = document.getElementById('fileName');
+
+        let questionCounter = 0;
+        let questions = [];
+
+        // File upload handling
+        answerFileInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                fileName.textContent = `Đã chọn: ${this.files[0].name}`;
+                fileName.style.display = 'block';
+            } else {
+                fileName.style.display = 'none';
+            }
+        });
+
+        // Add question functionality
+        addQuestionBtn.addEventListener('click', function () {
+            addQuestion();
+        });
+
+        function addQuestion() {
+            questionCounter++;
+            const questionId = `question_${questionCounter}`;
+
+            const questionData = {
+                id: questionCounter,
+                questionId: 0,
+                questionText: '',
+                answers: []
+            };
+
+            questions.push(questionData);
+
+            const questionHtml = `
+                    <div class="question-item" data-question-id="${questionCounter}">
+                        <div class="question-header">
+                            <div class="question-number">Q${questionCounter}</div>
+                            <button type="button" class="remove-question-btn" onclick="removeQuestion(${questionCounter})">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        
+                        <input type="hidden" name="QuestionRequest[${questionCounter - 1}].QuestionId" value="0">
+                        <input type="text" name="QuestionRequest[${questionCounter - 1}].QuestionText" 
+                               class="question-text-input" placeholder="Nhập câu hỏi..." 
+                               onchange="updateQuestionText(${questionCounter}, this.value)" required>
+                        
+                        <div class="answers-container">
+                            <div class="answers-header">
+                                <span class="answers-title">Đáp án (chọn đáp án đúng)</span>
+                                <button type="button" class="add-answer-btn" onclick="addAnswer(${questionCounter})">
+                                    <i class="fas fa-plus"></i>
+                                    Thêm đáp án
+                                </button>
+                            </div>
+                            <div class="answers-list" id="answers_${questionCounter}">
+                                <!-- Answers will be added here -->
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+            // Remove empty state if exists
+            const emptyState = questionsContainer.querySelector('.empty-questions');
+            if (emptyState) {
+                emptyState.remove();
+            }
+
+            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
+
+            // Add default answers
+            addAnswer(questionCounter);
+            addAnswer(questionCounter);
+        }
+
+        function addAnswer(questionId) {
+            const question = questions.find(q => q.id === questionId);
+            if (!question) return;
+
+            const answerIndex = question.answers.length;
+            const answerId = `answer_${questionId}_${answerIndex}`;
+
+            const answerData = {
+                answerId: 0,
+                answerText: '',
+                isCorrect: false
+            };
+
+            question.answers.push(answerData);
+
+            const answerHtml = `
+                    <div class="answer-item" data-answer-index="${answerIndex}">
+                        <input type="hidden" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].AnswerId" value="0">
+                        <div class="answer-checkbox" onclick="toggleCorrectAnswer(${questionId}, ${answerIndex})"></div>
+                        <input type="hidden" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].IsCorrect" 
+                               value="false" class="is-correct-input">
+                        <input type="text" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].AnswerText" 
+                               class="answer-input" placeholder="Nhập đáp án..." 
+                               onchange="updateAnswerText(${questionId}, ${answerIndex}, this.value)" required>
+                        <button type="button" class="remove-answer-btn" onclick="removeAnswer(${questionId}, ${answerIndex})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                `;
+
+            const answersList = document.getElementById(`answers_${questionId}`);
+            answersList.insertAdjacentHTML('beforeend', answerHtml);
+        }
+
+        // Global functions for dynamic content
+        window.removeQuestion = function (questionId) {
+            const questionElement = document.querySelector(`[data-question-id="${questionId}"]`);
+            if (questionElement) {
+                questionElement.remove();
+                questions = questions.filter(q => q.id !== questionId);
+
+                // Show empty state if no questions left
+                if (questions.length === 0) {
+                    questionsContainer.innerHTML = `
+                            <div class="empty-questions">
+                                <i class="fas fa-question-circle"></i>
+                                <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
+                            </div>
+                        `;
+                }
+
+                // Renumber questions
+                renumberQuestions();
+            }
+        };
+
+        window.addAnswer = addAnswer;
+
+        window.removeAnswer = function (questionId, answerIndex) {
+            const question = questions.find(q => q.id === questionId);
+            if (!question) return;
+
+            if (question.answers.length <= 2) {
+                showError('Mỗi câu hỏi phải có ít nhất 2 đáp án!');
+                return;
+            }
+
+            const answerElement = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"]`);
+            if (answerElement) {
+                answerElement.remove();
+                question.answers.splice(answerIndex, 1);
+                renumberAnswers(questionId);
+            }
+        };
+
+        window.toggleCorrectAnswer = function (questionId, answerIndex) {
+            const question = questions.find(q => q.id === questionId);
+            if (!question) return;
+
+            // Reset all answers to false
+            question.answers.forEach((answer, index) => {
+                answer.isCorrect = false;
+                const checkbox = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${index}"] .answer-checkbox`);
+                const hiddenInput = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${index}"] .is-correct-input`);
+                if (checkbox) {
+                    checkbox.classList.remove('checked');
+                }
+                if (hiddenInput) {
+                    hiddenInput.value = 'false';
+                }
+            });
+
+            // Set selected answer to true
+            question.answers[answerIndex].isCorrect = true;
+            const selectedCheckbox = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"] .answer-checkbox`);
+            const selectedHiddenInput = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"] .is-correct-input`);
+            if (selectedCheckbox) {
+                selectedCheckbox.classList.add('checked');
+            }
+            if (selectedHiddenInput) {
+                selectedHiddenInput.value = 'true';
+            }
+        };
+
+        window.updateQuestionText = function (questionId, text) {
+            const question = questions.find(q => q.id === questionId);
+            if (question) {
+                question.questionText = text;
+            }
+        };
+
+        window.updateAnswerText = function (questionId, answerIndex, text) {
+            const question = questions.find(q => q.id === questionId);
+            if (question && question.answers[answerIndex]) {
+                question.answers[answerIndex].answerText = text;
+            }
+        };
+
+        function renumberQuestions() {
+            const questionElements = document.querySelectorAll('.question-item');
+            questionElements.forEach((element, index) => {
+                const questionNumber = element.querySelector('.question-number');
+                if (questionNumber) {
+                    questionNumber.textContent = `Q${index + 1}`;
+                }
+
+                // Update form field names
+                const inputs = element.querySelectorAll('input, select, textarea');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('QuestionRequest[')) {
+                        input.name = input.name.replace(/QuestionRequest\[\d+\]/, `QuestionRequest[${index}]`);
+                    }
+                });
+            });
+        }
+
+        function renumberAnswers(questionId) {
+            const answerElements = document.querySelectorAll(`[data-question-id="${questionId}"] .answer-item`);
+            answerElements.forEach((element, index) => {
+                element.setAttribute('data-answer-index', index);
+
+                // Update form field names
+                const inputs = element.querySelectorAll('input');
+                inputs.forEach(input => {
+                    if (input.name && input.name.includes('.Answers[')) {
+                        input.name = input.name.replace(/\.Answers\[\d+\]/, `.Answers[${index}]`);
+                    }
+                });
+            });
+        }
+
+        // Form validation
+        function validateForm() {
+            if (questions.length === 0) {
+                showError('Vui lòng thêm ít nhất một câu hỏi!');
+                return false;
+            }
+
+            for (let question of questions) {
+                if (!question.questionText.trim()) {
+                    showError('Vui lòng nhập nội dung cho tất cả câu hỏi!');
+                    return false;
+                }
+
+                if (question.answers.length < 2) {
+                    showError('Mỗi câu hỏi phải có ít nhất 2 đáp án!');
+                    return false;
+                }
+
+                const hasCorrectAnswer = question.answers.some(answer => answer.isCorrect);
+                if (!hasCorrectAnswer) {
+                    showError('Mỗi câu hỏi phải có ít nhất một đáp án đúng!');
+                    return false;
+                }
+
+                for (let answer of question.answers) {
+                    if (!answer.answerText.trim()) {
+                        showError('Vui lòng nhập nội dung cho tất cả đáp án!');
+                        return false;
+                    }
+                }
+            }
+
+            return true;
+        }
+
+        // Show success message
+        function showSuccess(message) {
+            successMessage.querySelector('span').textContent = message;
+            successMessage.style.display = 'flex';
+            errorMessage.style.display = 'none';
+
+            setTimeout(() => {
+                successMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Show error message
+        function showError(message) {
+            errorText.textContent = message;
+            errorMessage.style.display = 'flex';
+            successMessage.style.display = 'none';
+
+            setTimeout(() => {
+                errorMessage.style.display = 'none';
+            }, 5000);
+        }
+
+        // Form submission
+        form.addEventListener('submit', function (e) {
+
+            // Update questions data from form
+             if (!validateDates()) {
+                e.preventDefault();
+                return;
+            }
+
+            // disable to avoid double submit and allow browser to post form
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài học...';
+
+            // Validate form
+            if (!validateForm()) {
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài tập...';
+
+         
+            
+        });
+
+        // Cancel button
+        cancelBtn.addEventListener('click', function () {
+            const hasContent = form.querySelector('input[type="text"]').value ||
+                form.querySelector('textarea').value ||
+                questions.length > 0;
+
+            if (hasContent) {
+                // Create custom confirmation dialog
+                const confirmDialog = document.createElement('div');
+                confirmDialog.style.cssText = `
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background: rgba(0, 0, 0, 0.5);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        z-index: 1000;
+                    `;
+
+                confirmDialog.innerHTML = `
+                        <div style="background: white; padding: 30px; border-radius: 20px; max-width: 400px; text-align: center;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f59e0b; margin-bottom: 20px;"></i>
+                            <h3 style="margin: 0 0 15px 0; color: #2d3748;">Xác nhận hủy bỏ</h3>
+                            <p style="margin: 0 0 25px 0; color: #64748b;">Bạn có chắc chắn muốn hủy bỏ? Tất cả dữ liệu đã nhập sẽ bị mất.</p>
+                            <div style="display: flex; gap: 15px;">
+                                <button id="confirmCancel" style="flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Xác nhận</button>
+                                <button id="keepEditing" style="flex: 1; padding: 12px; background: #f8fafc; color: #64748b; border: 2px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer;">Tiếp tục</button>
+                            </div>
+                        </div>
+                    `;
+
+                document.body.appendChild(confirmDialog);
+
+                document.getElementById('confirmCancel').addEventListener('click', function () {
+                    form.reset();
+                    questions = [];
+                    questionCounter = 0;
+                    questionsContainer.innerHTML = `
+                            <div class="empty-questions">
+                                <i class="fas fa-question-circle"></i>
+                                <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
+                            </div>
+                        `;
+                    fileName.style.display = 'none';
+                    document.body.removeChild(confirmDialog);
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+
+                document.getElementById('keepEditing').addEventListener('click', function () {
+                    document.body.removeChild(confirmDialog);
+                });
+            } else {
+                form.reset();
+                questions = [];
+                questionCounter = 0;
+                questionsContainer.innerHTML = `
+                        <div class="empty-questions">
+                            <i class="fas fa-question-circle"></i>
+                            <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
+                        </div>
+                    `;
+                fileName.style.display = 'none';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+        });
+
+        // Add first question by default
+        addQuestion();
+    });
+</script>

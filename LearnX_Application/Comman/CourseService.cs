@@ -56,7 +56,13 @@ namespace LearnX_Application.Comman
 
         public async Task<List<Course>> GetMyCourse(Guid idUser)
         {
-            var list = await _context.Courses.Where(n => n.InstructorID == idUser).ToListAsync();
+            var list = await _context.Courses
+                            .Include(c => c.Instructor)
+                            .Include(c => c.Exercises)
+                            .Include(c => c.Enrollments)
+                            .Include(c => c.Category)
+                            .Where(n => n.InstructorID == idUser)
+                            .ToListAsync();
             return list;
         }
         public async Task<List<Course>> GetCourseSinged(Guid idUser)
@@ -79,7 +85,7 @@ namespace LearnX_Application.Comman
                                 .Include(c => c.Instructor)
                                 .Include(c => c.Exercises)
                                 .Include(c => c.Enrollments).ThenInclude(e => e.User)
-                                .Include(c => c.Category )
+                                .Include(c => c.Category)
                                 .Include(c => c.Lessons).ThenInclude(l => l.Resources)
                                 .FirstOrDefaultAsync();
             return course;

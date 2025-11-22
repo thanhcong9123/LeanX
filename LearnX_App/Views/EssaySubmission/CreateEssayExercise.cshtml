@@ -1,109 +1,297 @@
 @model LearnX_App.Models.CreateEssayExerciseViewModel
 
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header bg-success text-white">
-                    <h4 class="card-title mb-0">
-                        <i class="fas fa-edit"></i> Tạo bài tập tự luận mới
-                    </h4>
+<link rel="stylesheet" href="~/css/exercise/CreateEssay.css" />
+
+<div class="container-table">
+
+    <!-- Page Header -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-info">
+                <div class="breadcrumb">
+                    <a href="@Url.Action("Index", "Course")">
+                        <i class="fas fa-home"></i> Trang chủ
+                    </a>
+                    <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                    <a href="@Url.Action("Index", "Exercise", new { courseId = Model.CourseId })">
+                        @ViewBag.CourseTitle
+                    </a>
+                    <span class="breadcrumb-separator"><i class="fas fa-chevron-right"></i></span>
+                    <span>Thêm bài tập tự luận</span>
                 </div>
-                <div class="card-body">
-                    <form asp-action="CreateEssayExercise" method="post" enctype="multipart/form-data">
-                        <input asp-for="CourseId" type="hidden" />
-                        
-                        <div class="form-group mb-3">
-                            <label asp-for="Title" class="form-label fw-bold"></label>
-                            <input asp-for="Title" class="form-control" placeholder="Nhập tiêu đề bài tập tự luận" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Description" class="form-label fw-bold"></label>
-                            <textarea asp-for="Description" class="form-control" rows="4" 
-                                placeholder="Mô tả về bài tập, yêu cầu cần đạt được..."></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
+                <h1 class="page-title">
+                    <div class="page-icon"><i class="fas fa-pen-fancy"></i></div>
+                    <div>
+                        <div>Thêm Bài Tập Tự Luận</div>
+                        <div class="page-subtitle">Tạo bài tập tự luận mới cho khóa học</div>
+                    </div>
+                </h1>
 
-                        <div class="form-group mb-3">
-                            <label asp-for="Instructions" class="form-label fw-bold"></label>
-                            <textarea asp-for="Instructions" class="form-control" rows="3" 
-                                placeholder="Hướng dẫn chi tiết cách làm bài, format yêu cầu..."></textarea>
-                            <span asp-validation-for="Instructions" class="text-danger"></span>
-                        </div>
-
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label asp-for="TimeLimit" class="form-label fw-bold"></label>
-                                    <div class="input-group">
-                                        <input asp-for="TimeLimit" type="number" class="form-control" min="0" 
-                                            placeholder="Để trống nếu không giới hạn" />
-                                        <span class="input-group-text">phút</span>
-                                    </div>
-                                    <span asp-validation-for="TimeLimit" class="text-danger"></span>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group mb-3">
-                                    <label asp-for="MaxScore" class="form-label fw-bold"></label>
-                                    <input asp-for="MaxScore" type="number" step="0.1" class="form-control" min="0" />
-                                    <span asp-validation-for="MaxScore" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group mb-4">
-                            <label asp-for="AnswerKeyFile" class="form-label fw-bold"></label>
-                            <input asp-for="AnswerKeyFile" type="file" class="form-control" 
-                                accept=".pdf,.doc,.docx,.txt" />
-                            <small class="form-text text-muted">
-                                Upload file đáp án chuẩn (tùy chọn). Hỗ trợ: PDF, Word, Text
-                            </small>
-                            <span asp-validation-for="AnswerKeyFile" class="text-danger"></span>
-                        </div>
-
-                        <div class="alert alert-info">
-                            <h6><i class="fas fa-info-circle"></i> Lưu ý về bài tập tự luận:</h6>
-                            <ul class="mb-0">
-                                <li>Học sinh sẽ nhập đáp án dạng văn bản và có thể đính kèm file</li>
-                                <li>Giáo viên cần chấm điểm và nhận xét thủ công</li>
-                                <li>File đáp án chuẩn sẽ giúp việc chấm điểm thuận tiện hơn</li>
-                            </ul>
-                        </div>
-
-                        <div class="d-flex justify-content-between">
-                            <a asp-controller="Exercise" asp-action="Details" asp-route-id="@Model.CourseId" 
-                                class="btn btn-secondary">
-                                <i class="fas fa-arrow-left"></i> Quay lại
-                            </a>
-                            <button type="submit" class="btn btn-success">
-                                <i class="fas fa-plus"></i> Tạo bài tập tự luận
-                            </button>
-                        </div>
-                    </form>
-                </div>
             </div>
         </div>
+    </div>
+
+    <!-- Messages -->
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="message success"><i class="fas fa-check-circle"></i>
+            <span>@TempData["SuccessMessage"]</span>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="message error"><i class="fas fa-exclamation-triangle"></i>
+            <span>@TempData["ErrorMessage"]</span>
+        </div>
+    }
+
+    <div class="message success" id="successMessage"><i class="fas fa-check-circle"></i> <span>Thao tác thành công!</span></div>
+    <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span id="errorText">Có lỗi xảy ra!</span></div>
+    <div class="message info" id="infoMessage"><i class="fas fa-info-circle"></i> <span id="infoText">Thông tin!</span></div>
+
+    <!-- Progress Steps -->
+    <div class="progress-steps">
+        <div class="step active"><div class="step-number">1</div><span>Thông tin cơ bản</span></div>
+        <div class="step"><div class="step-number">2</div><span>Cài đặt nâng cao</span></div>
+        <div class="step"><div class="step-number">3</div><span>Hoàn thành</span></div>
+    </div>
+
+    <!-- Form Container -->
+    <div class="form-container">
+
+        <form asp-action="CreateEssayExercise" method="post"  id="essayForm">
+            @Html.AntiForgeryToken()
+
+            <input asp-for="CourseId" type="hidden" />
+
+            <!-- Basic Information Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-info-circle"></i></div>
+                    Thông tin cơ bản
+                </h2>
+
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label required">@Html.DisplayNameFor(m => m.Title)</label>
+                    <input asp-for="Title" class="form-input" placeholder="Nhập tiêu đề bài tập tự luận..." />
+                    <span asp-validation-for="Title" class="form-error"></span>
+                    <div class="form-help"><i class="fas fa-lightbulb"></i> Tiêu đề nên rõ ràng, mô tả chính xác nội dung bài tập</div>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Description" class="form-label">@Html.DisplayNameFor(m => m.Description)</label>
+                    <textarea asp-for="Description" class="form-input form-textarea large"
+                              placeholder="Mô tả chi tiết về bài tập, yêu cầu, mục tiêu học tập..."></textarea>
+                    <span asp-validation-for="Description" class="form-error"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="Instructions" class="form-label">@Html.DisplayNameFor(m => m.Instructions)</label>
+                    <textarea asp-for="Instructions" class="form-input form-textarea"
+                              placeholder="Hướng dẫn cụ thể cách làm bài, format nộp bài..."></textarea>
+                    <span asp-validation-for="Instructions" class="form-error"></span>
+                </div>
+            </div>
+
+            <!-- Settings Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-cogs"></i></div>
+                    Cài đặt bài tập
+                </h2>
+
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label asp-for="TimeLimit" class="form-label">@Html.DisplayNameFor(m => m.TimeLimit)</label>
+                        <input asp-for="TimeLimit" type="number" class="form-input" min="0" max="1440" placeholder="Nhập thời gian (phút)" />
+                        <span asp-validation-for="TimeLimit" class="form-error"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label asp-for="MaxScore" class="form-label required">@Html.DisplayNameFor(m => m.MaxScore)</label>
+                        <input asp-for="MaxScore" type="number" class="form-input" min="0" max="100" step="0.5" placeholder="Nhập điểm tối đa" />
+                        <span asp-validation-for="MaxScore" class="form-error"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Answer Key Section -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <div class="section-icon"><i class="fas fa-file-alt"></i></div>
+                    File đáp án chuẩn (tùy chọn)
+                </h2>
+
+                <div class="form-group">
+                    <label asp-for="AnswerKeyFile" class="form-label">@Html.DisplayNameFor(m => m.AnswerKeyFile)</label>
+
+                    <div class="file-upload-container" id="fileUploadContainer">
+                        <input asp-for="AnswerKeyFile" type="file" class="file-upload-input" id="answerKeyFile"
+                               accept=".pdf,.doc,.docx,.txt,.zip,.rar" />
+                        <div class="file-upload-content" id="fileUploadContent">
+                            <div class="file-upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                            <div class="file-upload-text">Kéo thả file vào đây hoặc click để chọn</div>
+                            <div class="file-upload-hint">Hỗ trợ: PDF, DOC, DOCX, TXT, ZIP, RAR (Tối đa 10MB)</div>
+                            <small class="form-text text-muted">Upload file đáp án chuẩn (tùy chọn). Hỗ trợ PDF, Word, Text.</small>
+                        </div>
+                    </div>
+
+                    <span asp-validation-for="AnswerKeyFile" class="form-error"></span>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="@Url.Action("Index", "Exercise", new { courseId = Model.CourseId })"
+                   class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Hủy bỏ
+                </a>
+
+                <button type="button" class="btn btn-secondary" id="previewBtn">
+                    <i class="fas fa-eye"></i> Xem trước
+                </button>
+
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                    <i class="fas fa-save"></i> Tạo bài tập
+                </button>
+            </div>
+        </form>
+
     </div>
 </div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
     <script>
-        // Preview file name when selected
-        document.querySelector('input[type="file"]').addEventListener('change', function(e) {
-            const fileName = e.target.files[0]?.name || 'Chưa chọn file';
-            const small = e.target.parentElement.querySelector('small');
-            if (e.target.files[0]) {
-                small.innerHTML = `<strong>File đã chọn:</strong> ${fileName}`;
-                small.className = 'form-text text-success';
-            } else {
-                small.innerHTML = 'Upload file đáp án chuẩn (tùy chọn). Hỗ trợ: PDF, Word, Text';
-                small.className = 'form-text text-muted';
+        const CLOUD_NAME = 'dm72n5rzn'; // hoặc inject via ViewBag
+        const UPLOAD_PRESET = 'my_unsigned_preset';
+
+        async function uploadFileToCloudinary(file) {
+            if (!file) return null;
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`, {
+                method: 'POST',
+                body: formData
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.error('Cloudinary upload error', data);
+                alert(data.error?.message || 'Upload thất bại');
+                return null;
             }
+            return data; // contains secure_url, public_id, etc.
+        }
+
+        function formatBytes(bytes) {
+            if (!bytes) return '0 KB';
+            const kb = bytes / 1024;
+            if (kb < 1024) return `${kb.toFixed(1)} KB`;
+            return `${(kb / 1024).toFixed(2)} MB`;
+        }
+
+        // Hiển thị tên file + kích thước trong khu vực upload
+        function showSelectedFileInfo(containerEl, file) {
+            if (!containerEl) return;
+            let infoEl = containerEl.querySelector('.file-name-info');
+            if (!infoEl) {
+                infoEl = document.createElement('div');
+                infoEl.className = 'file-name-info';
+                infoEl.style.marginTop = '10px';
+                infoEl.style.fontSize = '0.95rem';
+                infoEl.style.color = '#075985';
+                infoEl.style.display = 'flex';
+                infoEl.style.gap = '8px';
+                infoEl.style.alignItems = 'center';
+                containerEl.appendChild(infoEl);
+            }
+            infoEl.innerHTML = `<i class="fas fa-file-alt"></i> <strong>${file.name}</strong> <span style="color:#6b7280;">(${formatBytes(file.size)})</span>`;
+        }
+
+        // Hiển thị trạng thái upload (spinning / uploaded)
+        function showUploadStatus(containerEl, status, fileName) {
+            let statusEl = containerEl.querySelector('.file-upload-status');
+            if (!statusEl) {
+                statusEl = document.createElement('div');
+                statusEl.className = 'file-upload-status';
+                statusEl.style.marginTop = '8px';
+                containerEl.appendChild(statusEl);
+            }
+            if (status === 'uploading') {
+                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang upload ${fileName}...`;
+                statusEl.style.color = '#0ea5a3';
+            } else if (status === 'done') {
+                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Đã upload ${fileName}`;
+                statusEl.style.color = '#059669';
+            } else if (status === 'error') {
+                statusEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> Upload thất bại`;
+                statusEl.style.color = '#dc2626';
+            } else {
+                statusEl.innerHTML = '';
+            }
+        }
+
+        document.getElementById('answerKeyFile')?.addEventListener('change', async function (e) {
+            const input = e.target;
+            const file = input.files && input.files[0];
+            const container = document.getElementById('fileUploadContent') || input.closest('.file-upload-container');
+            if (!file) {
+                // clear UI
+                showUploadStatus(container, '');
+                const info = container?.querySelector('.file-name-info');
+                if (info) info.remove();
+                return;
+            }
+
+            // Hiển thị tên + kích thước ngay khi chọn file
+            showSelectedFileInfo(container, file);
+
+            if (file.size > 10 * 1024 * 1024) {
+                alert('File quá 10MB');
+                return;
+            }
+
+            // show uploading status
+            showUploadStatus(container, 'uploading', file.name);
+
+            const uploadResult = await uploadFileToCloudinary(file);
+            if (!uploadResult) {
+                showUploadStatus(container, 'error');
+                return;
+            }
+
+            // store the returned URL/public_id into a hidden input so server receives metadata
+            let hiddenUrl = document.querySelector('input[name="AnswerKeyCloudUrl"]');
+            if (!hiddenUrl) {
+                hiddenUrl = document.createElement('input');
+                hiddenUrl.type = 'hidden';
+                hiddenUrl.name = 'AnswerKeyCloudUrl';
+                document.getElementById('essayForm').appendChild(hiddenUrl);
+            }
+            hiddenUrl.value = uploadResult.secure_url;
+
+            let hiddenId = document.querySelector('input[name="AnswerKeyPublicId"]');
+            if (!hiddenId) {
+                hiddenId = document.createElement('input');
+                hiddenId.type = 'hidden';
+                hiddenId.name = 'AnswerKeyPublicId';
+                document.getElementById('essayForm').appendChild(hiddenId);
+            }
+            hiddenId.value = uploadResult.public_id;
+
+            // update UI: show uploaded status
+            showUploadStatus(container, 'done', file.name);
+
+            // update the small hint text if present
+            const small = input.parentElement.querySelector('small');
+            if (small) small.innerHTML = `<strong>Uploaded:</strong> ${file.name}`;
         });
     </script>
 }

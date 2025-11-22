@@ -9,8 +9,8 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/LearnX_App.styles.css" asp-append-version="true" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
-
-</head>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" </head>
 
 
 <body>
@@ -21,12 +21,12 @@
                 <div class="nav-content">
                     <!-- Logo Section -->
                     <div class="logo-section">
-                        <div class="logo-container">
+                        <a asp-controller="Course" asp-action="Index" class="logo-container text-decoration-none">
                             <div class="logo-icon">
                                 <i class="fas fa-graduation-cap"></i>
                             </div>
                             <h2 class="brand-name">LearX</h2>
-                        </div>
+                        </a>
                         <div class="tagline">
                             <h3 class="tagline-text">Learn from the best</h3>
                             <div class="tagline-underline"></div>
@@ -34,8 +34,8 @@
                     </div>
 
                     <!-- User Profile (when authenticated) -->
-                    
-                    
+
+
                 </div>
             </div>
         </nav>
@@ -48,6 +48,15 @@
                     <ul class="nav-menu">
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
                             <a class="nav-link" asp-area="" asp-controller="Course" asp-action="Index">
+                                <div class="nav-icon">
+                                    <i class="fa-solid fa-house-chimney"></i>
+                                </div>
+                                <span class="nav-text">Trang chủ</span>
+                                <div class="nav-indicator"></div>
+                            </a>
+                        </li>
+                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
+                            <a class="nav-link" asp-area="" asp-controller="Course" asp-action="MyCourse">
                                 <div class="nav-icon">
                                     <i class="fas fa-book-open"></i>
                                 </div>
@@ -73,15 +82,7 @@
                                 <div class="nav-indicator"></div>
                             </a>
                         </li>
-                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
-                            <a class="nav-link" asp-area="" asp-controller="Test" asp-action="Index">
-                                <div class="nav-icon">
-                                    <i class="fas fa-clipboard-check"></i>
-                                </div>
-                                <span class="nav-text">Bài kiểm tra</span>
-                                <div class="nav-indicator"></div>
-                            </a>
-                        </li>
+                        
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
                             <a class="nav-link" asp-area="" asp-controller="Scores" asp-action="Index">
                                 <div class="nav-icon">
@@ -97,7 +98,7 @@
                                     <i class="fas fa-comments"></i>
                                 </div>
                                 <span class="nav-text">Tin nhắn</span>
-                           
+
                             </a>
                         </li>
                         <li class="nav-item mx-3 logout-item">
@@ -135,7 +136,7 @@
                     </div>
                     <ul class="mobile-nav-menu">
                         <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
-                            <a class="mobile-nav-link" asp-area="" asp-controller="Course" asp-action="Index">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="Course" asp-action="MyCourse">
                                 <i class="fas fa-book-open"></i>
                                 <span>Khóa học</span>
                             </a>
@@ -168,7 +169,6 @@
                             <a class="mobile-nav-link" asp-area="" asp-controller="Messages" asp-action="Chat">
                                 <i class="fas fa-comments"></i>
                                 <span>Tin nhắn</span>
-                                <span class="mobile-badge">2</span>
                             </a>
                         </li>
                         <li class="mobile-nav-item">
@@ -202,7 +202,7 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const mobileToggle = document.querySelector('.mobile-menu-toggle');
             const mobileNav = document.getElementById('mobile-nav');
             const mobileClose = document.querySelector('.mobile-nav-close');
@@ -210,7 +210,7 @@
 
             function toggleMobileMenu() {
                 mobileNav.classList.toggle('active');
-                
+
                 if (mobileNav.classList.contains('active')) {
                     hamburgerLines[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
                     hamburgerLines[1].style.opacity = '0';
@@ -230,9 +230,9 @@
                 mobileClose.addEventListener('click', toggleMobileMenu);
             }
 
-            document.addEventListener('click', function(e) {
-                if (mobileNav && mobileNav.classList.contains('active') && 
-                    !mobileNav.contains(e.target) && 
+            document.addEventListener('click', function (e) {
+                if (mobileNav && mobileNav.classList.contains('active') &&
+                    !mobileNav.contains(e.target) &&
                     !mobileToggle.contains(e.target)) {
                     toggleMobileMenu();
                 }
@@ -240,7 +240,7 @@
 
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-link');
             mobileNavLinks.forEach(link => {
-                link.addEventListener('click', function() {
+                link.addEventListener('click', function () {
                     // Remove active from all
                     document.querySelectorAll('.mobile-nav-item').forEach(item => {
                         item.classList.remove('active');

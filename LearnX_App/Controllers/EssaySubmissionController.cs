@@ -4,6 +4,8 @@ using LearnX_App.Models;
 using LearnX_ModelView.Catalog.EssaySubmission;
 using LearnX_ModelView.Catalog.Exercise;
 using Microsoft.AspNetCore.Mvc;
+using CloudinaryDotNet;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LearnX_App.Controllers
 {
@@ -13,17 +15,21 @@ namespace LearnX_App.Controllers
         private readonly IExerciseApiClient _exerciseService;
         private readonly ICourseApiClient _courseService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly Cloudinary _cloudinary; // add field and inject in ctor
+
         [ActivatorUtilitiesConstructor]
         public EssaySubmissionController(
             IEssaySubmissionApiClient essaySubmissionService,
             IExerciseApiClient exerciseService,
             ICourseApiClient courseService,
-            IWebHostEnvironment webHostEnvironment)
+            IWebHostEnvironment webHostEnvironment,
+            Cloudinary cloudinary)
         {
             _essaySubmissionService = essaySubmissionService;
             _exerciseService = exerciseService;
             _courseService = courseService;
             _webHostEnvironment = webHostEnvironment;
+            _cloudinary = cloudinary;
         }
 
         // GET: Tạo bài tập tự luận mới
@@ -34,66 +40,55 @@ namespace LearnX_App.Controllers
             {
                 CourseId = CourseId
             };
+
             return View(model);
         }
 
         // POST: Tạo bài tập tự luận
         [HttpPost]
-        public async Task<IActionResult> CreateEssayExercise(CreateEssayExerciseViewModel model)
+        public async Task<IActionResult> CreateEssayExercise(CreateEssayExerciseViewModel model, string? AnswerKeyCloudUrl, string? AnswerKeyPublicId)
         {
-
-
-            if (!ModelState.IsValid)
-            {
-                return View(model);
-            }
+            if (!ModelState.IsValid) return View(model);
 
             try
             {
-                // Upload file đáp án chuẩn nếu có
-                string? answerKeyFileName = null;
-                if (model.AnswerKeyFile != null && model.AnswerKeyFile.Length > 0)
-                {
-                    var uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "answer-keys");
-                    if (!Directory.Exists(uploadPath))
-                    {
-                        Directory.CreateDirectory(uploadPath);
-                    }
+                // Nếu client đã upload trực tiếp lên Cloudinary sẽ gửi AnswerKeyCloudUrl
+                string? answerKeyUrl = AnswerKeyCloudUrl;
+                string? answerKeyPublicId = AnswerKeyPublicId;
 
-                    answerKeyFileName = $"answerkey_{model.CourseId}_{DateTime.Now:yyyyMMddHHmmss}_{model.AnswerKeyFile.FileName}";
-                    var filePath = Path.Combine(uploadPath, answerKeyFileName);
+                // Nếu client không upload trực tiếp, bạn có thể fallback to server-side upload (see option 2)
 
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.AnswerKeyFile.CopyToAsync(stream);
-                    }
-                }
-
-                // Tạo Exercise cho bài tự luận (không có Questions)
                 var exerciseRequest = new ExerciseRequest
                 {
                     Title = model.Title,
-                    CourseId = model.CourseId
+                    CourseId = model.CourseId,
+                    Category = "Tự Luận",
+                    AnswerFile = answerKeyUrl
                 };
 
                 var exerciseWrapper = new ExerciseRequestWrapper
                 {
                     ExerciseRequest = exerciseRequest,
-                    QuestionRequest = new List<QuestionRequest>() // Empty list để đánh dấu là bài tự luận
+                    QuestionRequest = new List<QuestionRequest>() // empty = essay
                 };
 
                 var result = await _exerciseService.AddExerciseAsync(exerciseWrapper);
 
                 if (result.IsSuccessed)
                 {
+                    // Save answer key metadata to your API/service if you need to link it to the exercise
+                    if (!string.IsNullOrEmpty(answerKeyUrl))
+                    {
+                        // example: call EBook/Resource API to save link or extend Exercise model
+                        // await _exerciseService.AddAnswerKeyToExerciseAsync(result.ResultObj, answerKeyUrl, answerKeyPublicId);
+                    }
+
                     TempData["Success"] = "Tạo bài tập tự luận thành công!";
                     return RedirectToAction("Details", "Exercise", new { id = model.CourseId });
                 }
-                else
-                {
-                    TempData["Error"] = result.Message ?? "Có lỗi xảy ra khi tạo bài tập.";
-                    return View(model);
-                }
+
+                TempData["Error"] = result.Message ?? "Có lỗi xảy ra khi tạo bài tập.";
+                return View(model);
             }
             catch (Exception ex)
             {
@@ -276,21 +271,17 @@ namespace LearnX_App.Controllers
             }
 
             var isInMyCourse = courseofUser.MyCourse?.Any(c => c.CourseID == exercise.CourseId) ?? false;
-            var isInCourseSigned = courseofUser.CourseSinged?.Any(c => c.CourseID == exercise.CourseId) ?? false;
 
-            if (!isInMyCourse && !isInCourseSigned)
+            if (!isInMyCourse)
             {
                 TempData["Error"] = "Bạn không có quyền truy cập vào bài tập này.";
                 return RedirectToAction("Index", "Course");
             }
-
             // Truyền ViewBag để View sử dụng
             ViewBag.isInMyCourse = isInMyCourse;
-            ViewBag.isInCourseSigned = isInCourseSigned;
 
-            var submissions = showAll && isInMyCourse ?
-                await _essaySubmissionService.GetEssaySubmissionsByExerciseAsync(exerciseId) :
-                await _essaySubmissionService.GetEssaySubmissionsByUserAndExerciseAsync(userGuid, exerciseId);
+            var submissions = await _essaySubmissionService.GetEssaySubmissionsByExerciseAsync(exerciseId)
+                ;
 
             var viewModel = new EssaySubmissionListViewModel
             {
@@ -298,6 +289,7 @@ namespace LearnX_App.Controllers
                 ExerciseId = exerciseId,
                 ShowAllSubmissions = showAll && isInMyCourse, // Chỉ cho phép showAll nếu là chủ sở hữu
                 IsTeacher = isInMyCourse // Thay đổi logic kiểm tra
+                
             };
 
             return View(viewModel);
@@ -318,26 +310,23 @@ namespace LearnX_App.Controllers
 
         // POST: Giáo viên thêm nhận xét
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> AddTeacherComment(int id, string comment)
         {
+            var isAjax = Request.Headers["X-Requested-With"] == "XMLHttpRequest"
+                         || Request.Headers["Accept"].ToString().Contains("application/json");
+
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Không có quyền truy cập" });
-                }
+                if (isAjax) return Json(new { success = false, message = "Không có quyền truy cập" });
                 return RedirectToAction("Login", "Account");
             }
 
-            // Kiểm tra quyền - phải là chủ sở hữu khóa học
             var submission = await _essaySubmissionService.GetEssaySubmissionByIdAsync(id);
             if (submission == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Không tìm thấy bài nộp" });
-                }
+                if (isAjax) return Json(new { success = false, message = "Không tìm thấy bài nộp" });
                 TempData["Error"] = "Không tìm thấy bài nộp.";
                 return RedirectToAction("ViewSubmissionDetail", new { id });
             }
@@ -345,10 +334,7 @@ namespace LearnX_App.Controllers
             var exercise = await _exerciseService.GetExerciseByIdAsync(submission.ExerciseId);
             if (exercise == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Không tìm thấy bài tập" });
-                }
+                if (isAjax) return Json(new { success = false, message = "Không tìm thấy bài tập" });
                 TempData["Error"] = "Không tìm thấy bài tập.";
                 return RedirectToAction("ViewSubmissionDetail", new { id });
             }
@@ -359,49 +345,36 @@ namespace LearnX_App.Controllers
 
             if (!isOwner)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Bạn không có quyền thực hiện chức năng này" });
-                }
+                if (isAjax) return Json(new { success = false, message = "Bạn không có quyền thực hiện chức năng này" });
                 TempData["Error"] = "Bạn không có quyền thực hiện chức năng này.";
                 return RedirectToAction("ViewSubmissionDetail", new { id });
             }
 
             try
             {
-                var result = await _essaySubmissionService.AddTeacherCommentAsync(id, comment);
-                
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
+                var result = await _essaySubmissionService.AddTeacherCommentAsync(id, comment ?? string.Empty);
+
+                if (isAjax)
                 {
-                    if (result.IsSuccessed)
+                    return Json(new
                     {
-                        return Json(new { success = true, message = "Thêm nhận xét thành công!" });
-                    }
-                    else
-                    {
-                        return Json(new { success = false, message = result.Message ?? "Có lỗi xảy ra khi thêm nhận xét" });
-                    }
+                        success = result.IsSuccessed,
+                        message = result.IsSuccessed ? "Thêm nhận xét thành công!" : (result.Message ?? "Có lỗi xảy ra khi thêm nhận xét")
+                    });
                 }
-                
-                // For regular form submission
+
                 if (result.IsSuccessed)
                 {
-                    Console.WriteLine($"Thành công : {comment}");
                     TempData["Success"] = "Thêm nhận xét thành công!";
                 }
                 else
                 {
-                    Console.WriteLine($"Lỗi : {result.Message} , {comment}");
                     TempData["Error"] = result.Message ?? "Có lỗi xảy ra khi thêm nhận xét.";
                 }
             }
             catch (Exception ex)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
-                    Request.ContentType?.Contains("multipart/form-data") == true)
-                {
-                    return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
-                }
+                if (isAjax) return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
                 TempData["Error"] = $"Lỗi: {ex.Message}";
             }
 
@@ -410,23 +383,16 @@ namespace LearnX_App.Controllers
 
         // POST: Cập nhật trạng thái bài nộp
         [HttpPost]
+        [Authorize(Roles ="Teacher")]
         public async Task<IActionResult> UpdateStatus(int id, string status)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            if (string.IsNullOrEmpty(userId))
-            {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest")
-                {
-                    return Json(new { success = false, message = "Không có quyền truy cập" });
-                }
-                return RedirectToAction("Login", "Account");
-            }
-
+        
             // Kiểm tra quyền - phải là chủ sở hữu khóa học
             var submission = await _essaySubmissionService.GetEssaySubmissionByIdAsync(id);
             if (submission == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)
                 {
                     return Json(new { success = false, message = "Không tìm thấy bài nộp" });
@@ -438,7 +404,7 @@ namespace LearnX_App.Controllers
             var exercise = await _exerciseService.GetExerciseByIdAsync(submission.ExerciseId);
             if (exercise == null)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)
                 {
                     return Json(new { success = false, message = "Không tìm thấy bài tập" });
@@ -453,7 +419,7 @@ namespace LearnX_App.Controllers
 
             if (!isOwner)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)
                 {
                     return Json(new { success = false, message = "Bạn không có quyền thực hiện chức năng này" });
@@ -466,7 +432,7 @@ namespace LearnX_App.Controllers
             {
                 var result = await _essaySubmissionService.UpdateStatusAsync(id, status);
 
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)
                 {
                     if (result.IsSuccessed)
@@ -491,7 +457,7 @@ namespace LearnX_App.Controllers
             }
             catch (Exception ex)
             {
-                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" || 
+                if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)
                 {
                     return Json(new { success = false, message = $"Lỗi: {ex.Message}" });
