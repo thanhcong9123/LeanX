@@ -1,4 +1,4 @@
-c:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\bin\Debug\net8.0\LearnX_Utilities.deps.json
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\bin\Debug\net8.0\LearnX_Utilities.deps.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\bin\Debug\net8.0\LearnX_Utilities.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\bin\Debug\net8.0\LearnX_Utilities.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\LearnX_Utilities.csproj.AssemblyReference.cache
@@ -10,4 +10,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\LearnX_Utilities.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\refint\LearnX_Utilities.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\LearnX_Utilities.pdb
-c:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\ref\LearnX_Utilities.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_Utilities\obj\Debug\net8.0\ref\LearnX_Utilities.dll

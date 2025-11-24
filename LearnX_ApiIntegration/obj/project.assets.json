@@ -9568,11 +9568,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "projectUniqueName": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
       "projectName": "LearnX_ApiIntegration",
-      "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
+      "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\LearnX_ApiIntegration.csproj",
       "packagesPath": "C:\\Users\\CONGGGG\\.nuget\\packages\\",
-      "outputPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\obj\\",
+      "outputPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ApiIntegration\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -9599,8 +9599,8 @@
             "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ModelView\\LearnX_ModelView.csproj": {
               "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ModelView\\LearnX_ModelView.csproj"
             },
-            "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Utilities\\LearnX_Utilities.csproj": {
-              "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Utilities\\LearnX_Utilities.csproj"
+            "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Utilities\\LearnX_Utilities.csproj": {
+              "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Utilities\\LearnX_Utilities.csproj"
             }
           }
         }

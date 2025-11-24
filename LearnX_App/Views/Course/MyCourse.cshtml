@@ -70,23 +70,24 @@
                 </a>
             }
         </div>
-        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="tab-pane fade show d-flex flex-wrap gap-3 justify-content-between  tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
             @foreach (var course in Model.CourseSinged)
             {
-                <div class="course-item">
+                 <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID" class="course-item text-decoration-none">
                     <div class="course-info-basic">
                         <h2 class="course-name">@course.CourseName</h2>
-                        <h5 class="course-instruc">@course.Instructor?.UserName</h5>
+                        <p class="course-instruc d-flex align-items-center gap-1"><i
+                                class="fa-solid fa-chalkboard-user mg-3"></i>@course.Instructor?.UserName</p>
                     </div>
                     <div class="course-info-des">
                         <p class="course-dp">@course.Description</p>
-                        <div>
+                        <div class="d-flex justify-content-between">
                             <p class="course-pri">@course.Price</p>
                             <div class="course-date">@course.StartDate.ToString("dd/MM/yyyy") -
                                 @course.EndDate.ToString("dd/MM/yyyy")</div>
                         </div>
                     </div>
-                </div>
+                </a>
             }
         </div>
 

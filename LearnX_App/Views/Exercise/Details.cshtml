@@ -40,17 +40,20 @@
                     </h1>
                 </div>
 
-                <div class="header-actions">
-                    <a href="@Url.Action("Create", "Exercise", new { courseid = courseId })"
-                        class="action-btn btn-quiz">
-                        <i class="fas fa-plus-circle"></i> Thêm Bài Tập Trắc Nghiệm
-                    </a>
+                @if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
+                {
+                    <div class="header-actions">
+                        <a href="@Url.Action("Create", "Exercise", new { courseid = courseId })"
+                            class="action-btn btn-quiz">
+                            <i class="fas fa-plus-circle"></i> Thêm Bài Tập Trắc Nghiệm
+                        </a>
 
-                    <a asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@courseId"
-                        class="action-btn btn-essay">
-                        <i class="fas fa-pen-fancy"></i> Thêm Bài Tập Tự Luận
-                    </a>
-                </div>
+                        <a asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@courseId"
+                            class="action-btn btn-essay">
+                            <i class="fas fa-pen-fancy"></i> Thêm Bài Tập Tự Luận
+                        </a>
+                    </div>
+                }
             </div>
         </div>
 
@@ -163,15 +166,7 @@
                             </div>
 
                             <div class="exercise-actions">
-                                @if (User.IsInRole("Student"))
-                                {
-                                    <a href="@Url.Action("DoExercise", "Exercise", new { exerciseId = exercise.ExerciseId })"
-                                        class="action-icon-btn btn-view" title="Làm bài tập">
-                                        <i class="fas fa-play"></i>
-                                    </a>
-
-                                }
-                                else
+                                @if (User.IsInRole("Teacher"))
                                 {
                                     <a href="@Url.Action("DoExercise", "Exercise", new { exerciseId = exercise.ExerciseId })"
                                         class="action-icon-btn btn-view" title="Xem chi tiết">
@@ -181,6 +176,15 @@
                                         onclick="deleteExercise(@exercise.ExerciseId, '@exercise.Title')">
                                         <i class="fas fa-trash"></i>
                                     </button>
+
+
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("DoExercise", "Exercise", new { exerciseId = exercise.ExerciseId })"
+                                        class="action-icon-btn btn-view" title="Làm bài tập">
+                                        <i class="fas fa-play"></i>
+                                    </a>
                                 }
 
 
@@ -224,6 +228,7 @@
             questionCount = e.Questions?.Count ?? 0,
             submissionCount = e.EssaySubmissions?.Count ?? 0,
             hasAnswer = !string.IsNullOrEmpty(e.AnswerFile),
+            role = false ? User.IsInRole("Teacher") || User.IsInRole("Admin") : true,
             // use ISO format for safe parsing in JS
         }).ToList();
 
@@ -238,56 +243,56 @@
 
     <!-- Script của bạn giữ nguyên -->
     <script>
-         const exercises = @Html.Raw(exercisesJson);
-    let filteredExercises = exercises.slice();
-    const viewSubmissionsUrlTemplate = '@Url.Action("ViewSubmissions","EssaySubmission", new { exerciseId = "REPLACE_ID" })';
+        const exercises = @Html.Raw(exercisesJson);
+        let filteredExercises = exercises.slice();
+        const viewSubmissionsUrlTemplate = '@Url.Action("ViewSubmissions", "EssaySubmission", new { exerciseId = "REPLACE_ID" })';
 
-    document.addEventListener('DOMContentLoaded', function() {
-        const exercisesGrid = document.getElementById('exercisesGrid');
-        const emptyState = document.getElementById('emptyState');
-        const loadingState = document.getElementById('loadingState');
-        const exerciseCount = document.getElementById('exerciseCount');
-        const searchInput = document.getElementById('searchInput');
-        const categoryFilter = document.getElementById('categoryFilter');
-        const sortSelect = document.getElementById('sortSelect');
-        const successMessage = document.getElementById('successMessage');
-        const errorMessage = document.getElementById('errorMessage');
-        const infoMessage = document.getElementById('infoMessage');
+        document.addEventListener('DOMContentLoaded', function () {
+            const exercisesGrid = document.getElementById('exercisesGrid');
+            const emptyState = document.getElementById('emptyState');
+            const loadingState = document.getElementById('loadingState');
+            const exerciseCount = document.getElementById('exerciseCount');
+            const searchInput = document.getElementById('searchInput');
+            const categoryFilter = document.getElementById('categoryFilter');
+            const sortSelect = document.getElementById('sortSelect');
+            const successMessage = document.getElementById('successMessage');
+            const errorMessage = document.getElementById('errorMessage');
+            const infoMessage = document.getElementById('infoMessage');
 
-        // ensure safe defaults if elements missing
-        const safeShowLoading = () => { if (loadingState) loadingState.style.display = 'grid'; if (exercisesGrid) exercisesGrid.style.display = 'none'; if (emptyState) emptyState.style.display = 'none'; };
-        const safeHideLoading = () => { if (loadingState) loadingState.style.display = 'none'; if (exercisesGrid) exercisesGrid.style.display = 'grid'; };
+            // ensure safe defaults if elements missing
+            const safeShowLoading = () => { if (loadingState) loadingState.style.display = 'grid'; if (exercisesGrid) exercisesGrid.style.display = 'none'; if (emptyState) emptyState.style.display = 'none'; };
+            const safeHideLoading = () => { if (loadingState) loadingState.style.display = 'none'; if (exercisesGrid) exercisesGrid.style.display = 'grid'; };
 
-        // Initialize page
-        function init() {
-            safeShowLoading();
-            setTimeout(() => {
-                safeHideLoading();
-                filterExercises(); // use filtering to render initial set
-                updateExerciseCount();
-            }, 300);
-        }
-
-        // Render exercises (unchanged markup)
-        function renderExercises() {
-            if (!exercisesGrid) return;
-            if (filteredExercises.length === 0) {
-                exercisesGrid.style.display = 'none';
-                if (emptyState) emptyState.style.display = 'block';
-                return;
+            // Initialize page
+            function init() {
+                safeShowLoading();
+                setTimeout(() => {
+                    safeHideLoading();
+                    filterExercises(); // use filtering to render initial set
+                    updateExerciseCount();
+                }, 300);
             }
-            
 
-            exercisesGrid.style.display = 'grid';
-            if (emptyState) emptyState.style.display = 'none';
+            // Render exercises (unchanged markup)
+            function renderExercises() {
+                if (!exercisesGrid) return;
+                if (filteredExercises.length === 0) {
+                    exercisesGrid.style.display = 'none';
+                    if (emptyState) emptyState.style.display = 'block';
+                    return;
+                }
 
-            exercisesGrid.innerHTML = filteredExercises.map(exercise => {
-            // build view link using template replacement
-            const viewUrl = viewSubmissionsUrlTemplate.replace('REPLACE_ID', encodeURIComponent(exercise.exerciseId));
-            // Or for query string:
-            // const viewUrl = `${viewSubmissionsBase}?exerciseId=${encodeURIComponent(exercise.exerciseId)}`;
 
-            return `
+                exercisesGrid.style.display = 'grid';
+                if (emptyState) emptyState.style.display = 'none';
+
+                exercisesGrid.innerHTML = filteredExercises.map(exercise => {
+                    // build view link using template replacement
+                    const viewUrl = viewSubmissionsUrlTemplate.replace('REPLACE_ID', encodeURIComponent(exercise.exerciseId));
+                    // Or for query string:
+                    // const viewUrl = `${viewSubmissionsBase}?exerciseId=${encodeURIComponent(exercise.exerciseId)}`;
+
+                    return `
                 <div class="exercise-card" data-exercise-id="${exercise.exerciseId}">
                     <div class="exercise-header">
                         <div class="exercise-type ${exercise.questionCount > 0 ? 'type-quiz' : 'type-essay'}">
@@ -323,93 +328,101 @@
                             </div>
                         </div>
 
-                        <div class="exercise-actions">
+                       `if (exercise.role = true) {
+                        ` <div class="exercise-actions">
                             <a href="${viewUrl}" class="action-icon-btn btn-view" title="Xem chi tiết">
                                 <i class="fas fa-eye"></i>
                             </a>
                             <button class="action-icon-btn btn-delete" onclick="deleteExercise(${exercise.exerciseId}, '${escapeAttr(exercise.title)}')">
                                 <i class="fas fa-trash"></i>
                             </button>
-                        </div>
+                            </div>`
+                    } ``else {
+                        `<a  href="${viewUrl}"
+                            class="action-icon-btn btn-view" title="Làm bài tập">
+                            <i class="fas fa-play"></i>
+                        </a>`
+                    } `
+                       
                     </div>
                 </div>
             `;
-        }).join('');
-        }
-
-        // simple HTML escape helpers
-        function escapeHtml(s) {
-            if (!s) return '';
-            return s.replace(/[&<>"'`]/g, function (c) {
-                return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;','`':'&#x60;'}[c];
-            });
-        }
-        function escapeAttr(s) {
-            return escapeHtml(s).replace(/"/g, '&quot;');
-        }
-
-        // Update exercise count
-        function updateExerciseCount() {
-            if (!exerciseCount) return;
-            const total = filteredExercises.length;
-            const quizCount = filteredExercises.filter(e => e.questionCount > 0).length;
-            const essayCount = total - quizCount;
-            exerciseCount.textContent = `Tổng: ${total} bài tập (${quizCount} trắc nghiệm, ${essayCount} tự luận)`;
-        }
-
-        // Filter and search functions — correctly distinguish quiz vs essay by questionCount
-        function filterExercises() {
-            const searchTerm = (searchInput ? searchInput.value.toLowerCase() : '').trim();
-            const categoryValue = (categoryFilter ? categoryFilter.value : '').trim();
-            const sortValue = (sortSelect ? sortSelect.value : 'newest');
-
-            filteredExercises = exercises.filter(exercise => {
-                const matchesSearch = !searchTerm ||
-                    (exercise.title && exercise.title.toLowerCase().includes(searchTerm)) ||
-                    (exercise.describe && exercise.describe.toLowerCase().includes(searchTerm));
-
-                const matchesCategory = !categoryValue || (exercise.questionCount > 0 ? 'Multiple choice' : 'Essay') === categoryValue || exercise.category === categoryValue;
-
-                return matchesSearch && matchesCategory;
-            });
-
-            // Sort exercises
-            switch (sortValue) {
-                case 'newest':
-                    filteredExercises.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
-                    break;
-                case 'oldest':
-                    filteredExercises.sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate));
-                    break;
-                case 'title':
-                    filteredExercises.sort((a, b) => a.title.localeCompare(b.title));
-                    break;
-                case 'title-desc':
-                    filteredExercises.sort((a, b) => b.title.localeCompare(a.title));
-                    break;
-                case 'category':
-                    filteredExercises.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
-                    break;
+                }).join('');
             }
 
-            renderExercises();
-            updateExerciseCount();
-        }
+            // simple HTML escape helpers
+            function escapeHtml(s) {
+                if (!s) return '';
+                return s.replace(/[&<>"'`]/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;', '`': '&#x60;' }[c];
+                });
+            }
+            function escapeAttr(s) {
+                return escapeHtml(s).replace(/"/g, '&quot;');
+            }
 
-        // Format date
-        function formatDate(dateString) {
-            const date = new Date(dateString);
-            return isNaN(date.getTime()) ? '' : date.toLocaleDateString('vi-VN');
-        }
+            // Update exercise count
+            function updateExerciseCount() {
+                if (!exerciseCount) return;
+                const total = filteredExercises.length;
+                const quizCount = filteredExercises.filter(e => e.questionCount > 0).length;
+                const essayCount = total - quizCount;
+                exerciseCount.textContent = `Tổng: ${total} bài tập (${quizCount} trắc nghiệm, ${essayCount} tự luận)`;
+            }
 
-        // wire events if controls exist
-        if (searchInput) searchInput.addEventListener('input', filterExercises);
-        if (categoryFilter) categoryFilter.addEventListener('change', filterExercises);
-        if (sortSelect) sortSelect.addEventListener('change', filterExercises);
+            // Filter and search functions — correctly distinguish quiz vs essay by questionCount
+            function filterExercises() {
+                const searchTerm = (searchInput ? searchInput.value.toLowerCase() : '').trim();
+                const categoryValue = (categoryFilter ? categoryFilter.value : '').trim();
+                const sortValue = (sortSelect ? sortSelect.value : 'newest');
 
-        // Initialize
-        init();
-    });
+                filteredExercises = exercises.filter(exercise => {
+                    const matchesSearch = !searchTerm ||
+                        (exercise.title && exercise.title.toLowerCase().includes(searchTerm)) ||
+                        (exercise.describe && exercise.describe.toLowerCase().includes(searchTerm));
+
+                    const matchesCategory = !categoryValue || (exercise.questionCount > 0 ? 'Multiple choice' : 'Essay') === categoryValue || exercise.category === categoryValue;
+
+                    return matchesSearch && matchesCategory;
+                });
+
+                // Sort exercises
+                switch (sortValue) {
+                    case 'newest':
+                        filteredExercises.sort((a, b) => new Date(b.createdDate) - new Date(a.createdDate));
+                        break;
+                    case 'oldest':
+                        filteredExercises.sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate));
+                        break;
+                    case 'title':
+                        filteredExercises.sort((a, b) => a.title.localeCompare(b.title));
+                        break;
+                    case 'title-desc':
+                        filteredExercises.sort((a, b) => b.title.localeCompare(a.title));
+                        break;
+                    case 'category':
+                        filteredExercises.sort((a, b) => (a.category || '').localeCompare(b.category || ''));
+                        break;
+                }
+
+                renderExercises();
+                updateExerciseCount();
+            }
+
+            // Format date
+            function formatDate(dateString) {
+                const date = new Date(dateString);
+                return isNaN(date.getTime()) ? '' : date.toLocaleDateString('vi-VN');
+            }
+
+            // wire events if controls exist
+            if (searchInput) searchInput.addEventListener('input', filterExercises);
+            if (categoryFilter) categoryFilter.addEventListener('change', filterExercises);
+            if (sortSelect) sortSelect.addEventListener('change', filterExercises);
+
+            // Initialize
+            init();
+        });
     </script>
 
 </body>

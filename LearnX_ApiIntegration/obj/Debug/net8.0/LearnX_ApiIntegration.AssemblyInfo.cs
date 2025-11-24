@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LearnX_ApiIntegration")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+74052946cd8f170b56dc355bbbd571716eba887b")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+820be65b2981503d267951c246e97bec268e5ab9")]
 [assembly: System.Reflection.AssemblyProductAttribute("LearnX_ApiIntegration")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LearnX_ApiIntegration")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
