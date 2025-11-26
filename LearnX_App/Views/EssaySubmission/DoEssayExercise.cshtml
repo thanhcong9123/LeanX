@@ -168,12 +168,12 @@
             }
         });
 
-        // Clear draft after successful submission
+        @* // Clear draft after successful submission
         @if (Model.IsSubmitted)
         {
             <text>
             localStorage.removeItem('essay_draft_' + @Model.ExerciseId);
             </text>
-        }
+        } *@
     </script>
 }

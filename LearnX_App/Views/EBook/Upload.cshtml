@@ -1,43 +1,420 @@
-@using LearnX_ModelView.Catalog.EBook
-
-@model EBookRequest
-
-
-
-<body>
-    <div class="container mt-5">
-        <h2>Upload Sách Điện Tử</h2>
-        <div class="form-group">
-            <label>Tiêu Đề</label>
-            <input asp-for="Title" class="form-control" />
-        </div>
-        <div class="form-group">
-            <label>Mô Tả</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-        </div>
-        <div class="form-group">
-            <label>Ảnh</label>
-            <input asp-for="imgPath" class="form-control" />
-        </div>
-        <div class="item d-flex">
-            <label for="">File :</label>
-            <form id="upload_form" enctype="multipart/form-data" method="post">
-                <input type="file" name="file1" id="file1" onchange="uploadFile()" autocomplete="episodes"
-                    placeholder="Episodes" id="Episodes"  accept=".pdf"><br>
-                <progress id="progressBar" value="0" max="100" style="width:300px;"></progress>
-                <h3 id="status"></h3>
-                <p id="loaded_n_total"></p>
-            </form>
-
-        </div>
-        <button type="submit" id="create" class="btn btn-success">Upload</button>
-    </div>
-</body>
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-
-    }
-    <script src="~/EBook/create.js" asp-append-version="true"></script>
+@model EbookViewModel
+@{
+    ViewData[index: "Title"] = "Upload EBook";
 }
-<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<link href="~/css/ebook/upload.css" rel="stylesheet">
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="header-content">
+            <div class="header-icon">
+                <i class="fas fa-book-medical"></i>
+            </div>
+            <div class="header-text">
+                <h1>Thêm Sách Mới</h1>
+                <p>Tải lên sách điện tử vào thư viện</p>
+            </div>
+        </div>
+
+        <a href="@Url.Action("Index", "EBook")" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </header>
+
+    <!-- Form Container -->
+    <div class="form-container">
+        <form id="ebookForm" method="post" asp-action="UpLoad" asp-controller="EBook" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+
+            <!-- BASIC INFORMATION -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <span class="section-icon">
+                        <i class="fas fa-info-circle"></i>
+                    </span>
+                    Thông tin cơ bản
+                </h2>
+
+                <div class="form-grid">
+
+                    <!-- Title -->
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-heading label-icon"></i> Tiêu đề sách <span class="required">*</span>
+                        </label>
+                        <input type="text" asp-for="Title" class="form-input" placeholder="Nhập tiêu đề sách..."
+                            required />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <!-- Author -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-user label-icon"></i> Tác giả <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-feather-alt input-icon"></i>
+                            <input type="text" asp-for="Author" class="form-input" placeholder="Tên tác giả..."
+                                required />
+                        </div>
+                        <span asp-validation-for="Author" class="text-danger"></span>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-folder label-icon"></i> Danh mục
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-bookmark input-icon"></i>
+                            <input type="text" asp-for="NameCategory" class="form-input"
+                                placeholder="Ví dụ: Lập trình, Kinh doanh..." />
+                        </div>
+                        <span asp-validation-for="NameCategory" class="text-danger"></span>
+                    </div>
+
+                    <!-- Page Count -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-file-alt label-icon"></i> Số trang <span class="required">*</span>
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fas fa-hashtag input-icon"></i>
+                            <input type="number" asp-for="CountPages" class="form-input" placeholder="Số trang..."
+                                min="1" required />
+                        </div>
+                        <span asp-validation-for="CountPages" class="text-danger"></span>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="form-group">
+                        <label class="form-label">
+                            <i class="fas fa-tag label-icon"></i> Trạng thái <span class="required">*</span>
+                        </label>
+                        <select asp-for="Status" class="form-select" required>
+                            <option value="">-- Chọn trạng thái --</option>
+                            <option value="Free" selected>Miễn phí</option>
+                            <option value="Premium">Premium</option>
+                        </select>
+                        <span asp-validation-for="Status" class="text-danger"></span>
+                    </div>
+
+                    <!-- Description -->
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fas fa-align-left label-icon"></i> Mô tả
+                        </label>
+                        <textarea asp-for="Description" class="form-textarea"
+                            placeholder="Nhập mô tả chi tiết về nội dung sách..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+
+                        <div class="helper-text">
+                            <i class="fas fa-lightbulb"></i> Mô tả chi tiết giúp người đọc hiểu rõ hơn
+                        </div>
+                    </div>
+
+                    <!-- YouTube Link -->
+                    <div class="form-group full-width">
+                        <label class="form-label">
+                            <i class="fab fa-youtube label-icon"></i> Link YouTube (Video ID)
+                        </label>
+                        <div class="input-wrapper">
+                            <i class="fab fa-youtube input-icon"></i>
+                            <input type="text" asp-for="LinkYoutube" class="form-input"
+                                placeholder="Ví dụ: dQw4w9WgXcQ" />
+                        </div>
+                        <span asp-validation-for="LinkYoutube" class="text-danger"></span>
+
+                        <div class="helper-text">
+                            <i class="fas fa-info-circle"></i> Chỉ nhập phần ID (sau v=)
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- IMAGE UPLOAD -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <span class="section-icon"><i class="fas fa-image"></i></span>
+                    Ảnh bìa sách
+                </h2>
+
+                <div class="form-group">
+                    <label class="form-label">
+                        <i class="fas fa-link label-icon"></i>
+                        URL ảnh bìa <span class="required">*</span>
+                    </label>
+
+                    <input type="text" asp-for="imgPath" id="imageUrlInput" class="form-input"
+                        placeholder="Nhập URL ảnh..." required />
+                    <span asp-validation-for="imgPath" class="text-danger"></span>
+
+                    <div class="helper-text">
+                        <i class="fas fa-info-circle"></i> Dán URL ảnh bên ngoài.
+                    </div>
+                </div>
+
+                <div class="image-upload-area" id="imageUploadArea">
+                    <div class="upload-icon"><i class="fas fa-cloud-upload-alt"></i></div>
+                    <p class="upload-text">Xem trước ảnh bìa</p>
+                    <p class="upload-hint">Nhập URL để xem trước</p>
+
+                    <div class="image-preview" id="imagePreview">
+                        <img id="previewImg" src="" alt="Preview" />
+                        <button type="button" class="remove-image-btn" onclick="removeImage()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILE UPLOAD -->
+            <div class="form-section">
+                <h2 class="section-title">
+                    <span class="section-icon"><i class="fas fa-file-pdf"></i></span>
+                    File PDF
+                </h2>
+
+
+
+                <div class="file-upload-container" id="fileUploadContainer">
+                    <div class="file-upload-icon"><i class="fas fa-file-pdf"></i></div>
+                    <p class="upload-text">Kéo thả PDF hoặc bấm để chọn</p>
+                    <p class="upload-hint">Tối đa 50MB</p>
+
+
+                    <input  class="file-input-hidden"  type="hidden" type="file" id="file1" asp-for="FilePath" id="filePathInput" accept=".pdf" />
+
+                    <span asp-validation-for="FilePath" class="text-danger"></span>
+                    <div class="file-preview-card" id="filePreview">
+                        <div class="file-preview-icon"><i class="fas fa-file-pdf"></i></div>
+
+                        <div class="file-preview-info">
+                            <p class="file-preview-name" id="fileName"></p>
+                            <p class="file-preview-meta"><span id="fileSize"></span> • PDF</p>
+                        </div>
+
+                        <button type="button" class="file-remove-btn" onclick="removeFile()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="form-actions">
+                <a href="@Url.Action("Index", "EBook")" class="btn btn-secondary">
+                    <i class="fas fa-times"></i> Hủy
+                </a>
+
+                <button type="submit" id="create" class="btn btn-primary">
+                    <i class="fas fa-check"></i> Thêm sách
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <div class="toast-icon"><i class="fas fa-check"></i></div>
+        <div class="toast-content">
+            <p class="toast-title" id="toastTitle">Thành công</p>
+            <p class="toast-message" id="toastMessage">Thao tác hoàn tất</p>
+        </div>
+    </div>
+
+</div>
+
+
+
+
+<script>
+    // Image preview (fixed: debounce + don't clear input on load error)
+    const imageUrlInput = document.getElementById('imageUrlInput');
+    const imagePreview = document.getElementById('imagePreview');
+    const previewImg = document.getElementById('previewImg');
+    const imageUploadArea = document.getElementById('imageUploadArea');
+
+    let imagePreviewTimer = null;
+
+    function tryPreview(url) {
+        if (!url) {
+            imagePreview.classList.remove('active');
+            imageUploadArea.classList.remove('has-image');
+            previewImg.src = '';
+            return;
+        }
+
+        if (!/^https?:\/\//i.test(url)) {
+            showToast('error', 'Lỗi', 'URL không hợp lệ. Bắt đầu bằng http:// hoặc https://');
+            imagePreview.classList.remove('active');
+            imageUploadArea.classList.remove('has-image');
+            previewImg.src = '';
+            return;
+        }
+
+        // set src and let onload / onerror handle UI
+        previewImg.src = url;
+        // optimistic show while loading
+        imagePreview.classList.add('active');
+    }
+
+    imageUrlInput.addEventListener('input', function () {
+        const url = this.value.trim();
+        clearTimeout(imagePreviewTimer);
+        // if empty immediately hide preview but keep input cleared by user only
+        if (!url) {
+            imagePreview.classList.remove('active');
+            imageUploadArea.classList.remove('has-image');
+            previewImg.src = '';
+            return;
+        }
+        previewImg.addEventListener('error', function () {
+            // do not clear the input — just hide preview and show message
+            previewImg.src = '';
+            imagePreview.classList.remove('active');
+            imageUploadArea.classList.remove('has-image');
+        });
+        // debounce to avoid firing error while user is typing
+        imagePreviewTimer = setTimeout(() => tryPreview(url), 600);
+    });
+
+    imageUrlInput.addEventListener('blur', function () {
+        // try again on blur immediately
+        clearTimeout(imagePreviewTimer);
+        tryPreview(this.value.trim());
+    });
+
+    previewImg.addEventListener('load', function () {
+        imagePreview.classList.add('active');
+        imageUploadArea.classList.add('has-image');
+    });
+
+
+
+    function removeImage(clearInput = true) {
+        if (clearInput) imageUrlInput.value = '';
+        imagePreview.classList.remove('active');
+        imageUploadArea.classList.remove('has-image');
+        previewImg.src = '';
+    }
+
+    // File upload
+    const fileUploadContainer = document.getElementById('fileUploadContainer');
+    const fileInput = document.getElementById('file1');
+    const filePreview = document.getElementById('filePreview');
+
+    fileUploadContainer.addEventListener('click', function (e) {
+        if (!e.target.closest('.file-remove-btn')) {
+            fileInput.click();
+        }
+    });
+
+    fileUploadContainer.addEventListener('dragover', function (e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+    });
+
+    fileUploadContainer.addEventListener('dragleave', function () {
+        this.classList.remove('dragover');
+    });
+
+    fileUploadContainer.addEventListener('drop', function (e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+
+        if (e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            handleFileSelect();
+        }
+    });
+
+    fileInput.addEventListener('change', handleFileSelect);
+
+    function handleFileSelect() {
+        const file = fileInput.files[0];
+        if (file) {
+            if (file.type !== 'application/pdf' && !file.name.toLowerCase().endsWith('.pdf')) {
+                showToast('error', 'Lỗi', 'Vui lòng chọn file PDF hợp lệ.');
+                fileInput.value = '';
+                return;
+            }
+            if (file.size > 50 * 1024 * 1024) {
+                showToast('error', 'Lỗi', 'Dung lượng file không được vượt quá 50MB.');
+                fileInput.value = '';
+                return;
+            }
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = formatFileSize(file.size);
+            if (filePreview) filePreview.classList.add('active');
+        }
+    }
+
+    function removeFile() {
+        fileInput.value = '';
+        document.getElementById('filePathInput').value = '';
+        filePreview.classList.remove('active');
+        showToast('success', 'Đã xóa', 'File đã được gỡ bỏ');
+    }
+
+    function formatFileSize(bytes) {
+        if (bytes === 0) return '0 Bytes';
+        const k = 1024;
+        const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+        const i = Math.floor(Math.log(bytes) / Math.log(k));
+        return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+    }
+
+    // Toast notification
+    function showToast(type, title, message) {
+        const toast = document.getElementById('toast');
+        const toastTitle = document.getElementById('toastTitle');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = toast.querySelector('.toast-icon i');
+
+        toast.className = 'toast ' + type;
+        toastTitle.textContent = title;
+        toastMessage.textContent = message;
+
+        if (type === 'success') {
+            toastIcon.className = 'fas fa-check';
+        } else if (type === 'error') {
+            toastIcon.className = 'fas fa-exclamation-circle';
+        }
+
+        toast.classList.add('active');
+
+        setTimeout(() => {
+            toast.classList.remove('active');
+        }, 4000);
+    }
+
+    // Form validation
+    document.getElementById('ebookForm').addEventListener('submit', function (e) {
+        const filePath = document.getElementById('filePathInput').value;
+
+        if (!filePath) {
+            e.preventDefault();
+            showToast('error', 'Lỗi', 'Vui lòng tải lên file PDF');
+            return false;
+        }
+    });
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function () {
+        // Check if there's an existing image URL
+        if (imageUrlInput.value) {
+            previewImg.src = imageUrlInput.value;
+            imagePreview.classList.add('active');
+            imageUploadArea.classList.add('has-image');
+        }
+    });
+</script>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

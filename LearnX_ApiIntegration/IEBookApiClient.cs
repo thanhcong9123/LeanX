@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.EBook;
+using LearnX_ModelView.Common;
 
 namespace LearnX_ApiIntegration
 {
@@ -11,7 +12,7 @@ namespace LearnX_ApiIntegration
     {
         Task<List<EBook>> GetBooksAsync();
         Task<EBook> GetBookByIdAsync(int id);
-        Task<bool> UploadBookAsync(EBookRequest eBookRequest);
+        Task<ApiResult<string>> UploadBookAsync(EBookRequest eBookRequest);
          Task<bool> DeleteBookAsync(int id);
     }
 }

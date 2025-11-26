@@ -45,7 +45,7 @@ namespace LearnX_ApiIntegration
                 var response = await client.PostAsync("/api/Exercise", httpContent);
 
                 var responseString = await response.Content.ReadAsStringAsync();
-
+                Console.WriteLine("Response String: " + responseString);
                 // Kiểm tra kết quả
                 if (response.IsSuccessStatusCode)
                 {

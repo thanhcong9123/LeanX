@@ -94,7 +94,6 @@ namespace LearnX_ApiIntegration.SystemService
             {
                 return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString);
             }
-            Console.WriteLine("Kết quả" +responseString);
             return JsonConvert.DeserializeObject<ApiErrorResult<string>>(responseString) ?? new ApiErrorResult<string> { ResultObj = null };
 
         }

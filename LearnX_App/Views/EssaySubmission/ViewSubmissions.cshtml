@@ -3,8 +3,8 @@
 
 @{
     ViewData["Title"] = "Danh sách bài nộp";
-    var submissionsList = Model.Submissions?.OrderByDescending(s => s.SubmittedAt).ToList()
-                           ;
+    List<LearnX_Data.Entities.EssaySubmissions>? submissionsList = Model.Submissions?.OrderByDescending(s => s.SubmittedAt).ToList()
+    ;
 }
 
 <link rel="stylesheet" href="~/css/submission/viewSubmissions.css" />
@@ -163,17 +163,17 @@
                             {
                                 <i class="fas fa-clock"></i>
                                 <span>Chờ chấm</span>
-         }
+                            }
                             else if (submission.Status == "Graded")
                             {
                                 <i class="fas fa-check-circle"></i>
                                 <span>Đã chấm</span>
-         }
+                            }
                             else if (submission.Status == "Reviewed")
                             {
                                 <i class="fas fa-star"></i>
                                 <span>Đã duyệt</span>
-         }
+                            }
                         </div>
                     </div>
 
@@ -203,12 +203,13 @@
                         @if (Model.IsTeacher)
                         {
                             <button type="button" class="btn btn-grade"
-    data-submission-id="@submission.Id"
-    data-teacher-comment='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(submission.TeacherComment ?? ""))'
-    data-status="@(submission.Status ?? "Submitted")"
-    onclick="openGradeModalFromButton(this)">
-    <i class="fas fa-pen"></i> Chấm điểm
-</button>
+                                data-submission-id="@submission.Id"
+                                data-user-id="@submission.IdUser"
+                                data-teacher-comment='@Html.Raw(System.Text.Json.JsonSerializer.Serialize(submission.TeacherComment ?? ""))'
+                                data-status="@(submission.Status ?? "Submitted")"
+                                onclick="openGradeModalFromButton(this)">
+                                <i class="fas fa-pen"></i> Chấm điểm
+                            </button>
                         }
 
                         <a href="@Url.Action("ViewSubmissionDetail", "EssaySubmission", new { id = submission.Id })"
@@ -237,11 +238,21 @@
 
                 <div class="modal-body">
                     <input type="hidden" id="submissionId" />
+                    <input type="hidden" id="submissionUserId" />  @* <-- added *@
                     <div class="form-group">
                         <label for="teacherComment" class="form-label"><i class="fas fa-comment-dots"></i> Nhận xét</label>
                         <textarea id="teacherComment" class="form-control" placeholder="Nhập nhận xét của bạn..."
                         rows="5"></textarea>
                     </div>
+                    <div class="form-group">
+                        <label for="score" class="form-label">
+                            <i class="fas fa-star-half-alt"></i> Điểm số
+                        </label>
+
+                        <input id="score" name="score" class="form-input form-control" type="number" min="0" max="10"
+                            step="1" placeholder="Nhập điểm (0 - 10)" required />
+                    </div>
+
 
                     <div class="form-group">
                         <label for="statusSelect" class="form-label"><i class="fas fa-flag"></i> Trạng thái</label>
@@ -279,8 +290,8 @@
 
 @section Scripts {
     <script>
-   
-         function filterSubmissions() {
+        
+        function filterSubmissions() {
             const statusFilter = document.getElementById('statusFilter').value;
             const sortFilter = document.getElementById('sortFilter').value;
             const searchInput = document.getElementById('searchInput')?.value.toLowerCase() || '';
@@ -290,10 +301,10 @@
             cards.forEach(card => {
                 const status = card.getAttribute('data-status');
                 const student = card.getAttribute('data-student').toLowerCase();
-                
+
                 const matchesStatus = statusFilter === 'all' || status === statusFilter;
                 const matchesSearch = student.includes(searchInput);
-                
+
                 if (matchesStatus && matchesSearch) {
                     card.style.display = 'block';
                 } else {
@@ -303,7 +314,7 @@
 
             // Sort visible cards
             const visibleCards = cards.filter(card => card.style.display !== 'none');
-            
+
             visibleCards.sort((a, b) => {
                 if (sortFilter === 'newest') {
                     return parseInt(b.getAttribute('data-date')) - parseInt(a.getAttribute('data-date'));
@@ -330,24 +341,29 @@
             document.getElementById('gradeModal').classList.add('active');
             document.body.style.overflow = 'hidden';
         }
-
+        const idUser ="";
         // Open grade modal from button
         function openGradeModalFromButton(btn) {
-    try {
-        const submissionId = btn.getAttribute('data-submission-id');
-        const rawComment = btn.getAttribute('data-teacher-comment') || '""';
-        // parse safe JSON (teacherComment serialized on server-side)
-        let comment = '';
-        try { comment = JSON.parse(rawComment); } catch (e) { comment = rawComment; }
+            try {
+                const submissionId = btn.getAttribute('data-submission-id');
+                const submissionUserId = btn.getAttribute('data-user-id') || '';
+                const rawComment = btn.getAttribute('data-teacher-comment') || '""';
+                let comment = '';
+                try { comment = JSON.parse(rawComment); } catch (e) { comment = rawComment; }
 
-        const status = btn.getAttribute('data-status') || 'Graded';
+                const status = btn.getAttribute('data-status') || 'Graded';
 
-        // reuse existing openGradeModal which expects (id, comment, status)
-        openGradeModal(submissionId, comment, status);
-    } catch (err) {
-        console.error('openGradeModalFromButton error', err);
-    }
-}
+                document.getElementById('submissionId').value = submissionId;
+                document.getElementById('submissionUserId').value = submissionUserId;
+                document.getElementById('teacherComment').value = comment || '';
+                document.getElementById('statusSelect').value = status || 'Graded';
+
+                document.getElementById('gradeModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            } catch (err) {
+                console.error('openGradeModalFromButton error', err);
+            }
+        }
 
         // Close grade modal
         function closeGradeModal() {
@@ -357,9 +373,11 @@
 
         // Submit grade
         async function submitGrade() {
-           const submissionId = document.getElementById('submissionId').value;
+            const submissionId = document.getElementById('submissionId').value;
+            const submissionUserId = document.getElementById('submissionUserId').value;
             const comment = document.getElementById('teacherComment').value.trim();
             const status = document.getElementById('statusSelect').value;
+            const scoreInput = document.getElementById('score').value;
 
             if (!comment) {
                 showToast('error', 'Lỗi', 'Vui lòng nhập nhận xét');
@@ -371,17 +389,7 @@
             try {
                 const token = document.querySelector('input[name="__RequestVerificationToken"]')?.value || '';
 
-                const res = await fetch(`/EssaySubmission/AddTeacherComment/${submissionId}`, {
-                    method: 'POST',
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest',
-                        'Accept': 'application/json',
-                        'RequestVerificationToken': token
-                    },
-                    body: new FormData(document.createElement('form')) // we'll append fields below
-                });
-
-                // Use separate FormData to send fields
+                // Add comment
                 const fd = new FormData();
                 fd.append('comment', comment);
 
@@ -404,8 +412,11 @@
                 const data1 = await res1.json();
                 if (!data1.success) throw new Error(data1.message || 'Add comment failed');
 
+                // Update status (include user id and score)
                 const fd2 = new FormData();
                 fd2.append('status', status);
+                fd2.append('score', scoreInput);
+                fd2.append('idUser', submissionUserId);
 
                 const res2 = await fetch(`/EssaySubmission/UpdateStatus/${submissionId}`, {
                     method: 'POST',
@@ -446,7 +457,7 @@
             toast.className = 'toast ' + type;
             toastTitle.textContent = title;
             toastMessage.textContent = message;
-            
+
             if (type === 'success') {
                 toastIcon.className = 'fas fa-check';
             } else if (type === 'error') {
@@ -471,14 +482,14 @@
         }
 
         // Close modal on outside click
-        document.getElementById('gradeModal')?.addEventListener('click', function(e) {
+        document.getElementById('gradeModal')?.addEventListener('click', function (e) {
             if (e.target === this) {
                 closeGradeModal();
             }
         });
 
         // Close modal on ESC key
-        document.addEventListener('keydown', function(e) {
+        document.addEventListener('keydown', function (e) {
             if (e.key === 'Escape') {
                 closeGradeModal();
             }

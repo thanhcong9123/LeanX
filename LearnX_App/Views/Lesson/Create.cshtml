@@ -29,21 +29,24 @@
                     </div> Thông tin cơ bản
                 </h3>
                 <div class="form-row">
-                    <div class="form-group"><label for="courseId" class="form-label"> ID Khóa học <span
+                    <div class="form-group"><label asp-for="CourseID" class="form-label"> ID Khóa học <span
                                 class="required">*</span> </label>
                         <input asp-for="CourseID" id="courseId" type="number" value="@Model.CourseID" class="form-input" required />
+                        <span asp-validation-for="CourseID" class="text-danger"></span>
                     </div>
                  
                 </div>
-                <div class="form-group"><label for="lessonTitle" class="form-label"> Tiêu đề bài học <span
+                <div class="form-group"><label asp-for="LessonTitle" class="form-label"> Tiêu đề bài học <span
                             class="required">*</span> </label>
                     <input asp-for="LessonTitle" id="lessonTitle" class="form-input" placeholder="Nhập tiêu đề bài học..."
                         required />
+                    <span asp-validation-for="LessonTitle" class="text-danger"></span>
                 </div>
-                <div class="form-group"><label for="objectives" class="form-label"> Mục tiêu bài học <span
+                <div class="form-group"><label asp-for="Objectives" class="form-label"> Mục tiêu bài học <span
                             class="required">*</span> </label>
                     <textarea asp-for="Objectives" id="objectives" class="form-textarea"
                         placeholder="Mô tả mục tiêu và kết quả học tập mong đợi..." required></textarea>
+                    <span asp-validation-for="Objectives" class="text-danger"></span>
                 </div>
             </div><!-- Nội dung bài học -->
             <div class="form-section">
@@ -51,12 +54,12 @@
                     <div class="section-icon"><i class="fas fa-file-alt"></i>
                     </div> Nội dung bài học
                 </h3>
-                <div class="form-group"><label for="content" class="form-label"> Nội dung chi tiết <span
+                <div class="form-group"><label asp-for="Content" class="form-label"> Nội dung chi tiết <span
                             class="required">*</span> </label>
                     <textarea asp-for="Content" id="content" class="form-textarea" style="min-height: 150px;"
                         placeholder="Nhập nội dung chi tiết của bài học..." required></textarea>
                 </div>
-                <div class="form-group"><label for="videoUrl" class="form-label"> URL Video bài giảng </label>
+                <div class="form-group"><label asp-for="VideoUrl" class="form-label"> URL Video bài giảng </label>
                     <input asp-for="VideoUrl" id="videoUrl" type="text" class="form-input"
                         placeholder="https://youtube.com/watch?v=..." />
                 </div>
@@ -67,7 +70,7 @@
                     </div> Thời gian học
                 </h3>
                 <div class="form-row">
-                    <div class="form-group"><label for="startDate" class="form-label"> Ngày bắt đầu <span
+                    <div class="form-group"><label asp-for="StratDate" class="form-label"> Ngày bắt đầu <span
                                 class="required">*</span> </label>
                         <div class="datetime-input">
                             <!-- keep id names for existing JS but bind with asp-for -->
@@ -75,7 +78,7 @@
                             <i class="fas fa-calendar datetime-icon"></i>
                         </div>
                     </div>
-                    <div class="form-group"><label for="endDate" class="form-label"> Ngày kết thúc <span
+                    <div class="form-group"><label asp-for="EndDate" class="form-label"> Ngày kết thúc <span
                                 class="required">*</span> </label>
                         <div class="datetime-input">
                             <input asp-for="EndDate" id="endDate" type="datetime-local" class="form-input" required />
@@ -231,10 +234,7 @@
                 return;
             }
 
-            // disable to avoid double submit and allow browser to post form
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài học...';
-            // do NOT preventDefault here -> controller will receive posted inputs (asp-for names)
+         
         });
 
         // Cancel button
@@ -268,3 +268,6 @@
         `;
     document.head.appendChild(style);
 </script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

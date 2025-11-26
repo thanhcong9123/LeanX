@@ -43,17 +43,19 @@
             <i class="fas fa-chalkboard-teacher"></i>
             Khóa học của tôi
         </h2>
-        <a class="wp-btn wp-btn-primary text-decoration-none" asp-controller="Course" asp-action="Create" id="create-course-btn">
+        <a class="wp-btn wp-btn-primary text-decoration-none" asp-controller="Course" asp-action="Create"
+            id="create-course-btn">
             <i class="fas fa-plus"></i>
             Tạo khóa học mới
         </a>
     </div>
     <div class="tab-content" id="nav-tabContent">
-        <div class="tab-pane fade show d-flex flex-wrap gap-3 justify-content-between  active" id="nav-home"
-            role="tabpanel" aria-labelledby="nav-home-tab">
+        <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab">
+          <div class="d-flex flex-wrap gap-3 justify-content-start">
             @foreach (var course in Model.MyCourse)
             {
-                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID" class="course-item text-decoration-none">
+                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID"
+                    class="course-item text-decoration-none">
                     <div class="course-info-basic">
                         <h2 class="course-name">@course.CourseName</h2>
                         <p class="course-instruc d-flex align-items-center gap-1"><i
@@ -69,11 +71,14 @@
                     </div>
                 </a>
             }
+            </div>
         </div>
-        <div class="tab-pane fade show d-flex flex-wrap gap-3 justify-content-between  tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+        <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab">
+          <div class="d-flex flex-wrap gap-3 justify-content-start">
             @foreach (var course in Model.CourseSinged)
             {
-                 <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID" class="course-item text-decoration-none">
+                <a asp-controller="Course" asp-action="Details" asp-route-id="@course.CourseID"
+                    class="course-item text-decoration-none">
                     <div class="course-info-basic">
                         <h2 class="course-name">@course.CourseName</h2>
                         <p class="course-instruc d-flex align-items-center gap-1"><i
@@ -89,6 +94,7 @@
                     </div>
                 </a>
             }
+            </div>
         </div>
 
     </div>

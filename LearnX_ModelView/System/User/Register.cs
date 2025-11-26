@@ -33,6 +33,7 @@ namespace LearnX_ModelView.System.User
 
         [Display(Name = "Tài khoản")]
         [Required]
+        [RegularExpression(@"^[a-zA-ZÀ-ỹ\s]+$", ErrorMessage = "Tên người dùng chỉ được chứa chữ cái và khoảng trắng, không bao gồm số hoặc ký tự đặc biệt.")]
         public string UserName { get; set; }
 
         [Display(Name = "Mật khẩu")]

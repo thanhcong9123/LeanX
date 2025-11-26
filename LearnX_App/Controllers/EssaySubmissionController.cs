@@ -6,6 +6,7 @@ using LearnX_ModelView.Catalog.Exercise;
 using Microsoft.AspNetCore.Mvc;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authorization;
+using CloudinaryDotNet.Actions;
 
 namespace LearnX_App.Controllers
 {
@@ -15,6 +16,7 @@ namespace LearnX_App.Controllers
         private readonly IExerciseApiClient _exerciseService;
         private readonly ICourseApiClient _courseService;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IScoreApiClient scoreApiClient;
         private readonly Cloudinary _cloudinary; // add field and inject in ctor
 
         [ActivatorUtilitiesConstructor]
@@ -23,19 +25,20 @@ namespace LearnX_App.Controllers
             IExerciseApiClient exerciseService,
             ICourseApiClient courseService,
             IWebHostEnvironment webHostEnvironment,
-            Cloudinary cloudinary)
+            Cloudinary cloudinary,
+            IScoreApiClient _scoreApiClient)
         {
             _essaySubmissionService = essaySubmissionService;
             _exerciseService = exerciseService;
             _courseService = courseService;
             _webHostEnvironment = webHostEnvironment;
             _cloudinary = cloudinary;
+            scoreApiClient = _scoreApiClient;
         }
 
         // GET: Tạo bài tập tự luận mới
         public IActionResult CreateEssayExercise(int CourseId)
         {
-
             var model = new CreateEssayExerciseViewModel
             {
                 CourseId = CourseId
@@ -48,8 +51,10 @@ namespace LearnX_App.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateEssayExercise(CreateEssayExerciseViewModel model, string? AnswerKeyCloudUrl, string? AnswerKeyPublicId)
         {
-            if (!ModelState.IsValid) return View(model);
-
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
             try
             {
                 // Nếu client đã upload trực tiếp lên Cloudinary sẽ gửi AnswerKeyCloudUrl
@@ -63,7 +68,9 @@ namespace LearnX_App.Controllers
                     Title = model.Title,
                     CourseId = model.CourseId,
                     Category = "Tự Luận",
-                    AnswerFile = answerKeyUrl
+                    AnswerFile = answerKeyUrl,
+                    Describe = model.Description,
+                    Instruct = model.Instructions
                 };
 
                 var exerciseWrapper = new ExerciseRequestWrapper
@@ -141,7 +148,7 @@ namespace LearnX_App.Controllers
 
         // POST: Nộp bài tự luận
         [HttpPost]
-        public async Task<IActionResult> SubmitEssayExercise(DoEssayExerciseViewModel model)
+        public async Task<IActionResult> SubmitEssayExercise(DoEssayExerciseViewModel model, [FromServices] Cloudinary cloudinary)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             if (string.IsNullOrEmpty(userId))
@@ -151,28 +158,28 @@ namespace LearnX_App.Controllers
 
             var userGuid = Guid.Parse(userId);
             string? fileName = null;
-
+            string? cloudFileUrl = null;
+            string? cloudPublicId = null;
             // Xử lý upload file nếu có
             if (model.AttachmentFile != null && model.AttachmentFile.Length > 0)
             {
                 try
                 {
-                    // Tạo thư mục upload nếu chưa có
-                    var uploadPath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", "essays");
-                    if (!Directory.Exists(uploadPath))
+                    using var stream = model.AttachmentFile.OpenReadStream();
+                    var uploadParams = new RawUploadParams()
                     {
-                        Directory.CreateDirectory(uploadPath);
+                        File = new FileDescription(model.AttachmentFile.FileName, stream),
+                        Folder = "learnx/essays/" + userGuid
+                    };
+                    var uploadResult = await cloudinary.UploadAsync(uploadParams);
+                    if (uploadResult.Error != null)
+                    {
+                        TempData["Error"] = "Lỗi Cloudinary: " + uploadResult.Error.Message;
+                        return View("DoEssayExercise", model);
                     }
 
-                    // Tạo tên file unique
-                    fileName = $"{userGuid}_{model.ExerciseId}_{DateTime.Now:yyyyMMddHHmmss}_{model.AttachmentFile.FileName}";
-                    var filePath = Path.Combine(uploadPath, fileName);
-
-                    // Lưu file
-                    using (var stream = new FileStream(filePath, FileMode.Create))
-                    {
-                        await model.AttachmentFile.CopyToAsync(stream);
-                    }
+                    cloudFileUrl = uploadResult.SecureUrl.ToString();
+                    cloudPublicId = uploadResult.PublicId;
                 }
                 catch (Exception ex)
                 {
@@ -187,7 +194,7 @@ namespace LearnX_App.Controllers
                 IdUser = userGuid,
                 ExerciseId = model.ExerciseId,
                 StudentAnswer = model.StudentAnswer,
-                AttachmentFileName = fileName,
+                AttachmentFileName = cloudFileUrl,   // LƯU URL
                 AttemptNumber = model.AttemptNumber
             };
 
@@ -289,7 +296,7 @@ namespace LearnX_App.Controllers
                 ExerciseId = exerciseId,
                 ShowAllSubmissions = showAll && isInMyCourse, // Chỉ cho phép showAll nếu là chủ sở hữu
                 IsTeacher = isInMyCourse // Thay đổi logic kiểm tra
-                
+
             };
 
             return View(viewModel);
@@ -383,11 +390,11 @@ namespace LearnX_App.Controllers
 
         // POST: Cập nhật trạng thái bài nộp
         [HttpPost]
-        [Authorize(Roles ="Teacher")]
-        public async Task<IActionResult> UpdateStatus(int id, string status)
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> UpdateStatus(int id, string status, int score,string idUser)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        
+
             // Kiểm tra quyền - phải là chủ sở hữu khóa học
             var submission = await _essaySubmissionService.GetEssaySubmissionByIdAsync(id);
             if (submission == null)
@@ -431,6 +438,14 @@ namespace LearnX_App.Controllers
             try
             {
                 var result = await _essaySubmissionService.UpdateStatusAsync(id, status);
+                var scoreResult = await scoreApiClient.AddScoreAsync(new LearnX_ModelView.Catalog.Scores.ScoreRequest
+                {
+                    IdUser = submission.IdUser,
+                    ExerciseId = submission.ExerciseId,
+                    DateCompleted = DateTime.Now,
+                    Score = score ,
+                    IsPassed =score >= 5 ? true : false
+                });
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||
                     Request.ContentType?.Contains("multipart/form-data") == true)

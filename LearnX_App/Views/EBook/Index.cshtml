@@ -2,18 +2,21 @@
 @model IEnumerable<EBook>
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Thư viện Sách điện tử - LearX</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="~/css/ebook/index.css" rel="stylesheet">
 </head>
+
 <body>
     <style>
-     
+
     </style>
 
     <div class="container">
@@ -26,7 +29,7 @@
                 Thư viện Sách điện tử
             </h1>
             <p class="page-subtitle">Khám phá kho tàng tri thức với hàng ngàn cuốn sách điện tử chất lượng cao</p>
-            
+
             @if (Model != null && Model.Any())
             {
                 <div class="stats-bar">
@@ -47,11 +50,12 @@
                     </div>
                     <div class="stat-item">
                         <i class="fas fa-tags"></i>
-                        <span class="stat-number">@Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b => b.NameCategory).Distinct().Count()</span>
-                        <span>danh mục</span>
-                    </div>
+                        <span class="stat-number">@Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b =>
+                                                    b.NameCategory).Distinct().Count()</span>
+                    <span>danh mục</span>
                 </div>
-            }
+            </div>
+                        }
         </div>
 
         <!-- Controls Section -->
@@ -60,21 +64,23 @@
                 <div class="search-filters">
                     <div class="search-box">
                         <i class="fas fa-search search-icon"></i>
-                        <input type="text" class="search-input" placeholder="Tìm kiếm sách theo tên, tác giả..." id="searchInput">
+                        <input type="text" class="search-input" placeholder="Tìm kiếm sách theo tên, tác giả..."
+                            id="searchInput">
                     </div>
-                    
+
                     <div class="filter-group">
                         <select class="filter-select" id="categoryFilter">
                             <option value="">Tất cả danh mục</option>
                             @if (Model != null)
                             {
-                                @foreach (var category in Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b => b.NameCategory).Distinct())
+                                @foreach (var category in Model.Where(b => !string.IsNullOrEmpty(b.NameCategory)).Select(b
+                                                            => b.NameCategory).Distinct())
                                 {
                                     <option value="@category">@category</option>
                                 }
                             }
                         </select>
-                        
+
                         <select class="filter-select" id="statusFilter">
                             <option value="">Tất cả trạng thái</option>
                             <option value="Free">Miễn phí</option>
@@ -82,7 +88,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="view-controls">
                     <button class="view-btn active" id="gridView" title="Xem dạng lưới">
                         <i class="fas fa-th"></i>
@@ -90,10 +96,13 @@
                     <button class="view-btn" id="listView" title="Xem dạng danh sách">
                         <i class="fas fa-list"></i>
                     </button>
-                    <a href="#" class="add-btn">
-                        <i class="fas fa-plus"></i>
-                        Thêm sách mới
-                    </a>
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Upload" class="add-btn">
+                            <i class="fas fa-plus"></i>
+                            Thêm sách mới
+                        </a>
+                    }
                 </div>
             </div>
         </div>
@@ -108,43 +117,33 @@
                         <div class="book-image">
                             @if (!string.IsNullOrEmpty(book.imgPath))
                             {
-                                <img src="@book.imgPath" alt="@book.Title" class="book-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMyMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTYwIDEyMEMxNzEuMDQ2IDEyMCAxODAgMTI4Ljk1NCAxODAgMTQwQzE4MCAxNTEuMDQ2IDE3MS4wNDYgMTYwIDE2MCAxNjBDMTQ4Ljk1NCAxNjAgMTQwIDE1MS4wNDYgMTQwIDE0MEMxNDAgMTI4Ljk1NCAxNDguOTU0IDEyMCAxNjAgMTIwWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSIzMjAiIHkyPSIyODAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzY2N0VFQSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3NjRiYTIiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K'; this.alt='Không có ảnh';">
+                                <img src="@book.imgPath" alt="@book.Title" class="book-img"
+                                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIwIiBoZWlnaHQ9IjI4MCIgdmlld0JveD0iMCAwIDMyMCAyODAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIzMjAiIGhlaWdodD0iMjgwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNMTYwIDEyMEMxNzEuMDQ2IDEyMCAxODAgMTI4Ljk1NCAxODAgMTQwQzE4MCAxNTEuMDQ2IDE3MS4wNDYgMTYwIDE2MCAxNjBDMTQ4Ljk1NCAxNjAgMTQwIDE1MS4wNDYgMTQwIDE0MEMxNDAgMTI4Ljk1NCAxNDguOTU0IDEyMCAxNjAgMTIwWiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSIzMjAiIHkyPSIyODAiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KPHN0b3Agc3RvcC1jb2xvcj0iIzY2N0VFQSIvPgo8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiM3NjRiYTIiLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4K'; this.alt='Không có ảnh';">
                             }
                             else
                             {
-                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
+                                <div
+                                    style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 48px;">
                                     <i class="fas fa-book"></i>
                                 </div>
                             }
-                            
+
                             <div class="book-status @(book.Status == "Free" ? "status-free" : "status-premium")">
                                 @(book.Status == "Free" ? "Miễn phí" : "Premium")
                             </div>
-                            
+
                             <div class="book-overlay">
                                 <div class="quick-actions">
-                                    <button class="quick-btn btn-read">
+                                    <a asp-action="Details" asp-route-id="@book.Id"
+                                        class="quick-btn btn-read text-decora  text-decoration-none">
                                         <i class="fas fa-book-reader"></i>
                                         Đọc
-                                    </button>
-                                    @if (!string.IsNullOrEmpty(book.FilePath))
-                                    {
-                                        <button class="quick-btn btn-download">
-                                            <i class="fas fa-download"></i>
-                                            Tải
-                                        </button>
-                                    }
-                                    @if (!string.IsNullOrEmpty(book.LinkYoutube))
-                                    {
-                                        <button class="quick-btn btn-youtube" onclick="window.open('@book.LinkYoutube', '_blank')">
-                                            <i class="fab fa-youtube"></i>
-                                            Video
-                                        </button>
-                                    }
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="book-content">
                             <div class="book-header">
                                 <h3 class="book-title">@book.Title</h3>
@@ -153,7 +152,7 @@
                                     @(book.Author ?? "Chưa có tác giả")
                                 </div>
                             </div>
-                            
+
                             <div class="book-meta">
                                 <div class="meta-item">
                                     <div class="meta-icon">
@@ -174,14 +173,14 @@
                                     <span>@book.UploadedAt.ToString("dd/MM/yyyy")</span>
                                 </div>
                             </div>
-                            
+
                             @if (!string.IsNullOrEmpty(book.Description))
                             {
                                 <div class="book-description">
                                     @book.Description
                                 </div>
                             }
-                            
+
                             <div class="book-footer">
                                 <div class="book-rating">
                                     <div class="stars">
@@ -192,7 +191,7 @@
                                     </div>
                                     <span class="rating-text">(@(book.EvaluateBooks?.Count ?? 0) đánh giá)</span>
                                 </div>
-                                
+
                                 <div class="book-actions">
                                     <button class="action-btn btn-view" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
@@ -218,16 +217,18 @@
                         <div class="list-book-image">
                             @if (!string.IsNullOrEmpty(book.imgPath))
                             {
-                                <img src="@book.imgPath" alt="@book.Title" class="list-book-img" onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNNDAgMzVDNDUuNTIyOCAzNSA1MCAzOS40NzcyIDUwIDQ1QzUwIDUwLjUyMjggNDUuNTIyOCA1NSA0MCA1NUMzNC40NzcyIDU1IDMwIDUwLjUyMjggMzAgNDVDMzAgMzkuNDc3MiAzNC40NzcyIDM1IDQwIDM1WiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSI4MCIgeTI9IjEwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjY3RUVBIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzc2NGJhMiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo='; this.alt='Không có ảnh';">
+                                <img src="@book.imgPath" alt="@book.Title" class="list-book-img"
+                                    onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiB2aWV3Qm94PSIwIDAgODAgMTAwIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8cmVjdCB3aWR0aD0iODAiIGhlaWdodD0iMTAwIiBmaWxsPSJ1cmwoI3BhaW50MF9saW5lYXJfMF8xKSIvPgo8cGF0aCBkPSJNNDAgMzVDNDUuNTIyOCAzNSA1MCAzOS40NzcyIDUwIDQ1QzUwIDUwLjUyMjggNDUuNTIyOCA1NSA0MCA1NUMzNC40NzcyIDU1IDMwIDUwLjUyMjggMzAgNDVDMzAgMzkuNDc3MiAzNC40NzcyIDM1IDQwIDM1WiIgZmlsbD0id2hpdGUiIGZpbGwtb3BhY2l0eT0iMC41Ii8+CjxkZWZzPgo8bGluZWFyR3JhZGllbnQgaWQ9InBhaW50MF9saW5lYXJfMF8xIiB4MT0iMCIgeTE9IjAiIHgyPSI4MCIgeTI9IjEwMCIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPgo8c3RvcCBzdG9wLWNvbG9yPSIjNjY3RUVBIi8+CjxzdG9wIG9mZnNldD0iMSIgc3RvcC1jb2xvcj0iIzc2NGJhMiIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPgo='; this.alt='Không có ảnh';">
                             }
                             else
                             {
-                                <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
+                                <div
+                                    style="width: 100%; height: 100%; background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-size: 24px;">
                                     <i class="fas fa-book"></i>
                                 </div>
                             }
                         </div>
-                        
+
                         <div class="list-book-content">
                             <div class="list-book-info">
                                 <h3 class="list-book-title">@book.Title</h3>
@@ -257,7 +258,7 @@
                                     </div>
                                 }
                             </div>
-                            
+
                             <div class="book-actions">
                                 <button class="action-btn btn-view" title="Xem chi tiết">
                                     <i class="fas fa-eye"></i>
@@ -281,7 +282,8 @@
                     <i class="fas fa-book-open"></i>
                 </div>
                 <h3 class="empty-title">Chưa có sách điện tử nào</h3>
-                <p class="empty-description">Thư viện hiện tại chưa có cuốn sách nào. Hãy thêm sách đầu tiên để xây dựng kho tàng tri thức!</p>
+                <p class="empty-description">Thư viện hiện tại chưa có cuốn sách nào. Hãy thêm sách đầu tiên để xây dựng kho
+                    tàng tri thức!</p>
                 <a href="#" class="add-btn">
                     <i class="fas fa-plus"></i>
                     Thêm sách đầu tiên
@@ -291,7 +293,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             const searchInput = document.getElementById('searchInput');
             const categoryFilter = document.getElementById('categoryFilter');
             const statusFilter = document.getElementById('statusFilter');
@@ -302,14 +304,14 @@
             const bookCards = document.querySelectorAll('.book-card, .book-list-item');
 
             // View toggle functionality
-            gridView.addEventListener('click', function() {
+            gridView.addEventListener('click', function () {
                 gridView.classList.add('active');
                 listView.classList.remove('active');
                 booksGrid.style.display = 'grid';
                 booksList.style.display = 'none';
             });
 
-            listView.addEventListener('click', function() {
+            listView.addEventListener('click', function () {
                 listView.classList.add('active');
                 gridView.classList.remove('active');
                 booksGrid.style.display = 'none';
@@ -344,7 +346,7 @@
                 // Check if no results
                 const visibleCards = Array.from(bookCards).filter(card => card.style.display !== 'none');
                 const activeContainer = booksGrid.style.display !== 'none' ? booksGrid : booksList;
-                
+
                 if (visibleCards.length === 0 && activeContainer) {
                     if (!document.querySelector('.no-results')) {
                         const noResults = document.createElement('div');
@@ -373,7 +375,7 @@
 
             // Action buttons
             document.querySelectorAll('.btn-view').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const card = this.closest('.book-card, .book-list-item');
                     const title = card.querySelector('.book-title, .list-book-title').textContent;
                     // Redirect to view page
@@ -382,7 +384,7 @@
             });
 
             document.querySelectorAll('.btn-edit').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const card = this.closest('.book-card, .book-list-item');
                     const title = card.querySelector('.book-title, .list-book-title').textContent;
                     // Redirect to edit page
@@ -391,14 +393,14 @@
             });
 
             document.querySelectorAll('.btn-delete').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const card = this.closest('.book-card, .book-list-item');
                     const title = card.querySelector('.book-title, .list-book-title').textContent;
-                    
+
                     if (confirm(`Bạn có chắc chắn muốn xóa sách "${title}"?`)) {
                         this.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
                         this.disabled = true;
-                        
+
                         setTimeout(() => {
                             card.style.animation = 'fadeOut 0.3s ease-out';
                             setTimeout(() => {
@@ -411,7 +413,7 @@
 
             // Quick action buttons
             document.querySelectorAll('.btn-read').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const card = this.closest('.book-card');
                     const title = card.querySelector('.book-title').textContent;
                     console.log('Reading book:', title);
@@ -419,7 +421,7 @@
             });
 
             document.querySelectorAll('.btn-download').forEach(btn => {
-                btn.addEventListener('click', function() {
+                btn.addEventListener('click', function () {
                     const card = this.closest('.book-card');
                     const title = card.querySelector('.book-title').textContent;
                     console.log('Downloading book:', title);
@@ -443,4 +445,5 @@
         document.head.appendChild(style);
     </script>
 </body>
+
 </html>

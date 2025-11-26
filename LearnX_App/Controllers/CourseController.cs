@@ -108,11 +108,11 @@ namespace LearnX_App.Controllers
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var UserIds);
             model.InstructorID = UserIds;
-            if(await _categoryApiClient.GetAll() != null)
+            if (await _categoryApiClient.GetAll() != null)
             {
                 ViewBag.Category = await _categoryApiClient.GetAll();
                 return View(model);
-                
+
             }
             return View(model);
         }
@@ -130,17 +130,17 @@ namespace LearnX_App.Controllers
                             ModelState.AddModelError("", error.ErrorMessage);
                         }
                     }
-                    
+
                     var model = new CourseRequest();
-                    var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-                    Guid.TryParse(userId, out var UserIds);
-                     model.InstructorID = UserIds;
-                    if(await _categoryApiClient.GetAll() != null)
-            {
-                ViewBag.Category = await _categoryApiClient.GetAll();
-                return View(model);
-                
-            }
+                    var idItruction = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                    Guid.TryParse(idItruction, out var idItructions);
+                    model.InstructorID = idItructions;
+                    if (await _categoryApiClient.GetAll() != null)
+                    {
+                        ViewBag.Category = await _categoryApiClient.GetAll();
+                        return View(model);
+
+                    }
                 }
                 // Logic để xử lý lưu course
                 // Ví dụ: lưu vào database hoặc gọi một API

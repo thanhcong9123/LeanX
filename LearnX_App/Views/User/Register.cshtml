@@ -101,7 +101,7 @@
                             <div class="input-box position-relative">
                                 <input asp-for="Password" type="password" id="password" name="password" required>
                                 <label asp-for="Password" for="password">Mật khẩu</label>
-                                <span class="text-danger field-validation-valid" data-valmsg-for="Password"
+                                <span class="text-danger field-validation-valid" data-valmsg-for="Password"  
                                     data-valmsg-replace="true"></span>
                                 <i class="fas fa-lock input-icon"></i>
                                 <button type="button" class="password-toggle" onclick="togglePassword('password')">
@@ -287,3 +287,6 @@
 </script>
 
 </html>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

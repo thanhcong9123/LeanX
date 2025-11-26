@@ -2,13 +2,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Text;
 using System.Threading.Tasks;
 using LearnX_Data.Entities;
 using LearnX_Data.Migrations;
 using LearnX_ModelView.Catalog.EBook;
+using LearnX_ModelView.Common;
 using LearnX_Utilities.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Newtonsoft.Json;
 
 namespace LearnX_ApiIntegration
 {
@@ -35,46 +38,46 @@ namespace LearnX_ApiIntegration
         {
             var response = await GetAsync<EBook>($"api/books/{id}");
             Console.WriteLine("GetBookByIdAsync đã nhận " + response.LinkYoutube);
-      
+
             return response;
         }
 
-        public async Task<bool> UploadBookAsync(EBookRequest eBookRequest)
+        public async Task<ApiResult<string>> UploadBookAsync(EBookRequest eBookRequest)
         {
             try
             {
-                var sessions = _httpContextAccessor
-               .HttpContext
-               .Session
-               .GetString(SystemConstants.AppSettings.Token);
+
                 var client = _httpClientFactory.CreateClient();
                 client.BaseAddress = new Uri(_configuration[SystemConstants.AppSettings.BaseAddress]);
+
+                var sessions = _httpContextAccessor.HttpContext.Session.GetString("Token");
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", sessions);
-                client.BaseAddress = new Uri("http://localhost:5041");
-                var requestContent = new MultipartFormDataContent();
-                requestContent.Add(new StringContent(eBookRequest.Title), "title");
-                requestContent.Add(new StringContent(eBookRequest.Description), "description");
-                requestContent.Add(new StringContent(eBookRequest.imgPath), "imgPath");
-                requestContent.Add(new StringContent(eBookRequest.FilePath), "FilePath");
+
+                var json = JsonConvert.SerializeObject(eBookRequest);
+                var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+                var response = await client.PostAsync("/api/books", httpContent);
 
 
                 // Gửi yêu cầu POST tới API
-                var response = await client.PostAsync("api/books", requestContent);
-
-                // Kiểm tra kết quả trả về
-                return response.IsSuccessStatusCode;
+                var responseString = await response.Content.ReadAsStringAsync();
+                Console.WriteLine("Response from API: " + responseString);
+                if (response.IsSuccessStatusCode)
+                {
+                    return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString) ??
+                           new ApiSuccessResult<string> { ResultObj = "Success" };
+                }
+                return JsonConvert.DeserializeObject<ApiErrorResult<string>>(responseString) ??
+                       new ApiErrorResult<string> { Message = "Error occurred" };
             }
             catch (Exception ex)
             {
-                // Ghi log lỗi (nếu cần)
-                Console.WriteLine($"Error creating course: {ex.Message}");
-                return false;
+                return new ApiErrorResult<string> { Message = $"Error: {ex.Message}" };
             }
         }
 
         public async Task<bool> DeleteBookAsync(int id)
         {
-            return await Delete($"api/books/{id}");;
+            return await Delete($"api/books/{id}"); ;
         }
     }
 

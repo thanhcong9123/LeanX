@@ -1,4 +1,5 @@
 @using LearnX_ModelView.Catalog.Exercise
+@using Microsoft.CodeAnalysis.Scripting
 @model ExerciseRequestWrapper
 
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -34,6 +35,7 @@
                             <span class="required">*</span> </label>
                         <input type="text" asp-for="ExerciseRequest.Title" id="title" name="ExerciseRequest.Title"
                             class="form-input" placeholder="Nhập tiêu đề bài tập..." required>
+                        <span asp-validation-for="ExerciseRequest.Title" class="text-danger"></span>
                     </div>
                     <div class="form-row">
                         <div class="form-group"><label asp-for="ExerciseRequest.CourseId" class="form-label"> ID Khóa
@@ -41,37 +43,29 @@
                             <input asp-for="ExerciseRequest.CourseId" type="number" id="courseId"
                                 name="ExerciseRequest.CourseId" class="form-input" placeholder="Nhập ID khóa học..."
                                 required min="1">
+                            <span asp-validation-for="ExerciseRequest.CourseId" class="text-danger"></span>
                         </div>
                         <div class="form-group"><label asp-for="ExerciseRequest.Category" class="form-label"> Danh mục
                                 <span class="required">*</span> </label> <select asp-for="ExerciseRequest.Category"
                                 id="category" name="ExerciseRequest.Category" class="form-select" required>
-                                <option value="">Chọn danh mục</option>
                                 <option value="Trắc nghiệm">Trắc nghiệm</option>
-                                <option value="Tự luận">Tự luận</option>
-
                             </select>
+                            <span asp-validation-for="ExerciseRequest.Category" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="form-group"><label asp-for="ExerciseRequest.Describe" class="form-label"> Mô tả bài tập
                             <span class="required">*</span> </label> <textarea asp-for="ExerciseRequest.Describe"
                             id="describe" name="ExerciseRequest.Describe" class="form-textarea"
                             placeholder="Mô tả chi tiết về bài tập, mục tiêu và yêu cầu..." required></textarea>
+                        <span asp-validation-for="ExerciseRequest.Describe" class="text-danger"></span>
                     </div>
                     <div class="form-group"><label asp-for="ExerciseRequest.Instruct" class="form-label"> Hướng dẫn làm
                             bài </label>
                         <textarea asp-for="ExerciseRequest.Instruct" id="instruct" name="ExerciseRequest.Instruct"
                             class="form-textarea" placeholder="Hướng dẫn chi tiết cách thực hiện bài tập..."></textarea>
+                        <span asp-validation-for="ExerciseRequest.Instruct" class="text-danger"></span>
                     </div>
-                    <div class="form-group"><label asp-for="ExerciseRequest.AnswerFile" class="form-label"> File đáp án
-                            (tùy chọn) </label>
-                        <div class="file-upload-wrapper"><input asp-for="ExerciseRequest.AnswerFile" type="file"
-                                id="answerFile" name="AnswerFile" class="file-upload-input"
-                                accept=".pdf,.doc,.docx,.txt,.zip"> <label asp-for="ExerciseRequest.AnswerFile"
-                                class="file-upload-label"> <i class="fas fa-cloud-upload-alt file-upload-icon"></i>
-                                <span>Chọn file đáp án hoặc kéo thả vào đây</span> </label>
-                            <div class="file-name" id="fileName"></div>
-                        </div>
-                    </div>
+
                 </div><!-- Câu hỏi trắc nghiệm -->
                 <div class="questions-section">
                     <div class="questions-header">
@@ -96,28 +90,18 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('exerciseForm');
-        const submitBtn = document.getElementById('submitBtn');
         const cancelBtn = document.getElementById('cancelBtn');
         const successMessage = document.getElementById('successMessage');
         const errorMessage = document.getElementById('errorMessage');
         const errorText = document.getElementById('errorText');
         const questionsContainer = document.getElementById('questionsContainer');
         const addQuestionBtn = document.getElementById('addQuestionBtn');
-        const answerFileInput = document.getElementById('answerFile');
         const fileName = document.getElementById('fileName');
 
         let questionCounter = 0;
         let questions = [];
 
-        // File upload handling
-        answerFileInput.addEventListener('change', function () {
-            if (this.files && this.files[0]) {
-                fileName.textContent = `Đã chọn: ${this.files[0].name}`;
-                fileName.style.display = 'block';
-            } else {
-                fileName.style.display = 'none';
-            }
-        });
+
 
         // Add question functionality
         addQuestionBtn.addEventListener('click', function () {
@@ -150,6 +134,8 @@
                         <input type="text" name="QuestionRequest[${questionCounter - 1}].QuestionText" 
                                class="question-text-input" placeholder="Nhập câu hỏi..." 
                                onchange="updateQuestionText(${questionCounter}, this.value)" required>
+                        <span asp-validation-for="QuestionRequest[${questionCounter - 1}].QuestionText" class="text-danger"></span>
+
                         
                         <div class="answers-container">
                             <div class="answers-header">
@@ -388,31 +374,7 @@
         }
 
         // Form submission
-        form.addEventListener('submit', function (e) {
-
-            // Update questions data from form
-             if (!validateDates()) {
-                e.preventDefault();
-                return;
-            }
-
-            // disable to avoid double submit and allow browser to post form
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài học...';
-
-            // Validate form
-            if (!validateForm()) {
-                return;
-            }
-
-            // Show loading state
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<div class="loading"></div> Đang tạo bài tập...';
-
-         
-            
-        });
-
+      
         // Cancel button
         cancelBtn.addEventListener('click', function () {
             const hasContent = form.querySelector('input[type="text"]').value ||
@@ -486,3 +448,6 @@
         addQuestion();
     });
 </script>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

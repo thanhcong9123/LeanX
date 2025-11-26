@@ -40,7 +40,7 @@ namespace MyApp.Namespace
 
         // Tải lên sách (Admin)
         [HttpPost]
-        public async Task<IActionResult> UploadBook([FromForm] EBookRequest eBookRequest)
+        public async Task<IActionResult> UploadBook([FromBody] EBookRequest eBookRequest)
         {
             if (eBookRequest.FilePath == null)
             {
@@ -49,6 +49,7 @@ namespace MyApp.Namespace
 
             try
             {
+                Console.WriteLine("Uploading book: " + eBookRequest.Title);
                 var result = await _bookService.UploadBookAsync(eBookRequest);
                 if (result)
                 {

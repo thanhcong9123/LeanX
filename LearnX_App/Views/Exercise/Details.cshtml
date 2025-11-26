@@ -176,6 +176,11 @@
                                         onclick="deleteExercise(@exercise.ExerciseId, '@exercise.Title')">
                                         <i class="fas fa-trash"></i>
                                     </button>
+                                    <a href="@Url.Action("ViewSubmissions", "EssaySubmission", new { exerciseId = exercise.ExerciseId })"
+                                        class="action-icon-btn btn-view" title="Xem danh sách bài đã nộp">
+                                        <i class="fas fa-list-alt"></i>
+                                    </a>
+
 
 
                                 }
@@ -245,7 +250,8 @@
     <script>
         const exercises = @Html.Raw(exercisesJson);
         let filteredExercises = exercises.slice();
-        const viewSubmissionsUrlTemplate = '@Url.Action("ViewSubmissions", "EssaySubmission", new { exerciseId = "REPLACE_ID" })';
+        const viewSubmUrlTemplate = '@Url.Action(action: "DoExercise", "Exercise", new { exerciseId = "REPLACE_ID" })';
+        const viewSubmissionsUrlTemplate = '@Url.Action(action: "ViewSubmissions", "EssaySubmission", new { exerciseId = "REPLACE_ID" })';
 
         document.addEventListener('DOMContentLoaded', function () {
             const exercisesGrid = document.getElementById('exercisesGrid');
@@ -289,6 +295,7 @@
                 exercisesGrid.innerHTML = filteredExercises.map(exercise => {
                     // build view link using template replacement
                     const viewUrl = viewSubmissionsUrlTemplate.replace('REPLACE_ID', encodeURIComponent(exercise.exerciseId));
+                    const viewSubmUrl = viewSubmUrlTemplate.replace('REPLACE_ID', encodeURIComponent(exercise.exerciseId));
                     // Or for query string:
                     // const viewUrl = `${viewSubmissionsBase}?exerciseId=${encodeURIComponent(exercise.exerciseId)}`;
 
@@ -336,7 +343,12 @@
                             <button class="action-icon-btn btn-delete" onclick="deleteExercise(${exercise.exerciseId}, '${escapeAttr(exercise.title)}')">
                                 <i class="fas fa-trash"></i>
                             </button>
-                            </div>`
+                            </div>
+                            <a href="${viewUrl}"
+                            class="action-icon-btn btn-view" title="Xem danh sách bài đã nộp">
+                                <i class="fas fa-list-alt"></i>
+                            </a>
+`
                     } ``else {
                         `<a  href="${viewUrl}"
                             class="action-icon-btn btn-view" title="Làm bài tập">

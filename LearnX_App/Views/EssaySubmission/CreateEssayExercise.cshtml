@@ -63,7 +63,7 @@
 
         <form asp-action="CreateEssayExercise" method="post"  id="essayForm">
             @Html.AntiForgeryToken()
-
+            
             <input asp-for="CourseId" type="hidden" />
 
             <!-- Basic Information Section -->
@@ -149,9 +149,6 @@
                     <i class="fas fa-times"></i> Hủy bỏ
                 </a>
 
-                <button type="button" class="btn btn-secondary" id="previewBtn">
-                    <i class="fas fa-eye"></i> Xem trước
-                </button>
 
                 <button type="submit" class="btn btn-primary" id="submitBtn">
                     <i class="fas fa-save"></i> Tạo bài tập
@@ -168,130 +165,130 @@
     }
 
     <script>
-        const CLOUD_NAME = 'dm72n5rzn'; // hoặc inject via ViewBag
-        const UPLOAD_PRESET = 'my_unsigned_preset';
+            const CLOUD_NAME = 'dm72n5rzn'; // hoặc inject via ViewBag
+            const UPLOAD_PRESET = 'my_unsigned_preset';
 
-        async function uploadFileToCloudinary(file) {
-            if (!file) return null;
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
+            async function uploadFileToCloudinary(file) {
+                if (!file) return null;
+                const formData = new FormData();
+                formData.append('file', file);
+                formData.append('upload_preset', UPLOAD_PRESET);
 
-            const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`, {
-                method: 'POST',
-                body: formData
+                const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/raw/upload`, {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (!res.ok) {
+                    console.error('Cloudinary upload error', data);
+                    alert(data.error?.message || 'Upload thất bại');
+                    return null;
+                }
+                return data; // contains secure_url, public_id, etc.
+            }
+
+            function formatBytes(bytes) {
+                if (!bytes) return '0 KB';
+                const kb = bytes / 1024;
+                if (kb < 1024) return `${kb.toFixed(1)} KB`;
+                return `${(kb / 1024).toFixed(2)} MB`;
+            }
+
+            // Hiển thị tên file + kích thước trong khu vực upload
+            function showSelectedFileInfo(containerEl, file) {
+                if (!containerEl) return;
+                let infoEl = containerEl.querySelector('.file-name-info');
+                if (!infoEl) {
+                    infoEl = document.createElement('div');
+                    infoEl.className = 'file-name-info';
+                    infoEl.style.marginTop = '10px';
+                    infoEl.style.fontSize = '0.95rem';
+                    infoEl.style.color = '#075985';
+                    infoEl.style.display = 'flex';
+                    infoEl.style.gap = '8px';
+                    infoEl.style.alignItems = 'center';
+                    containerEl.appendChild(infoEl);
+                }
+                infoEl.innerHTML = `<i class="fas fa-file-alt"></i> <strong>${file.name}</strong> <span style="color:#6b7280;">(${formatBytes(file.size)})</span>`;
+            }
+
+            // Hiển thị trạng thái upload (spinning / uploaded)
+            function showUploadStatus(containerEl, status, fileName) {
+                let statusEl = containerEl.querySelector('.file-upload-status');
+                if (!statusEl) {
+                    statusEl = document.createElement('div');
+                    statusEl.className = 'file-upload-status';
+                    statusEl.style.marginTop = '8px';
+                    containerEl.appendChild(statusEl);
+                }
+                if (status === 'uploading') {
+                    statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang upload ${fileName}...`;
+                    statusEl.style.color = '#0ea5a3';
+                } else if (status === 'done') {
+                    statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Đã upload ${fileName}`;
+                    statusEl.style.color = '#059669';
+                } else if (status === 'error') {
+                    statusEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> Upload thất bại`;
+                    statusEl.style.color = '#dc2626';
+                } else {
+                    statusEl.innerHTML = '';
+                }
+            }
+
+            document.getElementById('answerKeyFile')?.addEventListener('change', async function (e) {
+                const input = e.target;
+                const file = input.files && input.files[0];
+                const container = document.getElementById('fileUploadContent') || input.closest('.file-upload-container');
+                if (!file) {
+                    // clear UI
+                    showUploadStatus(container, '');
+                    const info = container?.querySelector('.file-name-info');
+                    if (info) info.remove();
+                    return;
+                }
+
+                // Hiển thị tên + kích thước ngay khi chọn file
+                showSelectedFileInfo(container, file);
+
+                if (file.size > 10 * 1024 * 1024) {
+                    alert('File quá 10MB');
+                    return;
+                }
+
+                // show uploading status
+                showUploadStatus(container, 'uploading', file.name);
+
+                const uploadResult = await uploadFileToCloudinary(file);
+                if (!uploadResult) {
+                    showUploadStatus(container, 'error');
+                    return;
+                }
+
+                // store the returned URL/public_id into a hidden input so server receives metadata
+                let hiddenUrl = document.querySelector('input[name="AnswerKeyCloudUrl"]');
+                if (!hiddenUrl) {
+                    hiddenUrl = document.createElement('input');
+                    hiddenUrl.type = 'hidden';
+                    hiddenUrl.name = 'AnswerKeyCloudUrl';
+                    document.getElementById('essayForm').appendChild(hiddenUrl);
+                }
+                hiddenUrl.value = uploadResult.secure_url;
+
+                let hiddenId = document.querySelector('input[name="AnswerKeyPublicId"]');
+                if (!hiddenId) {
+                    hiddenId = document.createElement('input');
+                    hiddenId.type = 'hidden';
+                    hiddenId.name = 'AnswerKeyPublicId';
+                    document.getElementById('essayForm').appendChild(hiddenId);
+                }
+                hiddenId.value = uploadResult.public_id;
+
+                // update UI: show uploaded status
+                showUploadStatus(container, 'done', file.name);
+
+                // update the small hint text if present
+                const small = input.parentElement.querySelector('small');
+                if (small) small.innerHTML = `<strong>Uploaded:</strong> ${file.name}`;
             });
-            const data = await res.json();
-            if (!res.ok) {
-                console.error('Cloudinary upload error', data);
-                alert(data.error?.message || 'Upload thất bại');
-                return null;
-            }
-            return data; // contains secure_url, public_id, etc.
-        }
-
-        function formatBytes(bytes) {
-            if (!bytes) return '0 KB';
-            const kb = bytes / 1024;
-            if (kb < 1024) return `${kb.toFixed(1)} KB`;
-            return `${(kb / 1024).toFixed(2)} MB`;
-        }
-
-        // Hiển thị tên file + kích thước trong khu vực upload
-        function showSelectedFileInfo(containerEl, file) {
-            if (!containerEl) return;
-            let infoEl = containerEl.querySelector('.file-name-info');
-            if (!infoEl) {
-                infoEl = document.createElement('div');
-                infoEl.className = 'file-name-info';
-                infoEl.style.marginTop = '10px';
-                infoEl.style.fontSize = '0.95rem';
-                infoEl.style.color = '#075985';
-                infoEl.style.display = 'flex';
-                infoEl.style.gap = '8px';
-                infoEl.style.alignItems = 'center';
-                containerEl.appendChild(infoEl);
-            }
-            infoEl.innerHTML = `<i class="fas fa-file-alt"></i> <strong>${file.name}</strong> <span style="color:#6b7280;">(${formatBytes(file.size)})</span>`;
-        }
-
-        // Hiển thị trạng thái upload (spinning / uploaded)
-        function showUploadStatus(containerEl, status, fileName) {
-            let statusEl = containerEl.querySelector('.file-upload-status');
-            if (!statusEl) {
-                statusEl = document.createElement('div');
-                statusEl.className = 'file-upload-status';
-                statusEl.style.marginTop = '8px';
-                containerEl.appendChild(statusEl);
-            }
-            if (status === 'uploading') {
-                statusEl.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Đang upload ${fileName}...`;
-                statusEl.style.color = '#0ea5a3';
-            } else if (status === 'done') {
-                statusEl.innerHTML = `<i class="fas fa-check-circle"></i> Đã upload ${fileName}`;
-                statusEl.style.color = '#059669';
-            } else if (status === 'error') {
-                statusEl.innerHTML = `<i class="fas fa-exclamation-circle"></i> Upload thất bại`;
-                statusEl.style.color = '#dc2626';
-            } else {
-                statusEl.innerHTML = '';
-            }
-        }
-
-        document.getElementById('answerKeyFile')?.addEventListener('change', async function (e) {
-            const input = e.target;
-            const file = input.files && input.files[0];
-            const container = document.getElementById('fileUploadContent') || input.closest('.file-upload-container');
-            if (!file) {
-                // clear UI
-                showUploadStatus(container, '');
-                const info = container?.querySelector('.file-name-info');
-                if (info) info.remove();
-                return;
-            }
-
-            // Hiển thị tên + kích thước ngay khi chọn file
-            showSelectedFileInfo(container, file);
-
-            if (file.size > 10 * 1024 * 1024) {
-                alert('File quá 10MB');
-                return;
-            }
-
-            // show uploading status
-            showUploadStatus(container, 'uploading', file.name);
-
-            const uploadResult = await uploadFileToCloudinary(file);
-            if (!uploadResult) {
-                showUploadStatus(container, 'error');
-                return;
-            }
-
-            // store the returned URL/public_id into a hidden input so server receives metadata
-            let hiddenUrl = document.querySelector('input[name="AnswerKeyCloudUrl"]');
-            if (!hiddenUrl) {
-                hiddenUrl = document.createElement('input');
-                hiddenUrl.type = 'hidden';
-                hiddenUrl.name = 'AnswerKeyCloudUrl';
-                document.getElementById('essayForm').appendChild(hiddenUrl);
-            }
-            hiddenUrl.value = uploadResult.secure_url;
-
-            let hiddenId = document.querySelector('input[name="AnswerKeyPublicId"]');
-            if (!hiddenId) {
-                hiddenId = document.createElement('input');
-                hiddenId.type = 'hidden';
-                hiddenId.name = 'AnswerKeyPublicId';
-                document.getElementById('essayForm').appendChild(hiddenId);
-            }
-            hiddenId.value = uploadResult.public_id;
-
-            // update UI: show uploaded status
-            showUploadStatus(container, 'done', file.name);
-
-            // update the small hint text if present
-            const small = input.parentElement.querySelector('small');
-            if (small) small.innerHTML = `<strong>Uploaded:</strong> ${file.name}`;
-        });
-    </script>
-}
+        </script>
+    }

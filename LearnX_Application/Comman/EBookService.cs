@@ -30,9 +30,6 @@ namespace LearnX_Application.Comman
         {
             var book = await _context.EBooks.FindAsync(id);
             if (book == null) return false;
-
-
-
             // Delete book record from database
             _context.EBooks.Remove(book);
             await _context.SaveChangesAsync();
