@@ -7,11 +7,11 @@ namespace LearnX_ModelView.Catalog.Messages
 {
     public class ViewMessage
     {
-        public int Id { get; set; }               // ID của tin nhắn
-        public Guid SenderId { get; set; }        // ID của người gửi (lấy từ Identity User)
-        public Guid ReceiverId { get; set; }      // ID của người nhận (lấy từ Identity User)
-        public string Content { get; set; }       // Nội dung tin nhắn
-        public DateTime SentAt { get; set; }      // Thời gian gửi tin nhắn
+        public int Id { get; set; }               
+        public Guid SenderId { get; set; }      
+        public Guid ReceiverId { get; set; }     
+        public string Content { get; set; }      
+        public DateTime SentAt { get; set; }   
         public bool IsRead { get; set; }
 
         // Thuộc tính không ánh xạ

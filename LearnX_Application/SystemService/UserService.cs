@@ -121,7 +121,11 @@ namespace LearnX_Application.SystemService
                 Email = user.Email,
                 PhoneNumber = user.PhoneNumber,
                 UserName = user.UserName,
-                Roles = roles
+                Roles = roles,
+                MemberDate = user.Member,
+                DateJoined = user.DateJoined,
+                
+
             };
             return new ApiSuccessResult<UserVm>(userVm);
         }
@@ -147,14 +151,15 @@ namespace LearnX_Application.SystemService
                 UserName = request.UserName,
                 PhoneNumber = request.PhoneNumber,
                 EmailConfirmed = true,
-                
+                DateJoined = DateTime.Now,
+                Member = DateTime.Now,
+                FirstName = request.FirstName,
+                LastName = request.LastName,
+                Dob = request.Dob                
             };
             var result = await _userManager.CreateAsync(user, request.Password);
-            Console.WriteLine("sdadasd"+user.Id);
             var roles = await _userInManager.GetRolesAsync(user);
-            Console.WriteLine(user.Id);
             var role = await _roleManager.FindByIdAsync("CECA3754-C5FB-4AB4-FA05-08DE1C8CB0D5");
-            Console.WriteLine(role.Name);
             await _userInManager.AddToRoleAsync(user, role.Name);
             foreach (var rolename in roles)
             {

@@ -10,6 +10,7 @@ using LearnX_ModelView.System.User;
 using LearnX_Utilities.Constants;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
@@ -31,7 +32,31 @@ namespace LearnX_App.Controllers
             _context = context;
             _configuration = configuration;
         }
+        [Authorize]
+        public async Task<IActionResult> InfoUser()
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid.TryParse(userId, out var id);
+            var user = await _context.GetByID(id);
+            if (user.IsSuccessed)
+            {
+                var model = new UserVm()
+                {
+                    Id = user.ResultObj.Id,
+                    UserName = user.ResultObj.UserName,
+                    Email = user.ResultObj.Email,
+                    PhoneNumber = user.ResultObj.PhoneNumber,
+                    DateJoined = user.ResultObj.DateJoined,
+                    MemberDate = user.ResultObj.MemberDate,
+                    Roles = user.ResultObj.Roles,
+                    Dob = user.ResultObj.Dob
+                };
 
+                return View(model);
+            }
+            return RedirectToAction("Login", "User");
+
+        }
         public async Task<IActionResult> Login()
         {
             await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);

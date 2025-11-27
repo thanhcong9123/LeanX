@@ -28,7 +28,7 @@ namespace MyApp.Namespace
             _scoreService = scoreService;
             _essaySubmissionService = essaySubmissionService;
         }
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Create(int CourseId)
         {
             var model = new ExerciseRequestWrapper
@@ -46,6 +46,13 @@ namespace MyApp.Namespace
         {
             if (!ModelState.IsValid)
             {
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError("", error.ErrorMessage);
+                    }
+                }
                 return View(model);
             }
             try

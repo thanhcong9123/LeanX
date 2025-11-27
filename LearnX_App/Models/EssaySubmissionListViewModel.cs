@@ -13,5 +13,6 @@ namespace LearnX_App.Models
         public string? ExerciseTitle { get; set; }
         public bool IsTeacher { get; set; } = false;
         public bool ShowAllSubmissions { get; set; } = false; // Hiển thị tất cả submission hay chỉ của user hiện tại
+        public string? AnswerFile { get; set; }
     }
 }

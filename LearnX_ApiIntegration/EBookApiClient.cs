@@ -60,7 +60,6 @@ namespace LearnX_ApiIntegration
 
                 // Gửi yêu cầu POST tới API
                 var responseString = await response.Content.ReadAsStringAsync();
-                Console.WriteLine("Response from API: " + responseString);
                 if (response.IsSuccessStatusCode)
                 {
                     return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString) ??

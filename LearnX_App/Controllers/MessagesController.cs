@@ -85,8 +85,34 @@ namespace MyApp.Namespace
             {
                 messages = new List<ViewMessage>();
             }
+            var conversations = messages
+            .Select(m =>
+                {
+                // Xác định người còn lại
+                if (m.SenderId == userId)
+                    return new { OtherId = m.ReceiverId, OtherEmail = m.ReceiverEmail, Message = m };
+                else
+                    return new { OtherId = m.SenderId, OtherEmail = m.SenderEmail, Message = m };
+            })
+            .GroupBy(x => x.OtherId)
+            .Select(g =>
+                    {
+                        var latest = g.OrderByDescending(x => x.Message.SentAt).First();
+                        var unreadCount = g.Count(x => !x.Message.IsRead && x.Message.ReceiverId == userId);
+                        return new ConversationSummary
+                        {
+                            UserId = g.Key,
+                            Email = latest.OtherEmail,
+                            LatestMessage = latest.Message.Content,
+                            LatestAt = latest.Message.SentAt,
+                            LatestIsRead = latest.Message.IsRead,
+                            UnreadCount = unreadCount
+                        };
+                    })
+            .OrderByDescending(c => c.LatestAt)
+            .ToList();
             ViewBag.UserId = userId;
-            return View(messages);
+            return View(conversations);
         }
 
         [HttpPost("send-from-chat")]
@@ -101,14 +127,14 @@ namespace MyApp.Namespace
             {
                 // Lấy User ID của người nhận từ email
                 var receiverId = await _messageApiClient.GetUserIdByEmailAsync(model.ReceiverId);
-                
+
                 if (receiverId.HasValue)
                 {
                     // Chỉ gửi tin nhắn cho người nhận cụ thể thông qua User ID
                     await _hubContext.Clients.User(receiverId.Value.ToString())
                         .SendAsync("ReceiveMessage", HttpContext.User.Identity?.Name ?? "Unknown", model.Content, DateTime.Now.ToString("HH:mm:ss"));
                 }
-                
+
                 return Json(new { success = true });
             }
 

@@ -8,17 +8,11 @@
 <html lang="vi">
 
 <head>
-    <script src="/_sdk/data_sdk.js"></script>
-    <script src="/_sdk/element_sdk.js"></script>
+
     <script src="https://cdn.tailwindcss.com"></script>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ViewData["Title"] - LearX</title>
-
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/fsont-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
-        rel="stylesheet">
     <link rel="stylesheet" href="~/css/exercise/details.css">
 </head>
 
@@ -172,10 +166,10 @@
                                         class="action-icon-btn btn-view" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <button class="action-icon-btn btn-delete"
-                                        onclick="deleteExercise(@exercise.ExerciseId, '@exercise.Title')">
+                                    <a class="action-icon-btn btn-delete"
+                                        asp-action="Delete" asp-route-id="@exercise.ExerciseId" asp-route-idCourse="@courseId">
                                         <i class="fas fa-trash"></i>
-                                    </button>
+                                    </a>
                                     <a href="@Url.Action("ViewSubmissions", "EssaySubmission", new { exerciseId = exercise.ExerciseId })"
                                         class="action-icon-btn btn-view" title="Xem danh sách bài đã nộp">
                                         <i class="fas fa-list-alt"></i>
@@ -209,14 +203,13 @@
                 <p class="empty-description">Hãy bắt đầu tạo bài tập đầu tiên cho lớp học.</p>
 
                 <div class="empty-actions">
-                    <a href="@Url.Action("CreateQuiz", "Exercise", new { courseid = courseId })"
-                        class="action-btn btn-quiz">
-                        <i class="fas fa-plus-circle"></i> Tạo Bài Tập Trắc Nghiệm
+                    <a href="@Url.Action("Create", "Exercise", new { courseid = courseId })" class="action-btn btn-quiz">
+                        <i class="fas fa-plus-circle"></i> Thêm Bài Tập Trắc Nghiệm
                     </a>
 
-                    <a href="@Url.Action("CreateEssay", "Exercise", new { courseid = courseId })"
+                    <a asp-controller="EssaySubmission" asp-action="CreateEssayExercise" asp-route-CourseId="@courseId"
                         class="action-btn btn-essay">
-                        <i class="fas fa-pen-fancy"></i> Tạo Bài Tập Tự Luận
+                        <i class="fas fa-pen-fancy"></i> Thêm Bài Tập Tự Luận
                     </a>
                 </div>
             </div>

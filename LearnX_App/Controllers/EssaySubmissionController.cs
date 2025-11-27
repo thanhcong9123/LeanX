@@ -53,6 +53,13 @@ namespace LearnX_App.Controllers
         {
             if (!ModelState.IsValid)
             {
+                foreach (var modelState in ModelState.Values)
+                {
+                    foreach (var error in modelState.Errors)
+                    {
+                        ModelState.AddModelError("", error.ErrorMessage);
+                    }
+                }
                 return View(model);
             }
             try
@@ -295,7 +302,9 @@ namespace LearnX_App.Controllers
                 Submissions = submissions,
                 ExerciseId = exerciseId,
                 ShowAllSubmissions = showAll && isInMyCourse, // Chỉ cho phép showAll nếu là chủ sở hữu
-                IsTeacher = isInMyCourse // Thay đổi logic kiểm tra
+                IsTeacher = isInMyCourse, // Thay đổi logic kiểm tra
+                AnswerFile = exercise.AnswerFile
+
 
             };
 
@@ -391,7 +400,7 @@ namespace LearnX_App.Controllers
         // POST: Cập nhật trạng thái bài nộp
         [HttpPost]
         [Authorize(Roles = "Teacher")]
-        public async Task<IActionResult> UpdateStatus(int id, string status, int score,string idUser)
+        public async Task<IActionResult> UpdateStatus(int id, string status, int score, string idUser)
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -443,8 +452,8 @@ namespace LearnX_App.Controllers
                     IdUser = submission.IdUser,
                     ExerciseId = submission.ExerciseId,
                     DateCompleted = DateTime.Now,
-                    Score = score ,
-                    IsPassed =score >= 5 ? true : false
+                    Score = score,
+                    IsPassed = score >= 5 ? true : false
                 });
 
                 if (Request.Headers["X-Requested-With"] == "XMLHttpRequest" ||

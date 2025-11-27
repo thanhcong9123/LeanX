@@ -1,0 +1,234 @@
+@using LearnX_ModelView.System.User
+@model UserVm
+
+<link rel="stylesheet" href="~/css/auth/infoUser.css" />
+<div class="page-wrapper">
+
+    <!-- Header -->
+    <header class="page-header">
+        <div class="header-title">
+            <div class="header-icon">
+                <i class="fas fa-user-circle"></i>
+            </div>
+            <h1>Thông Tin Người Dùng</h1>
+        </div>
+
+        <a href="@Url.Action("Index", "Course")" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Quay lại
+        </a>
+    </header>
+
+    @{
+        var isPremium = Model.MemberDate.HasValue && Model.MemberDate.Value > DateTime.Now;
+        var daysRemaining = isPremium ? (Model.MemberDate.Value - DateTime.Now).Days : 0;
+        var membershipStatus = isPremium ? "Premium" : "Miễn phí";
+        var userInitial = !string.IsNullOrEmpty(Model.UserName)
+            ? Model.UserName.Substring(0, 1).ToUpper()
+            : "U";
+    }
+
+    <!-- Stats Grid -->
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon purple"><i class="fas fa-crown"></i></div>
+            <p class="stat-value">@membershipStatus</p>
+            <p class="stat-label">Trạng thái tài khoản</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon blue"><i class="fas fa-calendar-alt"></i></div>
+            <p class="stat-value">
+                @Model.DateJoined?.ToString("dd/MM/yyyy HH:mm")
+            </p>
+            <p class="stat-label">Ngày đã tham gia</p>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon green"><i class="fas fa-shield-alt"></i></div>
+            <p class="stat-value">@((Model.Roles?.Count) ?? 0)</p>
+            <p class="stat-label">Vai trò</p>
+        </div>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="profile-container">
+
+        <!-- Sidebar -->
+        <aside class="profile-sidebar">
+
+            <div class="profile-avatar">
+                <span class="profile-avatar-text">@userInitial</span>
+            </div>
+
+            <h2 class="profile-name">@Model.UserName</h2>
+            <p class="profile-email">@Model.Email</p>
+
+            <span class="membership-badge @(isPremium ? "premium" : "free")">
+                @if (isPremium)
+                {
+                    <i class="fas fa-crown"></i>
+                    <span>Thành viên Premium</span>
+                }
+                else
+                {
+                    <i class="fas fa-user"></i>
+                    <span>Thành viên Miễn phí</span>
+                }
+            </span>
+
+            <div class="membership-info">
+                @if (isPremium)
+                {
+                    <div class="membership-info-item">
+                        <span class="info-label">Ngày hết hạn</span>
+                        <span class="info-value">@Model.MemberDate.Value.ToString("dd/MM/yyyy")</span>
+                    </div>
+
+                    <div class="membership-info-item">
+                        <span class="info-label">Còn lại</span>
+                        <span class="info-value" style="color:@(daysRemaining <= 7 ? "#ef4444" : "#22c55e")">
+                            @daysRemaining ngày
+                        </span>
+                    </div>
+
+                    @if (daysRemaining <= 30)
+                    {
+                        <a href="@Url.Action("Upgrade", "Subscription")" class="upgrade-btn">
+                            <i class="fas fa-sync-alt"></i> Gia hạn Premium
+                        </a>
+                    }
+                }
+                else
+                {
+                    <div class="membership-info-item">
+                        <span class="info-label">Trạng thái</span>
+                        <span class="info-value">Tài khoản miễn phí</span>
+                    </div>
+
+                    @if (Model.MemberDate.HasValue)
+                    {
+                        <div class="membership-info-item">
+                            <span class="info-label">Đã hết hạn</span>
+                            <span class="info-value" style="color:#ef4444">
+                                @Model.MemberDate.Value.ToString("dd/MM/yyyy")
+                            </span>
+                        </div>
+                    }
+
+                    <a href="@Url.Action("Upgrade", "Subscription")" class="upgrade-btn">
+                        <i class="fas fa-arrow-up"></i> Nâng cấp Premium
+                    </a>
+                }
+            </div>
+
+        </aside>
+
+        <!-- Profile Content -->
+        <main class="profile-content">
+
+            <!-- Personal Info -->
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-id-card"></i></div>
+                    <h3 class="card-title">Thông tin cá nhân</h3>
+                </div>
+
+                <div class="info-grid">
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-fingerprint"></i> ID Người dùng</label>
+                        <div class="info-item-value">@Model.Id</div>
+                    </div>
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-user"></i> Tài khoản</label>
+                        <div class="info-item-value @(string.IsNullOrEmpty(Model.UserName) ? "empty" : "")">
+                            @(Model.UserName ?? "Chưa có tên tài khoản")
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-envelope"></i> Email</label>
+                        <div class="info-item-value @(string.IsNullOrEmpty(Model.Email) ? "empty" : "")">
+                            @(Model.Email ?? "Chưa có email")
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-phone"></i> Số điện thoại</label>
+                        <div class="info-item-value @(string.IsNullOrEmpty(Model.PhoneNumber) ? "empty" : "")">
+                            @(Model.PhoneNumber ?? "Chưa có số điện thoại")
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-calendar-plus"></i> Ngày tham gia</label>
+                        <div class="info-item-value">
+                            @(Model.DateJoined?.ToString("dd/MM/yyyy HH:mm") ?? "Không rõ")
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <label class="info-item-label"><i class="fas fa-crown"></i> Premium</label>
+
+                        <div class="info-item-value" style="color:@(isPremium ? "#f59e0b" : "#64748b")">
+                            @if (isPremium)
+                            {
+                                <span>Còn @daysRemaining ngày</span>
+                            }
+                            else if (Model.MemberDate.HasValue)
+                            {
+                                <span>Đã hết hạn @Model.MemberDate.Value.ToString("dd/MM/yyyy")</span>
+                            }
+                            else
+                            {
+                                <span>Chưa đăng ký</span>
+                            }
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="@Url.Action("Edit", "User", new { id = Model.Id })" class="action-btn primary">
+                        <i class="fas fa-edit"></i> Chỉnh sửa thông tin
+                    </a>
+
+                    <a href="@Url.Action("ChangePassword", "User", new { id = Model.Id })" class="action-btn secondary">
+                        <i class="fas fa-key"></i> Đổi mật khẩu
+                    </a>
+                </div>
+            </div>
+
+            <!-- Roles -->
+            <div class="info-card">
+                <div class="card-header">
+                    <div class="card-icon"><i class="fas fa-user-tag"></i></div>
+                    <h3 class="card-title">Vai trò & Quyền hạn</h3>
+                </div>
+
+                @if (Model.Roles != null && Model.Roles.Any())
+                {
+                    <div class="roles-container">
+                        @foreach (var role in Model.Roles)
+                        {
+                            <span class="role-badge">
+                                <i class="fas fa-certificate"></i> @role
+                            </span>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="empty-roles">
+                        <i class="fas fa-info-circle"></i> Người dùng chưa có vai trò
+                    </div>
+                }
+            </div>
+
+        </main>
+
+    </div>
+
+</div>

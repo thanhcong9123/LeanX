@@ -12,7 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" </head>
 
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 
 <body>
@@ -84,7 +84,7 @@
                                 <div class="nav-indicator"></div>
                             </a>
                         </li>
-                        
+
                         <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
                             <a class="nav-link" asp-area="" asp-controller="Scores" asp-action="Index">
                                 <div class="nav-icon">
@@ -94,7 +94,7 @@
                                 <div class="nav-indicator"></div>
                             </a>
                         </li>
-                        <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
+                        @* <li class="nav-item mx-3 @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
                             <a class="nav-link" asp-area="" asp-controller="Messages" asp-action="Chat">
                                 <div class="nav-icon">
                                     <i class="fas fa-comments"></i>
@@ -102,7 +102,7 @@
                                 <span class="nav-text">Tin nhắn</span>
 
                             </a>
-                        </li>
+                        </li> *@
                         <li class="nav-item mx-3 logout-item">
                             <form asp-controller="User" asp-action="Logout" method="post" class="logout-form">
                                 <button class="logout-btn">
@@ -137,6 +137,13 @@
                         </button>
                     </div>
                     <ul class="mobile-nav-menu">
+                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
+                            <a class="mobile-nav-link" asp-area="" asp-controller="User" asp-action="InfoUser">
+                                <i class="fas fa-user"></i>
+                                <span>Thông tin người dùng</span>
+                            </a>
+                        </li>
+
                         <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Index" ? "active" : "")">
                             <a class="mobile-nav-link" asp-area="" asp-controller="Course" asp-action="MyCourse">
                                 <i class="fas fa-book-open"></i>
@@ -155,24 +162,19 @@
                                 <span>Sách điện tử</span>
                             </a>
                         </li>
-                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Test" ? "active" : "")">
-                            <a class="mobile-nav-link" asp-area="" asp-controller="Test" asp-action="Index">
-                                <i class="fas fa-clipboard-check"></i>
-                                <span>Bài kiểm tra</span>
-                            </a>
-                        </li>
+
                         <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Scores" ? "active" : "")">
                             <a class="mobile-nav-link" asp-area="" asp-controller="Scores" asp-action="Index">
                                 <i class="fas fa-chart-line"></i>
                                 <span>Sổ điểm</span>
                             </a>
                         </li>
-                        <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
+                        @* <li class="mobile-nav-item @(ViewData["ActivePage"] as string == "Messages" ? "active" : "")">
                             <a class="mobile-nav-link" asp-area="" asp-controller="Messages" asp-action="Chat">
                                 <i class="fas fa-comments"></i>
                                 <span>Tin nhắn</span>
                             </a>
-                        </li>
+                        </li> *@
                         <li class="mobile-nav-item">
                             <form asp-controller="User" asp-action="Logout" method="post" class="mobile-logout-form">
                                 <button class="mobile-logout-btn" onclick="handleLogout()">
@@ -189,14 +191,14 @@
     <div class="">
         <main role="main" class="pb-3">
             @RenderBody()
-            
+
         </main>
     </div>
 
     <footer class="border-top footer text-muted">
 
     </footer>
-    
+
     <!-- Thêm thư viện SignalR -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/7.0.5/signalr.min.js"></script>
 

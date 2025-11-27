@@ -78,7 +78,7 @@ namespace LearnX_ApiIntegration.SystemService
                 return JsonConvert.DeserializeObject<ApiSuccessResult<UserVm>>(body);
 
             }
-            return JsonConvert.DeserializeObject<ApiErrorResult<UserVm>>(body);
+            return new ApiErrorResult<UserVm> { Message = $"Request failed: {(int)response.StatusCode} {response.ReasonPhrase}" };
 
         }
 
