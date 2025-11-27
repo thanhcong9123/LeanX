@@ -1,708 +1,369 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nhắn tin - LearX</title>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-</head>
-<body>
-    <style>
-        body {
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-            margin: 0;
-            padding: 0;
-            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            height: 100vh;
-            overflow: hidden;
-        }
+@model IEnumerable<LearnX_ModelView.Catalog.Messages.ConversationSummary>
+@using System
+@using LearnX_ModelView.Catalog.Messages
 
-        .chat-container {
-            display: flex;
-            height: 100vh;
-            max-width: 1200px;
-            margin: 0 auto;
-            background: white;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Sidebar - Danh sách cuộc trò chuyện */
-        .chat-sidebar {
-            width: 350px;
-            background: white;
-            border-right: 1px solid #e2e8f0;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .sidebar-header {
-            padding: 25px 20px;
-            border-bottom: 1px solid #e2e8f0;
-            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .sidebar-title {
-            font-size: 1.4rem;
-            font-weight: 600;
-            margin: 0;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .search-box {
-            margin: 20px;
-            position: relative;
-        }
-
-        .search-input {
-            width: 100%;
-            padding: 12px 20px 12px 45px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 14px;
-            background: #f8fafc;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: #667EEA;
-            background: white;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #64748b;
-            font-size: 16px;
-        }
-
-        .conversations-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px 0;
-        }
-
-        .conversation-item {
-            padding: 15px 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border-left: 3px solid transparent;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .conversation-item:hover {
-            background: #f8fafc;
-        }
-
-        .conversation-item.active {
-            background: rgba(102, 126, 234, 0.1);
-            border-left-color: #667EEA;
-        }
-
-        .user-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 16px;
-            flex-shrink: 0;
-        }
-
-        .conversation-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .user-name {
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0 0 5px 0;
-            font-size: 15px;
-        }
-
-        .last-message {
-            color: #64748b;
-            font-size: 13px;
-            margin: 0;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .message-time {
-            color: #94a3b8;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        /* Main Chat Area */
-        .chat-main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            background: #fafbfc;
-        }
-
-        .chat-header {
-            padding: 20px 25px;
-            background: white;
-            border-bottom: 1px solid #e2e8f0;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .current-user-name {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0;
-        }
-
-        .user-status {
-            color: #48bb78;
-            font-size: 13px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .status-dot {
-            width: 8px;
-            height: 8px;
-            background: #48bb78;
-            border-radius: 50%;
-        }
-
-        .messages-container {
-            flex: 1;
-            overflow-y: auto;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .message {
-            display: flex;
-            align-items: flex-end;
-            gap: 10px;
-            max-width: 70%;
-        }
-
-        .message.sent {
-            align-self: flex-end;
-            flex-direction: row-reverse;
-        }
-
-        .message.received {
-            align-self: flex-start;
-        }
-
-        .message-avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-weight: 600;
-            font-size: 12px;
-            flex-shrink: 0;
-        }
-
-        .message-content {
-            background: white;
-            padding: 12px 16px;
-            border-radius: 18px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            position: relative;
-        }
-
-        .message.sent .message-content {
-            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
-            color: white;
-        }
-
-        .message-text {
-            margin: 0;
-            line-height: 1.4;
-            word-wrap: break-word;
-        }
-
-        .message-time-stamp {
-            font-size: 11px;
-            color: #94a3b8;
-            margin-top: 5px;
-            text-align: right;
-        }
-
-        .message.sent .message-time-stamp {
-            color: rgba(255, 255, 255, 0.8);
-        }
-
-        /* Message Input */
-        .message-input-container {
-            padding: 20px 25px;
-            background: white;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        .message-input-form {
-            display: flex;
-            gap: 15px;
-            align-items: flex-end;
-        }
-
-        .message-input {
-            flex: 1;
-            padding: 12px 20px;
-            border: 2px solid #e2e8f0;
-            border-radius: 25px;
-            font-size: 14px;
-            resize: none;
-            min-height: 20px;
-            max-height: 100px;
-            font-family: inherit;
-            transition: all 0.3s ease;
-        }
-
-        .message-input:focus {
-            outline: none;
-            border-color: #667EEA;
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-        }
-
-        .send-button {
-            width: 45px;
-            height: 45px;
-            background: linear-gradient(135deg, #667EEA 0%, #764ba2 100%);
-            border: none;
-            border-radius: 50%;
-            color: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-
-        .send-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-
-        .send-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        /* Empty State */
-        .empty-chat {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: #64748b;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .empty-icon {
-            width: 80px;
-            height: 80px;
-            background: rgba(102, 126, 234, 0.1);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #667EEA;
-            font-size: 32px;
-            margin-bottom: 20px;
-        }
-
-        .empty-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2d3748;
-            margin: 0 0 10px 0;
-        }
-
-        .empty-description {
-            font-size: 14px;
-            color: #64748b;
-        }
-
-        /* Responsive */
-        @@media (max-width: 768px) {
-            .chat-container {
-                height: 100vh;
-            }
-
-            .chat-sidebar {
-                width: 100%;
-                position: absolute;
-                z-index: 10;
-                transform: translateX(-100%);
-                transition: transform 0.3s ease;
-            }
-
-            .chat-sidebar.show {
-                transform: translateX(0);
-            }
-
-            .chat-main {
-                width: 100%;
-            }
-
-            .message {
-                max-width: 85%;
-            }
-        }
-
-        /* Scrollbar Styling */
-        .conversations-list::-webkit-scrollbar,
-        .messages-container::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        .conversations-list::-webkit-scrollbar-track,
-        .messages-container::-webkit-scrollbar-track {
-            background: #f1f5f9;
-        }
-
-        .conversations-list::-webkit-scrollbar-thumb,
-        .messages-container::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
-            border-radius: 3px;
-        }
-
-        .conversations-list::-webkit-scrollbar-thumb:hover,
-        .messages-container::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
-        }
-    </style>
-
-    <div class="chat-container">
-        <!-- Sidebar -->
-        <div class="chat-sidebar" id="chatSidebar">
-            <div class="sidebar-header">
-                <h2 class="sidebar-title">
-                    <i class="fas fa-comments"></i>
-                    Tin nhắn
-                </h2>
-            </div>
-
-            <div class="search-box">
-                <i class="fas fa-search search-icon"></i>
-                <input type="text" class="search-input" placeholder="Tìm kiếm cuộc trò chuyện..." id="searchConversations">
-            </div>
-
-            <div class="conversations-list" id="conversationsList">
-                <!-- Sample conversations -->
-                <div class="conversation-item active" data-user-id="user1" data-user-name="Nguyễn Văn An">
-                    <div class="user-avatar">NA</div>
-                    <div class="conversation-info">
-                        <h4 class="user-name">Nguyễn Văn An</h4>
-                        <p class="last-message">Chào bạn, mình có thể hỏi về bài tập không?</p>
-                    </div>
-                    <div class="message-time">10:30</div>
-                </div>
-
-                <div class="conversation-item" data-user-id="user2" data-user-name="Trần Thị Bình">
-                    <div class="user-avatar">TB</div>
-                    <div class="conversation-info">
-                        <h4 class="user-name">Trần Thị Bình</h4>
-                        <p class="last-message">Cảm ơn bạn đã giúp đỡ!</p>
-                    </div>
-                    <div class="message-time">09:15</div>
-                </div>
-
-                <div class="conversation-item" data-user-id="user3" data-user-name="Lê Minh Cường">
-                    <div class="user-avatar">LC</div>
-                    <div class="conversation-info">
-                        <h4 class="user-name">Lê Minh Cường</h4>
-                        <p class="last-message">Bài giảng hôm nay rất hay</p>
-                    </div>
-                    <div class="message-time">Hôm qua</div>
-                </div>
-
-                <div class="conversation-item" data-user-id="user4" data-user-name="Phạm Thu Hà">
-                    <div class="user-avatar">PH</div>
-                    <div class="conversation-info">
-                        <h4 class="user-name">Phạm Thu Hà</h4>
-                        <p class="last-message">Mình đã hoàn thành bài tập rồi</p>
-                    </div>
-                    <div class="message-time">2 ngày</div>
-                </div>
+<link href="~/css/mess/chat.css" rel="stylesheet"/>
+<div class="messenger-container">
+    <!-- Sidebar - Conversations List -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title"><i class="fas fa-comment-dots"></i> Đoạn chat</h1>
+            <div class="sidebar-actions">
+                <button class="icon-btn" title="Tin nhắn mới"><i class="fas fa-edit"></i></button>
+                <button class="icon-btn" title="Cài đặt"><i class="fas fa-cog"></i></button>
             </div>
         </div>
-
-        <!-- Main Chat Area -->
-        <div class="chat-main">
-            <div class="chat-header" id="chatHeader">
-                <div class="user-avatar">NA</div>
-                <div>
-                    <h3 class="current-user-name" id="currentUserName">Nguyễn Văn An</h3>
-                    <div class="user-status">
-                        <div class="status-dot"></div>
-                        Đang hoạt động
+        <div class="search-box">
+            <div class="search-wrapper">
+                <i class="fas fa-search search-icon"></i>
+                <input type="text" class="search-input" placeholder="Tìm kiếm trên Messenger" id="searchConversations"/>
+            </div>
+        </div>
+        <div class="conversations-list" id="conversationsList">
+            @if (Model != null && Model.Any())
+            {
+                foreach (var conversation in Model)
+                {
+                    var initial = !string.IsNullOrEmpty(conversation.Email) ? conversation.Email.Substring(0, 1).ToUpper() : "U";
+                    var timeAgo = GetTimeAgo(conversation.LatestAt);
+                    var unreadClass = conversation.UnreadCount > 0 ? "unread" : "";
+            <div class="conversation-item @unreadClass" data-user-id="@conversation.UserId" data-email="@conversation.Email"
+                onclick="openChat(event, '@conversation.UserId', '@conversation.Email')">
+                <div class="conversation-avatar">
+                    <div class="avatar">@initial</div>
+                    <div class="online-indicator"></div>
+                </div>
+                <div class="conversation-content">
+                    <div class="conversation-header">
+                        <span class="conversation-name">@conversation.Email</span>
+                        <span class="conversation-time">@timeAgo</span>
+                    </div>
+                    <div class="conversation-preview">
+                        <span class="preview-text">@(conversation.LatestMessage ?? "Bắt đầu cuộc trò chuyện")</span>
+                        @if (conversation.UnreadCount > 0)
+                        {
+                            <span class="unread-badge">@conversation.UnreadCount</span>
+                        }
                     </div>
                 </div>
             </div>
+                }
+            }
+            else
+            {
+            <div class="empty-chat">
+                <div class="empty-icon"><i class="fas fa-comments"></i></div>
+                <h3 class="empty-title">Chưa có cuộc trò chuyện</h3>
+                <p class="empty-text">Bắt đầu trò chuyện với ai đó!</p>
+            </div>
+            }
+        </div>
+    </aside>
+    <!-- Chat Area -->
+    <main class="chat-area" id="chatArea">
+        <div class="empty-chat">
+            <div class="empty-icon"><i class="fas fa-comments"></i></div>
+            <h3 class="empty-title">Chọn một cuộc trò chuyện</h3>
+            <p class="empty-text">Chọn từ danh sách bên trái để bắt đầu trò chuyện</p>
+        </div>
+    </main>
+</div>
 
+<script>
+    const currentUserId = '@ViewBag.UserId';
+    let currentChatUserId = null;
+    let currentChatUserEmail = null;
+
+    // Open chat with user
+    async function openChat(event, userId, email) {
+        currentChatUserId = userId;
+        currentChatUserEmail = email;
+        // Update active conversation
+        document.querySelectorAll('.conversation-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        if (event && event.currentTarget) {
+            event.currentTarget.classList.add('active');
+        }
+        // Mobile: hide sidebar when chat is opened
+        if (window.innerWidth <= 768) {
+            document.getElementById('sidebar').classList.add('hidden');
+        }
+        // Load chat messages
+        await loadChatMessages(userId);
+        // Mark messages as read
+        markConversationAsRead(userId);
+    }
+
+    // Load chat messages
+    async function loadChatMessages(userId) {
+        const chatArea = document.getElementById('chatArea');
+        const initial = currentChatUserEmail
+            ? currentChatUserEmail.substring(0, 1).toUpperCase()
+            : "";
+        chatArea.innerHTML = `
+            <div class="chat-header">
+                <div class="chat-user-info">
+                    <button class="icon-btn" onclick="backToList()" style="margin-right: 8px; display: none;" id="backBtn">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-user-avatar">${initial}</div>
+                    <div class="chat-user-details">
+                        <div class="chat-user-name">${currentChatUserEmail}</div>
+                        <div class="chat-user-status online">
+                            <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
+                            Đang hoạt động
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-icon-btn" title="Gọi thoại">
+                        <i class="fas fa-phone"></i>
+                    </button>
+                    <button class="action-icon-btn" title="Gọi video">
+                        <i class="fas fa-video"></i>
+                    </button>
+                    <button class="action-icon-btn" title="Thông tin">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                </div>
+            </div>
             <div class="messages-container" id="messagesContainer">
-                <!-- Sample messages -->
-                <div class="message received">
-                    <div class="message-avatar">NA</div>
-                    <div class="message-content">
-                        <p class="message-text">Chào bạn! Mình có thể hỏi về bài tập hôm nay không?</p>
-                        <div class="message-time-stamp">10:25</div>
+                <div style="text-align: center; padding: 40px 20px;">
+                    <div style="width: 80px; height: 80px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto 16px; display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; font-weight: 700;">
+                        ${initial}
                     </div>
-                </div>
-
-                <div class="message sent">
-                    <div class="message-avatar">T</div>
-                    <div class="message-content">
-                        <p class="message-text">Chào bạn! Tất nhiên rồi, bạn cần hỗ trợ gì?</p>
-                        <div class="message-time-stamp">10:26</div>
-                    </div>
-                </div>
-
-                <div class="message received">
-                    <div class="message-avatar">NA</div>
-                    <div class="message-content">
-                        <p class="message-text">Mình không hiểu phần về thuật toán sắp xếp, bạn có thể giải thích thêm không?</p>
-                        <div class="message-time-stamp">10:28</div>
-                    </div>
-                </div>
-
-                <div class="message sent">
-                    <div class="message-avatar">T</div>
-                    <div class="message-content">
-                        <p class="message-text">Được thôi! Thuật toán sắp xếp có nhiều loại như Bubble Sort, Quick Sort... Bạn muốn tìm hiểu loại nào trước?</p>
-                        <div class="message-time-stamp">10:30</div>
-                    </div>
+                    <h3 style="font-size: 1.5rem; font-weight: 700; color: #050505; margin: 0 0 8px 0;">${currentChatUserEmail}</h3>
+                    <p style="font-size: 0.9rem; color: #65676b; margin: 0 0 16px 0;">Các bạn là bạn bè trên Messenger</p>
+                    <p style="font-size: 0.85rem; color: #65676b;">Bắt đầu cuộc trò chuyện của bạn!</p>
                 </div>
             </div>
-
-            <div class="message-input-container">
-                <form class="message-input-form" id="messageForm">
-                    <textarea class="message-input" id="messageInput" placeholder="Nhập tin nhắn..." rows="1"></textarea>
-                    <button type="submit" class="send-button" id="sendButton">
+            <div class="message-input-area">
+                <div class="input-wrapper">
+                    <div class="input-actions">
+                        <button class="attach-btn" title="Đính kèm file"><i class="fas fa-plus-circle"></i></button>
+                        <button class="attach-btn" title="Gửi ảnh"><i class="fas fa-image"></i></button>
+                        <button class="attach-btn" title="Gửi sticker"><i class="fas fa-sticky-note"></i></button>
+                    </div>
+                    <div class="message-input-wrapper">
+                        <textarea class="message-input" id="messageInput" placeholder="Aa" rows="1"></textarea>
+                        <button class="emoji-btn" title="Chọn emoji">😊</button>
+                    </div>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
                         <i class="fas fa-paper-plane"></i>
                     </button>
-                </form>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const conversationItems = document.querySelectorAll('.conversation-item');
-            const messagesContainer = document.getElementById('messagesContainer');
-            const messageForm = document.getElementById('messageForm');
-            const messageInput = document.getElementById('messageInput');
-            const sendButton = document.getElementById('sendButton');
-            const currentUserName = document.getElementById('currentUserName');
-            const searchInput = document.getElementById('searchConversations');
-
-            let currentReceiverId = 'user1';
-            const currentSenderId = 'current-user'; // This would come from your authentication system
-
-            // Auto-resize textarea
-            messageInput.addEventListener('input', function() {
-                this.style.height = 'auto';
-                this.style.height = Math.min(this.scrollHeight, 100) + 'px';
-            });
-
-            // Search conversations
-            searchInput.addEventListener('input', function() {
-                const searchTerm = this.value.toLowerCase();
-                conversationItems.forEach(item => {
-                    const userName = item.querySelector('.user-name').textContent.toLowerCase();
-                    const lastMessage = item.querySelector('.last-message').textContent.toLowerCase();
-                    
-                    if (userName.includes(searchTerm) || lastMessage.includes(searchTerm)) {
-                        item.style.display = 'flex';
-                    } else {
-                        item.style.display = 'none';
-                    }
-                });
-            });
-
-            // Switch conversations
-            conversationItems.forEach(item => {
-                item.addEventListener('click', function() {
-                    // Remove active class from all items
-                    conversationItems.forEach(i => i.classList.remove('active'));
-                    
-                    // Add active class to clicked item
-                    this.classList.add('active');
-                    
-                    // Update current user info
-                    const userName = this.dataset.userName;
-                    const userId = this.dataset.userId;
-                    currentReceiverId = userId;
-                    
-                    currentUserName.textContent = userName;
-                    
-                    // Update avatar in header
-                    const headerAvatar = document.querySelector('.chat-header .user-avatar');
-                    headerAvatar.textContent = userName.split(' ').map(n => n[0]).join('').toUpperCase();
-                    
-                    // Load messages for this conversation (in real app, this would be an API call)
-                    loadMessagesForUser(userId);
-                });
-            });
-
-            // Send message
-            messageForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const messageText = messageInput.value.trim();
-                if (!messageText) return;
-                
-                // Create message object
-                const messageData = {
-                    SenderId: currentSenderId,
-                    ReceiverId: currentReceiverId,
-                    Content: messageText
-                };
-                
-                // Add message to UI
-                addMessageToUI(messageText, true);
-                
-                // Clear input
-                messageInput.value = '';
-                messageInput.style.height = 'auto';
-                
-                // In a real application, you would send this to your API
-                sendMessageToAPI(messageData);
-                
-                // Simulate response (remove this in real implementation)
-                setTimeout(() => {
-                    addMessageToUI("Cảm ơn bạn đã nhắn tin! Tôi sẽ trả lời sớm nhất có thể.", false);
-                }, 1000);
-            });
-
-            // Add message to UI
-            function addMessageToUI(text, isSent) {
-                const messageDiv = document.createElement('div');
-                messageDiv.className = `message ${isSent ? 'sent' : 'received'}`;
-                
-                const currentTime = new Date().toLocaleTimeString('vi-VN', { 
-                    hour: '2-digit', 
-                    minute: '2-digit' 
-                });
-                
-                const avatarText = isSent ? 'T' : currentUserName.textContent.split(' ').map(n => n[0]).join('').toUpperCase();
-                
-                messageDiv.innerHTML = `
-                    <div class="message-avatar">${avatarText}</div>
-                    <div class="message-content">
-                        <p class="message-text">${text}</p>
-                        <div class="message-time-stamp">${currentTime}</div>
-                    </div>
-                `;
-                
-                messagesContainer.appendChild(messageDiv);
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-                
-                // Update last message in sidebar
-                updateLastMessage(text);
+        `;
+        // Show back button on mobile
+        if (window.innerWidth <= 768) {
+            document.getElementById('backBtn').style.display = 'flex';
+        }
+        // Setup message input
+        setupMessageInput();
+        // Load actual messages from server
+        try {
+            const response = await fetch(`/Message/GetConversation?otherUserId=${userId}`);
+            if (response.ok) {
+                const messages = await response.json();
+                displayMessages(messages);
             }
+        } catch (error) {
+            console.error('Error loading messages:', error);
+        }
+    }
 
-            // Update last message in conversation list
-            function updateLastMessage(text) {
-                const activeConversation = document.querySelector('.conversation-item.active');
-                if (activeConversation) {
-                    const lastMessageElement = activeConversation.querySelector('.last-message');
-                    const timeElement = activeConversation.querySelector('.message-time');
-                    
-                    lastMessageElement.textContent = text.length > 30 ? text.substring(0, 30) + '...' : text;
-                    timeElement.textContent = new Date().toLocaleTimeString('vi-VN', { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                    });
-                }
+    // Display messages
+    function displayMessages(messages) {
+        const container = document.getElementById('messagesContainer');
+        if (!messages || messages.length === 0) {
+            container.innerHTML = "";
+            return;
+        }
+        let html = '';
+        let lastDate = '';
+        messages.forEach((msg, index) => {
+            const thisDate = new Date(msg.sentAt);
+            const messageDate = thisDate.toDateString();
+            const messageTime = thisDate.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+            const isSent = msg.senderId === currentUserId;
+            const initial = isSent ? 'B' : (currentChatUserEmail ? currentChatUserEmail.substring(0, 1).toUpperCase() : "U");
+            // Add date divider
+            if (messageDate !== lastDate) {
+                html += `<div class="date-divider"><span>${formatDate(thisDate)}</span></div>`;
+                lastDate = messageDate;
             }
-
-            // Load messages for specific user (placeholder function)
-            function loadMessagesForUser(userId) {
-                // In a real application, this would make an API call to load messages
-                // For now, we'll just clear the messages and show a loading state
-                messagesContainer.innerHTML = `
-                    <div class="empty-chat">
-                        <div class="empty-icon">
-                            <i class="fas fa-comments"></i>
+            // Add message
+            html += `
+                <div class="message-group ${isSent ? 'sent' : 'received'}">
+                    ${!isSent ? `<div class="message-avatar">${initial}</div>` : ''}
+                    <div class="message-content-wrapper">
+                        <div class="message-bubble">${escapeHtml(msg.content)}</div>
+                        <div class="message-time">
+                            ${messageTime}
+                            ${isSent && msg.isRead ? '<i class="fas fa-check-double" style="color: #0084ff;"></i>' : ''}
+                            ${isSent && !msg.isRead ? '<i class="fas fa-check"></i>' : ''}
                         </div>
-                        <h3 class="empty-title">Bắt đầu cuộc trò chuyện</h3>
-                        <p class="empty-description">Gửi tin nhắn đầu tiên để bắt đầu trò chuyện</p>
                     </div>
-                `;
-            }
-
-            // Send message to API (placeholder function)
-            function sendMessageToAPI(messageData) {
-                // In a real application, this would make an API call
-                console.log('Sending message:', messageData);
-                
-                // Example API call:
-                /*
-                fetch('/api/messages/send', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(messageData)
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Message sent successfully:', data);
-                })
-                .catch(error => {
-                    console.error('Error sending message:', error);
-                });
-                */
-            }
-
-            // Enable/disable send button based on input
-            messageInput.addEventListener('input', function() {
-                sendButton.disabled = !this.value.trim();
-            });
-
-            // Send message with Enter key (Shift+Enter for new line)
-            messageInput.addEventListener('keydown', function(e) {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    messageForm.dispatchEvent(new Event('submit'));
-                }
-            });
-
-            // Auto-scroll to bottom on page load
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+                    ${isSent ? `<div class="message-avatar">${initial}</div>` : ''}
+                </div>
+            `;
         });
-    </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'98f0c1caf15bdd36',t:'MTc2MDU0NjQxMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
-</html>
+        container.innerHTML = html;
+        scrollToBottom();
+    }
+
+    // Setup message input
+    function setupMessageInput() {
+        const input = document.getElementById('messageInput');
+        const sendBtn = document.getElementById('sendBtn');
+        if (!input || !sendBtn) return;
+        input.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+            sendBtn.disabled = this.value.trim() === '';
+        });
+        input.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                if (this.value.trim() !== '') {
+                    sendMessage();
+                }
+            }
+        });
+    }
+
+    // Send message
+    async function sendMessage() {
+        const input = document.getElementById('messageInput');
+        const message = input.value.trim();
+        if (!message || !currentChatUserId) return;
+        try {
+            const response = await fetch('/Message/Send', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    receiverId: currentChatUserId,
+                    content: message
+                })
+            });
+            if (response.ok) {
+                input.value = '';
+                input.style.height = 'auto';
+                document.getElementById('sendBtn').disabled = true;
+                await loadChatMessages(currentChatUserId);
+                updateConversationPreview(currentChatUserId, message);
+            }
+        } catch (error) {
+            console.error('Error sending message:', error);
+        }
+    }
+
+    // Mark conversation as read
+    function markConversationAsRead(userId) {
+        const conversation = document.querySelector(`.conversation-item[data-user-id="${userId}"]`);
+        if (conversation) {
+            conversation.classList.remove('unread');
+            const badge = conversation.querySelector('.unread-badge');
+            if (badge) {
+                badge.remove();
+            }
+        }
+    }
+
+    // Update conversation preview
+    function updateConversationPreview(userId, message) {
+        const conversation = document.querySelector(`.conversation-item[data-user-id="${userId}"]`);
+        if (conversation) {
+            const previewText = conversation.querySelector('.preview-text');
+            const timeSpan = conversation.querySelector('.conversation-time');
+            if (previewText) {
+                previewText.textContent = message;
+            }
+            if (timeSpan) {
+                timeSpan.textContent = 'Vừa xong';
+            }
+            // Move to top
+            const list = document.getElementById('conversationsList');
+            list.insertBefore(conversation, list.firstChild);
+        }
+    }
+
+    // Search conversations
+    document.getElementById('searchConversations')?.addEventListener('input', function(e) {
+        const searchTerm = e.target.value.toLowerCase();
+        const conversations = document.querySelectorAll('.conversation-item');
+        conversations.forEach(conv => {
+            const email = (conv.dataset.email || "").toLowerCase();
+            const preview = (conv.querySelector('.preview-text')?.textContent || "").toLowerCase();
+            if (email.includes(searchTerm) || preview.includes(searchTerm)) {
+                conv.style.display = 'flex';
+            } else {
+                conv.style.display = 'none';
+            }
+        });
+    });
+
+    // Back to list (mobile)
+    function backToList() {
+        document.getElementById('sidebar').classList.remove('hidden');
+    }
+
+    // Utility functions
+    function scrollToBottom() {
+        const container = document.getElementById('messagesContainer');
+        if (container) {
+            container.scrollTop = container.scrollHeight;
+        }
+    }
+    function escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
+    }
+    function formatDate(date) {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(yesterday.getDate() - 1);
+        if (date.toDateString() === today.toDateString()) {
+            return 'Hôm nay';
+        } else if (date.toDateString() === yesterday.toDateString()) {
+            return 'Hôm qua';
+        } else {
+            return date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+    }
+
+    // Handle window resize
+    window.addEventListener('resize', function() {
+        if (window.innerWidth > 768) {
+            document.getElementById('sidebar').classList.remove('hidden');
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.style.display = 'none';
+            }
+        } else if (currentChatUserId) {
+            const backBtn = document.getElementById('backBtn');
+            if (backBtn) {
+                backBtn.style.display = 'flex';
+            }
+        }
+    });
+
+</script>
+@functions {
+    // Hàm tính thời gian đã trôi qua kể từ sentAt (định dạng tiếng Việt đơn giản)
+    public static string GetTimeAgo(DateTime sentAt)
+    {
+        var timeSpan = DateTime.Now - sentAt;
+        if (timeSpan.TotalMinutes < 1)
+            return "Vừa xong";
+        if (timeSpan.TotalMinutes < 60)
+            return $"{(int)timeSpan.TotalMinutes} phút";
+        if (timeSpan.TotalHours < 24)
+            return $"{(int)timeSpan.TotalHours} giờ";
+        if (timeSpan.TotalDays < 7)
+            return $"{(int)timeSpan.TotalDays} ngày";
+        return sentAt.ToString("dd/MM");
+    }
+}

@@ -11,9 +11,10 @@ namespace LearnX_App.Models
     {
         [Required(ErrorMessage = "Tiêu đề là bắt buộc")]
         [Display(Name = "Tiêu đề bài tập")]
+        [RegularExpression(@"^(?!\s*$).+", ErrorMessage = "Tiêu đề không được để trống hoặc chỉ chứa khoảng trắng")]
         public string Title { get; set; } = string.Empty;
 
-        [Required]
+        [Required(ErrorMessage = "Khóa học là bắt buộc")]
         public int CourseId { get; set; }
 
         [Display(Name = "Mô tả bài tập")]

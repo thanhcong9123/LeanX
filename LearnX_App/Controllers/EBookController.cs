@@ -197,7 +197,7 @@ namespace MyApp.Namespace
             return NotFound();
         }
         // Xóa sách
-        [HttpPost]
+        [HttpGet]
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _ebookApiClient.DeleteBookAsync(id);

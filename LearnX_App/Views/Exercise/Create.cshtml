@@ -1,10 +1,9 @@
 @using LearnX_ModelView.Catalog.Exercise
 @using Microsoft.CodeAnalysis.Scripting
 @model ExerciseRequestWrapper
-
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&amp;display=swap"
-    rel="stylesheet">
+@{
+    ViewData["Title"] = "Tạo Bài Tập Mới";
+}
 
 <link rel="stylesheet" href="/css/exercise/create.css">
 <div class="container-table">
@@ -19,12 +18,10 @@
             <div class="message success" id="successMessage"><i class="fas fa-check-circle"></i> <span>Bài tập đã được
                     tạo thành công!</span>
             </div>
-            <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span
-                    id="errorText">Có lỗi xảy ra, vui lòng thử lại!</span>
-            </div>
+           
             <form id="exerciseForm" asp-controller="Exercise" asp-action="Create" method="post">
                 @Html.AntiForgeryToken()
-
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <!-- Thông tin bài tập -->
                 <div class="form-section">
                     <h3 class="section-title">
@@ -68,6 +65,9 @@
 
                 </div><!-- Câu hỏi trắc nghiệm -->
                 <div class="questions-section">
+                 <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span
+                    id="errorText">Có lỗi xảy ra, vui lòng thử lại!</span>
+            </div>
                     <div class="questions-header">
                         <h3 class="questions-title"><i class="fas fa-question-circle"></i> Câu hỏi trắc nghiệm</h3>
                         <button type="button" class="add-question-btn" id="addQuestionBtn"> <i class="fas fa-plus"></i>
@@ -87,7 +87,7 @@
         </div>
     </div>
 </div>
-<script>
+<script type="text/javascript">
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.getElementById('exerciseForm');
         const cancelBtn = document.getElementById('cancelBtn');
@@ -350,7 +350,38 @@
 
             return true;
         }
+        window.validateForm = validateForm;
 
+        // Gắn submit handler (bổ sung nếu thiếu)
+        form.addEventListener('submit', function (e) {
+            // Đồng bộ dữ liệu từ các input vào object questions (phòng trường hợp user không rời khỏi input nên onchange chưa chạy)
+            syncLatestValues();
+            if (!validateForm()) {
+                e.preventDefault();
+                return false;
+            }
+        });
+        function syncLatestValues() {
+            // Đồng bộ câu hỏi
+            document.querySelectorAll('.question-item').forEach(qEl => {
+                const qId = parseInt(qEl.getAttribute('data-question-id'));
+                const qObj = questions.find(q => q.id === qId);
+                if (qObj) {
+                    const qInput = qEl.querySelector('input.question-text-input');
+                    if (qInput) qObj.questionText = qInput.value || '';
+                    // Đồng bộ đáp án
+                    qEl.querySelectorAll('.answer-item').forEach(aEl => {
+                        const idx = parseInt(aEl.getAttribute('data-answer-index'));
+                        const ansInput = aEl.querySelector('input.answer-input');
+                        const hiddenCorrect = aEl.querySelector('input.is-correct-input');
+                        if (qObj.answers[idx]) {
+                            if (ansInput) qObj.answers[idx].answerText = ansInput.value || '';
+                            if (hiddenCorrect) qObj.answers[idx].isCorrect = hiddenCorrect.value === 'true';
+                        }
+                    });
+                }
+            });
+        }
         // Show success message
         function showSuccess(message) {
             successMessage.querySelector('span').textContent = message;
@@ -374,7 +405,7 @@
         }
 
         // Form submission
-      
+
         // Cancel button
         cancelBtn.addEventListener('click', function () {
             const hasContent = form.querySelector('input[type="text"]').value ||

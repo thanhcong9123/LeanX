@@ -189,6 +189,14 @@
                                 </a>
                             </div>
                         }
+                        @if(!string.IsNullOrEmpty(Model.AnswerFile))
+                        {
+                            <div class="attachment-section">
+                                <a href="@Model.AnswerFile" class="attachment-link" target="_blank">
+                                    <i class="fas fa-file-download"></i> Đáp án mẫu
+                                </a>
+                            </div>
+                        }
 
                         @if (!string.IsNullOrEmpty(submission.TeacherComment))
                         {

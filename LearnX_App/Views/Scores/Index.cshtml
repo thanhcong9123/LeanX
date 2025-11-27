@@ -1,56 +1,45 @@
 @using LearnX_ModelView.Catalog.Exercise
 @model List<ExerciseScoreDto>
 
-<!DOCTYPE html>
-<html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-
-<body>
-    <div class="container mt-3">
-        <table class="table table-bordered table-striped">
-            <thead class="table-dark">
+<div class="container mt-3">
+    <table class="table table-bordered table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Exercise Title</th>
+                <th>Score</th>
+                <th>Passed</th>
+                <th>Date Completed</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
                 <tr>
-                    <th>Exercise Title</th>
-                    <th>Score</th>
-                    <th>Passed</th>
-                    <th>Date Completed</th>
+                    <td>@item.ExerciseTitle</td>
+                    <td>@item.Score</td>
+                    <td>
+                        @if (item.IsPassed)
+                        {
+                            <span class="text-success">
+                                <i class="fas fa-check-circle"></i> Yes
+                            </span>
+                        }
+                        else
+                        {
+                            <span class="text-danger">
+                                <i class="fas fa-times-circle"></i> No
+                            </span>
+                        }
+                    </td>
+                    <td>@item.DateCompleted.ToString("yyyy-MM-dd HH:mm:ss")</td>
                 </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.ExerciseTitle</td>
-                        <td>@item.Score</td>
-                        <td>
-                            @if (item.IsPassed)
-                            {
-                                <span class="text-success">
-                                    <i class="fas fa-check-circle"></i> Yes
-                                </span>
-                            }
-                            else
-                            {
-                                <span class="text-danger">
-                                    <i class="fas fa-times-circle"></i> No
-                                </span>
-                            }
-                        </td>
-                        <td>@item.DateCompleted.ToString("yyyy-MM-dd HH:mm:ss")</td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+            }
+        </tbody>
+    </table>
 
-    </div>
-    <!-- Đảm bảo có thêm link tới Font Awesome cho các biểu tượng -->
+</div>
+<!-- Đảm bảo có thêm link tới Font Awesome cho các biểu tượng -->
 
-</body>
 
-</html>
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">

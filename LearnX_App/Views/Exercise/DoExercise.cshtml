@@ -156,9 +156,16 @@
                                 <div><strong>Chú ý:</strong> Bạn còn <span id="unansweredCount">0</span> câu chưa trả lời!</div>
                             </div>
 
-                            <button type="button" class="submit-button" id="submitBtn" onclick="showConfirmModal()">
-                                <i class="fas fa-paper-plane"></i> Nộp bài
-                            </button>
+                            @if(User.IsInRole("Student") || User.IsInRole("Admin"))
+                            {
+                                <button type="button" class="submit-button" onclick="showConfirmModal()">
+                                    <i class="fas fa-paper-plane"></i> Nộp bài
+                                </button>
+                            }
+                            else
+                            {
+                                <div class="info-text">Chức năng nộp bài chỉ dành cho học viên.</div>
+                            }
                         </div>
                     </div>
                 </div>
