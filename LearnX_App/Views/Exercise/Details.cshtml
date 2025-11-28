@@ -166,14 +166,17 @@
                                         class="action-icon-btn btn-view" title="Xem chi tiết">
                                         <i class="fas fa-eye"></i>
                                     </a>
-                                    <a class="action-icon-btn btn-delete"
-                                        asp-action="Delete" asp-route-id="@exercise.ExerciseId" asp-route-idCourse="@courseId">
+                                    <a class="action-icon-btn btn-delete" asp-action="Delete" asp-route-id="@exercise.ExerciseId"
+                                        asp-route-idCourse="@courseId">
                                         <i class="fas fa-trash"></i>
                                     </a>
+                                   if(!isQuiz)
+                                   {
                                     <a href="@Url.Action("ViewSubmissions", "EssaySubmission", new { exerciseId = exercise.ExerciseId })"
                                         class="action-icon-btn btn-view" title="Xem danh sách bài đã nộp">
                                         <i class="fas fa-list-alt"></i>
                                     </a>
+                                   }
 
 
 
@@ -337,10 +340,13 @@
                                 <i class="fas fa-trash"></i>
                             </button>
                             </div>
+                            `if (exercise.questionCount <= 0) {
+                            `
                             <a href="${viewUrl}"
                             class="action-icon-btn btn-view" title="Xem danh sách bài đã nộp">
                                 <i class="fas fa-list-alt"></i>
                             </a>
+                            `} `
 `
                     } ``else {
                         `<a  href="${viewUrl}"

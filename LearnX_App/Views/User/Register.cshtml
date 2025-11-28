@@ -41,7 +41,7 @@
                     <p>Điền thông tin để bắt đầu hành trình học tập</p>
                 </div>
                 <div class="form-body ">
-                    <form asp-action="Register" method="post" class="">
+                    <form asp-action="Register" method="post" class="" id="registerForm">
                         @Html.AntiForgeryToken()
 
                         <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -85,6 +85,7 @@
                                     <input asp-for="Dob" type="date" id="dob" name="dob" required>
                                     <label asp-for="Dob" for="dob">Ngày sinh</label>
                                     <i class="fas fa-calendar input-icon"></i>
+                                    <span class="text-danger field-validation-valid" data-valmsg-for="Dob" data-valmsg-replace="true"></span>
                                 </div>
                             </div>
 
@@ -246,23 +247,21 @@
         const form = document.getElementById('registerForm');
         if (!form) return;
 
-        // same regex as server
         const pwdRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
 
         form.addEventListener('submit', function (e) {
             const pwd = document.getElementById('password')?.value || '';
             const confirm = document.getElementById('confirmPassword')?.value || '';
+            const dobStr = document.getElementById('dob')?.value || '';
 
-            // clear previous messages
             const setMsg = (fieldName, msg) => {
                 const span = document.querySelector(`[data-valmsg-for="${fieldName}"]`);
-                if (span) {
-                    span.textContent = msg;
-                }
+                if (span) span.textContent = msg;
             };
 
             let ok = true;
 
+            // Password checks
             if (!pwdRegex.test(pwd)) {
                 setMsg('Password', 'Mật khẩu phải ít nhất 6 ký tự, có 1 chữ hoa, 1 số và 1 ký tự đặc biệt.');
                 ok = false;
@@ -277,11 +276,33 @@
                 setMsg('ConfirmPassword', '');
             }
 
+            // Date of birth check: must be at least 5 years before today
+            if (!dobStr) {
+                setMsg('Dob', 'Vui lòng chọn ngày sinh.');
+                ok = false;
+            } else {
+                const dobDate = new Date(dobStr + 'T00:00:00');
+                const today = new Date();
+                const minDate = new Date();
+                minDate.setFullYear(minDate.getFullYear() - 5); // today minus 5 years
+                if (isNaN(dobDate.getTime())) {
+                    setMsg('Dob', 'Ngày sinh không hợp lệ.');
+                    ok = false;
+                } else if (dobDate > minDate) {
+                    setMsg('Dob', 'Ngày sinh phải trước hôm nay ít nhất 5 năm.');
+                    ok = false;
+                } else if (dobDate > today) {
+                    setMsg('Dob', 'Ngày sinh không được ở tương lai.');
+                    ok = false;
+                } else {
+                    setMsg('Dob', '');
+                }
+            }
+
             if (!ok) {
                 e.preventDefault();
                 return false;
             }
-            // nếu ok: submit form bình thường, server sẽ kiểm tra lần nữa
         });
     })();
 </script>

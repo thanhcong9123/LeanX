@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {}
+    "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {}
   },
   "projects": {
-    "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {
+    "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+        "projectUniqueName": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
         "projectName": "LearnX_Data",
-        "projectPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
+        "projectPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\LearnX_Data.csproj",
         "packagesPath": "C:\\Users\\CONGGGG\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\obj\\",
+        "outputPath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_Data\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
