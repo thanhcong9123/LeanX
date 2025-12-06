@@ -1,3 +1,4 @@
+using LearnX_Application.ApiIntegration.Momo;
 using LearnX_Application.Comman.PayMent;
 using LearnX_Application.Handler;
 using LearnX_Data.Entities.EF;
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<LearnXPayMentDbContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("PayMent"));
 });
+builder.Services.Configure<MomoOptions>(builder.Configuration.GetSection("Momo"));
+builder.Services.AddHttpClient<IMomoClient, MomoClient>();
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
