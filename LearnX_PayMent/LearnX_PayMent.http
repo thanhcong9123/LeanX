@@ -1,0 +1,6 @@
+@LearnX_PayMent_HostAddress = http://localhost:5190
+
+GET {{LearnX_PayMent_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

@@ -10,9 +10,9 @@ namespace LearnX_Application.Base
 {
     public class EntityBaseRepository<T> : IEntityBaseRepository<T> where T : class 
     {
-        protected LearnXDbContext _context;
+        protected DbContext _context;
         internal DbSet<T> dbSet { get; set; }
-        public EntityBaseRepository(LearnXDbContext context)
+        public EntityBaseRepository(DbContext context)
         {
             _context = context;
             this.dbSet = this._context.Set<T>();

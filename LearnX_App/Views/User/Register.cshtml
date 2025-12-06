@@ -248,7 +248,6 @@
         if (!form) return;
 
         const pwdRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{6,}$/;
-
         form.addEventListener('submit', function (e) {
             const pwd = document.getElementById('password')?.value || '';
             const confirm = document.getElementById('confirmPassword')?.value || '';

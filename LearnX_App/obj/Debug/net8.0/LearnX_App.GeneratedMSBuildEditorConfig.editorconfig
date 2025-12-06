@@ -17,157 +17,157 @@ build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = LearnX_App
 build_property.RootNamespace = LearnX_App
-build_property.ProjectDir = C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\
+build_property.ProjectDir = c:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App
+build_property.MSBuildProjectDirectory = c:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App
 build_property._RazorSourceGeneratorDebug = 
 build_property.EffectiveAnalysisLevelStyle = 8.0
 build_property.EnableCodeStyleSeverity = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Create.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Details.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXERldGFpbHMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Edit.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Edit.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXEVkaXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Home.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Home.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXEhvbWUuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Index.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/MyCourse.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/MyCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXE15Q291cnNlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/UserofCourse.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Course/UserofCourse.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ291cnNlXFVzZXJvZkNvdXJzZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Details.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRUJvb2tcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Index.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRUJvb2tcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Upload.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EBook/Upload.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRUJvb2tcVXBsb2FkLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/CreateEssayExercise.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/CreateEssayExercise.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXNzYXlTdWJtaXNzaW9uXENyZWF0ZUVzc2F5RXhlcmNpc2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/DoEssayExercise.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/DoEssayExercise.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXNzYXlTdWJtaXNzaW9uXERvRXNzYXlFeGVyY2lzZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/EssaySubmissionResult.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/EssaySubmissionResult.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXNzYXlTdWJtaXNzaW9uXEVzc2F5U3VibWlzc2lvblJlc3VsdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/ViewSubmissionDetail.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/ViewSubmissionDetail.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXNzYXlTdWJtaXNzaW9uXFZpZXdTdWJtaXNzaW9uRGV0YWlsLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/ViewSubmissions.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/EssaySubmission/ViewSubmissions.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXNzYXlTdWJtaXNzaW9uXFZpZXdTdWJtaXNzaW9ucy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Create.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcQ3JlYXRlLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Details.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Details.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcRGV0YWlscy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/DoExercise.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/DoExercise.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcRG9FeGVyY2lzZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Index.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Results.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/Results.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcUmVzdWx0cy5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/_AnswerList.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/_AnswerList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcX0Fuc3dlckxpc3QuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/_QuestionList.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Exercise/_QuestionList.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcRXhlcmNpc2VcX1F1ZXN0aW9uTGlzdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Lesson/Create.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Lesson/Create.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVzc29uXENyZWF0ZS5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Lesson/Index.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Lesson/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTGVzc29uXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/Chat.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/Chat.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcQ2hhdC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/GetMessages.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/GetMessages.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcR2V0TWVzc2FnZXMuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/SendMessage.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Messages/SendMessage.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcTWVzc2FnZXNcU2VuZE1lc3NhZ2UuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Scores/Index.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Scores/Index.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2NvcmVzXEluZGV4LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/Error.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXEVycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/_ValidationScriptsPartial.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/InfoUser.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/InfoUser.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxJbmZvVXNlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/Login.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/Login.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxMb2dpbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/Register.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/User/Register.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcVXNlclxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/_ViewImports.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/_ViewStart.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/_Layout.cshtml]
+[c:/Users/CONGGGG/OneDrive/Documents/DotNet/LearnX/LearnX_App/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcU2hhcmVkXF9MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-1sj7snwc86

@@ -1,6 +1,5 @@
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\publish\web.config
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\appsettings.Development.json
-C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\appsettings.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\publish\appsettings.Development.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\publish\appsettings.json
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\publish\LearnX_API.deps.json
@@ -316,3 +315,4 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\re
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.genruntimeconfig.cache
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\ref\LearnX_API.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\CloudinaryDotNet.dll

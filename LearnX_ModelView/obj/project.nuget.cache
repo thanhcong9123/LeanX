@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "K2o1lPxhKJI=",
+  "dgSpecHash": "S3UifArutR0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ModelView\\LearnX_ModelView.csproj",
+  "projectFilePath": "c:\\Users\\CONGGGG\\OneDrive\\Documents\\DotNet\\LearnX\\LearnX_ModelView\\LearnX_ModelView.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\CONGGGG\\.nuget\\packages\\automapper\\12.0.1\\automapper.12.0.1.nupkg.sha512",
     "C:\\Users\\CONGGGG\\.nuget\\packages\\azure.core\\1.35.0\\azure.core.1.35.0.nupkg.sha512",
