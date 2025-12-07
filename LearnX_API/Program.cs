@@ -85,7 +85,17 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IEBookService, EBookService>();
 builder.Services.AddScoped<IEssaySubmissionService, EssaySubmissionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
-
+var tokenKey = builder.Configuration["Tokens:Key"];
+var tokenIssuer = builder.Configuration["Tokens:Issuer"];
+if (string.IsNullOrWhiteSpace(tokenKey))
+{
+    throw new InvalidOperationException("Configuration missing: Tokens:Key. Set it in LearnX_API/appsettings.json or via user-secrets / environment variables (Tokens__Key).");
+}
+if (string.IsNullOrWhiteSpace(tokenIssuer))
+{
+    // optional, but helpful
+    builder.Configuration["Tokens:Issuer"] = "LearnX";
+}
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowAll", builder =>

@@ -1,0 +1,26 @@
+@using LearnX_ModelView.Catalog.PayMent
+@model UpgradeRequestModel
+@{
+    ViewData["Title"] = "Nâng cấp tài khoản";
+}
+
+<h2>Nâng cấp tài khoản</h2>
+
+<form method="post" asp-action="CreateUpgrade" asp-controller="Payment">
+    <div class="form-group">
+        <label>Gói</label>
+        <select name="PackageName" class="form-control">
+            <option value="Premium 1 tháng">Premium - 1 tháng</option>
+            <option value="Premium 1 năm">Premium - 1 năm</option>
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Số tiền (VND)</label>
+        <input type="number" name="Amount" class="form-control" value="100000" required />
+    </div>
+
+    <input type="hidden" name="ExtraData" value="" />
+
+    <button type="submit" class="btn btn-primary">Thanh toán & Nâng cấp</button>
+</form>

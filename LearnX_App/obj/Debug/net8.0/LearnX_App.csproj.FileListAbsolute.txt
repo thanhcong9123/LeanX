@@ -317,3 +317,6 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\re
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\LearnX_App.pdb
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\LearnX_App.genruntimeconfig.cache
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\obj\Debug\net8.0\ref\LearnX_App.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_Application.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_App\bin\Debug\net8.0\LearnX_Application.pdb

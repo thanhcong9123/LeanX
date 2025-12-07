@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -20,5 +21,28 @@ namespace LearnX_ModelView.Catalog.PayMent
         public string OrderCode { get; set; } = default!;
         public string PayUrl { get; set; } = default!;
         public DateTime? ExpiresAt { get; set; }
+    }
+    public class PaymentStatusResponse
+    {
+        public string? OrderId { get; set; }
+        public string? Status { get; set; } // Pending, Success, Failed
+        public long? Amount { get; set; }
+        public string? Raw { get; set; }
+    }
+     public class UpgradeRequestModel
+    {
+        [Required]
+        public long Amount { get; set; }
+
+        public string? PackageName { get; set; }
+
+        public string? ExtraData { get; set; }
+    }
+    public class UpgradePaymentViewModel
+    {
+        public string OrderId { get; set; } = "";
+        public string PayUrl { get; set; } = "";
+        public long Amount { get; set; }
+        public string PackageName { get; set; } = "";
     }
 }

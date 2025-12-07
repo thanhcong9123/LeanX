@@ -10,12 +10,14 @@
     <PackageReference Include="Microsoft.AspNetCore.App" Version="2.2.8" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.1.0" />
+    <PackageReference Include="Microsoft.IdentityModel.Tokens" Version="8.14.0" />
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.1.0" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LearnX_Data\LearnX_Data.csproj" />
     <ProjectReference Include="..\LearnX_ModelView\LearnX_ModelView.csproj" />
     <ProjectReference Include="..\LearnX_Utilities\LearnX_Utilities.csproj" />
+    <ProjectReference Include="..\LearnX_Application\LearnX_Application.csproj" />
+
   </ItemGroup>
 </Project>

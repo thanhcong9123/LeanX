@@ -1,5 +1,6 @@
 using LearnX_ApiIntegration;
 using LearnX_ApiIntegration.FileService;
+using LearnX_ApiIntegration.PayMent;
 using LearnX_ApiIntegration.SystemService;
 using LearnX_App.Hubs;
 using LearnX_App.Models;
@@ -38,6 +39,7 @@ builder.Services.AddTransient<IEBookApiClient, EBookApiClient>();
 builder.Services.AddTransient<IEssaySubmissionApiClient, EssaySubmissionApiClient>();
 builder.Services.AddTransient<IFileUpLoadServices,LoaclFileUpLoadService>();
 builder.Services.AddTransient<ICategoryApiClient, CategoryApiClient>();
+builder.Services.AddHttpClient<IPaymentApiClient, PaymentApiClient>();
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
