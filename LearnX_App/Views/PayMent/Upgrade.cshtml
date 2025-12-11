@@ -1,26 +1,35 @@
 @using LearnX_ModelView.Catalog.PayMent
-@model UpgradeRequestModel
+@model CreatePaymentRequest
 @{
     ViewData["Title"] = "Nâng cấp tài khoản";
 }
+<!-- Use your provided HTML structure; here I provide simplified integration -->
+<div class="page-container">
+    <header class="page-header">
+        <div class="header-icon"><i class="fas fa-crown"></i></div>
+        <h1 class="page-title">Nâng Cấp Tài Khoản Premium</h1>
+        <p class="page-subtitle">Mở khóa tất cả tính năng cao cấp</p>
+    </header>
 
-<h2>Nâng cấp tài khoản</h2>
-
-<form method="post" asp-action="CreateUpgrade" asp-controller="Payment">
-    <div class="form-group">
-        <label>Gói</label>
-        <select name="PackageName" class="form-control">
-            <option value="Premium 1 tháng">Premium - 1 tháng</option>
-            <option value="Premium 1 năm">Premium - 1 năm</option>
-        </select>
+    <div>
+        <form asp-action="CreateUpgrade" method="post">
+            <input type="hidden" name="IdempotencyKey" value="@Guid.NewGuid().ToString()" />
+            <div>
+                <label>Gói</label>
+                <select name="PackageCode" class="form-control">
+                    <option value="premium_month">Premium - 1 tháng</option>
+                    <option value="premium_year">Premium - 1 năm</option>
+                    <option value="premium_lifetime">Premium trọn đời</option>
+                </select>
+            </div>
+            <div>
+                <label>Số tiền (VND)</label>
+                <input type="number" asp-for="Amount" name="Amount" class="form-control" value="10000" required />
+            </div>
+            <br/>
+            <button class="select-plan-btn" type="submit">Thanh toán & Nâng cấp</button>
+        </form>
     </div>
+</div>
 
-    <div class="form-group">
-        <label>Số tiền (VND)</label>
-        <input type="number" name="Amount" class="form-control" value="100000" required />
-    </div>
-
-    <input type="hidden" name="ExtraData" value="" />
-
-    <button type="submit" class="btn btn-primary">Thanh toán & Nâng cấp</button>
-</form>
+<!-- Include modal and QR rendering target inside same view or separate view UpgradeQr -->

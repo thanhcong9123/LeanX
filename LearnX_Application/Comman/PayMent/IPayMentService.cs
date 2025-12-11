@@ -13,5 +13,7 @@ namespace LearnX_Application.Comman.PayMent
         Task<PaymentCreatedResponse> CreateAsync(CreatePaymentRequest req);
         Task HandleMomoNotifyAsync(MomoNotifyDto dto);
         Task<Payment?> GetByOrderCodeAsync(string orderCode);
+        Task HandleMomoReturnAsync(string orderId, int resultCode, string message, string? transId = null, string? signature = null);
+
     }
 }

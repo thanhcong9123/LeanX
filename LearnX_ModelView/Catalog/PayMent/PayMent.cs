@@ -26,13 +26,13 @@ namespace LearnX_ModelView.Catalog.PayMent
     {
         public string? OrderId { get; set; }
         public string? Status { get; set; } // Pending, Success, Failed
-        public long? Amount { get; set; }
+        public decimal? Amount { get; set; }
         public string? Raw { get; set; }
     }
      public class UpgradeRequestModel
     {
         [Required]
-        public long Amount { get; set; }
+        public decimal Amount { get; set; }
 
         public string? PackageName { get; set; }
 
@@ -42,7 +42,7 @@ namespace LearnX_ModelView.Catalog.PayMent
     {
         public string OrderId { get; set; } = "";
         public string PayUrl { get; set; } = "";
-        public long Amount { get; set; }
+        public decimal Amount { get; set; }
         public string PackageName { get; set; } = "";
     }
 }

@@ -33,45 +33,43 @@ namespace LearnX_App.Controllers
         // Called when user clicks "Start payment" (POST)
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> CreateUpgrade(UpgradeRequestModel model)
+        public async Task<IActionResult> CreateUpgrade(CreatePaymentRequest model)
         {
             if (!ModelState.IsValid) return View("Upgrade", model);
 
-            // Get current user id from claims (assuming NameIdentifier contains GUID)
-            var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (!Guid.TryParse(userIdStr, out var userId))
+            var uid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(uid, out var userId))
             {
-                _logger.LogWarning("Cannot find user id in claims");
                 return Forbid();
             }
 
-            var req = new CreatePaymentRequest
+            // Build request to PaymentService
+            var paymentReq = new CreatePaymentRequest
             {
                 UserId = userId,
+                PackageCode = model.PackageCode,
                 Amount = model.Amount,
-                PackageCode = model.PackageName ?? "Premium 1 tháng",
+                Currency = "VND",
+                ReturnUrl = $"{Request.Scheme}://{Request.Host}/payment/return",
+                NotifyUrl = $"{Request.Scheme}://{Request.Host}/api/payment/MomoNotify",
+                IdempotencyKey = model.IdempotencyKey ?? Guid.NewGuid().ToString()
             };
 
-            var resp = await _paymentClient.CreatePaymentAsync(req);
+            var resp = await _paymentClient.CreatePaymentAsync(paymentReq);
             if (resp == null)
             {
-                ModelState.AddModelError("", "Không thể tạo giao dịch thanh toán. Vui lòng thử lại.");
-                return View("Upgrade", model);
+                TempData["Error"] = "Không thể tạo giao dịch thanh toán. Vui lòng thử lại.";
+                return RedirectToAction("Upgrade");
             }
-
-            if (string.IsNullOrEmpty(resp.PayUrl) || string.IsNullOrEmpty(resp.OrderCode))
-            {
-                ModelState.AddModelError("", $"Thanh toán thất bại: {resp}");
-                return View("Upgrade", model);
-            }
-
-            var vm = new UpgradePaymentViewModel
+            // Pass payUrl & orderId to view that will render QR
+            return View("UpgradeQr", new UpgradePaymentViewModel
             {
                 OrderId = resp.OrderCode,
-                PayUrl = resp.PayUrl
-            };
+                PayUrl = resp.PayUrl,
+                Amount = model.Amount,
+                PackageName = model.PackageCode
+            });
 
-            return View("UpgradeQr", vm);
         }
 
         // AJAX poll endpoint for client to ask status
@@ -84,5 +82,6 @@ namespace LearnX_App.Controllers
             if (status == null) return StatusCode(500);
             return Ok(status);
         }
+
     }
 }

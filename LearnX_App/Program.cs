@@ -39,7 +39,9 @@ builder.Services.AddTransient<IEBookApiClient, EBookApiClient>();
 builder.Services.AddTransient<IEssaySubmissionApiClient, EssaySubmissionApiClient>();
 builder.Services.AddTransient<IFileUpLoadServices,LoaclFileUpLoadService>();
 builder.Services.AddTransient<ICategoryApiClient, CategoryApiClient>();
-builder.Services.AddHttpClient<IPaymentApiClient, PaymentApiClient>();
+builder.Services.AddHttpClient<IPaymentApiClient, PaymentApiClient>(
+    client => client.BaseAddress = new Uri("http://localhost:5190")
+);
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();

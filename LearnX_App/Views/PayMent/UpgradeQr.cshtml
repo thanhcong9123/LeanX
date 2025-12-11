@@ -1,72 +1,50 @@
 @using LearnX_ModelView.Catalog.PayMent
 @model UpgradePaymentViewModel
 @{
-    ViewData["Title"] = "Thanh toán bằng Momo";
+    ViewData["Title"] = "Thanh toán - Quét QR";
 }
-
-<h2>Thanh toán</h2>
-
-<div>
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<div class="page-container">
+    <h2>Thanh toán</h2>
     <p>Gói: <strong>@Model.PackageName</strong></p>
     <p>Số tiền: <strong>@Model.Amount</strong> VND</p>
     <p>Mã đơn hàng: <strong>@Model.OrderId</strong></p>
+
+    <div id="qrcode" style="width:260px;height:260px;margin-bottom:10px;"></div>
+    <p>
+        <a id="openLink" class="btn btn-success" target="_blank">Mở liên kết thanh toán</a>
+    </p>
+    <div id="statusMessage"></div>
 </div>
 
-<div id="qrcode" style="width:220px; height:220px; margin-bottom:10px;"></div>
-
-<p>
-    <a id="openLink" class="btn btn-success" target="_blank">Mở trong Momo / Trình duyệt</a>
-    <button id="refreshStatusBtn" class="btn btn-secondary">Kiểm tra trạng thái</button>
-</p>
-
-<div id="statusMessage" class="mt-3"></div>
-
-<!-- QRCode JS (client-side rendering) -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     const payUrl = '@Model.PayUrl';
     const orderId = '@Model.OrderId';
-
     // Render QR
-    new QRCode(document.getElementById("qrcode"), {
-        text: payUrl,
-        width: 200,
-        height: 200
-    });
-
-    // Set link
+    new QRCode(document.getElementById("qrcode"), { text: payUrl, width: 250, height: 250 });
     document.getElementById("openLink").href = payUrl;
 
-    // Polling function
     async function checkStatus() {
         try {
-            const res = await fetch('@Url.Action("CheckStatus", "Payment")?orderId=' + encodeURIComponent(orderId));
-            if (!res.ok) {
-                document.getElementById('statusMessage').innerText = 'Lỗi khi kiểm tra trạng thái';
-                return;
-            }
+            const res = await fetch('@Url.Action("CheckStatus","Payment")?orderId=' + encodeURIComponent(orderId));
             const data = await res.json();
-            // Expected data.Status values: Pending, Success, Failed
-            if (data.status === 'Success' || data.status === 'success') {
+            if (data.status && (data.status.toLowerCase() === 'success')) {
                 document.getElementById('statusMessage').innerHTML = '<div class="alert alert-success">Thanh toán thành công. Tài khoản đã được nâng cấp.</div>';
-                // Redirect to profile or refresh
-                setTimeout(() => { window.location.href = '/User/Profile'; }, 2000);
-            } else if (data.status === 'Failed' || data.status === 'failed') {
-                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-danger">Thanh toán không thành công.</div>';
+                setTimeout(()=> window.location.href = '/User/Profile',2000);
+            } else if (data.status && data.status.toLowerCase() === 'failed') {
+                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-danger">Thanh toán thất bại.</div>';
             } else {
-                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-info">Đang chờ thanh toán... (status: ' + data.status + ')</div>';
+                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-info">Đang chờ thanh toán... (status: '+ (data.status||'Pending') +')</div>';
             }
         } catch (err) {
             console.error(err);
-            document.getElementById('statusMessage').innerText = 'Lỗi kết nối.';
+            document.getElementById('statusMessage').innerText = 'Lỗi khi kiểm tra trạng thái';
         }
     }
 
-    // Start polling every 5 seconds
-    const pollInterval = setInterval(checkStatus, 5000);
-
-    // Manual refresh button
-    document.getElementById('refreshStatusBtn').addEventListener('click', checkStatus);
-
-    // Stop polling after success/fail check inside checkStatus by redirect
+    // poll every 5s
+    const interval = setInterval(checkStatus, 5000);
+    // initial
+    checkStatus();
 </script>
