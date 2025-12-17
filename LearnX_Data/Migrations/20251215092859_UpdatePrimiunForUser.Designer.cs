@@ -4,6 +4,7 @@ using LearnX_Data.EF;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LearnX_Data.Migrations
 {
     [DbContext(typeof(LearnXDbContext))]
-    partial class LearnXDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251215092859_UpdatePrimiunForUser")]
+    partial class UpdatePrimiunForUser
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

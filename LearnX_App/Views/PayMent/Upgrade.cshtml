@@ -3,33 +3,226 @@
 @{
     ViewData["Title"] = "Nâng cấp tài khoản";
 }
+<script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+
+<link rel="stylesheet" href="~/css/PayMent/Upgrade.css" />
 <!-- Use your provided HTML structure; here I provide simplified integration -->
-<div class="page-container">
-    <header class="page-header">
-        <div class="header-icon"><i class="fas fa-crown"></i></div>
-        <h1 class="page-title">Nâng Cấp Tài Khoản Premium</h1>
-        <p class="page-subtitle">Mở khóa tất cả tính năng cao cấp</p>
-    </header>
-
-    <div>
-        <form asp-action="CreateUpgrade" method="post">
-            <input type="hidden" name="IdempotencyKey" value="@Guid.NewGuid().ToString()" />
-            <div>
-                <label>Gói</label>
-                <select name="PackageCode" class="form-control">
-                    <option value="premium_month">Premium - 1 tháng</option>
-                    <option value="premium_year">Premium - 1 năm</option>
-                    <option value="premium_lifetime">Premium trọn đời</option>
-                </select>
+<div class="upgrade-page-wrapper">
+    <div class="upgrade-container"><!-- Header -->
+        <header class="upgrade-header">
+            <div class="header-icon-wrapper"><i class="fas fa-crown"></i>
             </div>
-            <div>
-                <label>Số tiền (VND)</label>
-                <input type="number" asp-for="Amount" name="Amount" class="form-control" value="10000" required />
+            <h1 class="upgrade-title">Nâng Cấp Tài Khoản Premium</h1>
+            <p class="upgrade-subtitle">Mở khóa tất cả tính năng cao cấp và trải nghiệm học tập tốt nhất cùng LearnX</p>
+        </header><!-- Pricing Cards -->
+        <div class="pricing-grid"><!-- Monthly Plan -->
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <div class="plan-icon-box"><i class="fas fa-star"></i>
+                    </div>
+                    <div class="plan-title-group">
+                        <h3>Premium Tháng</h3>
+                    </div>
+                </div>
+                <p class="plan-description">Hoàn hảo để bắt đầu và trải nghiệm các tính năng cao cấp ngay hôm nay</p>
+                <div class="price-section">
+                    <div class="current-price"><span class="price-number">99,000</span> <span
+                            class="price-currency">₫</span> <span class="price-period">/tháng</span>
+                    </div>
+                </div>
+                <div class="features-section">
+                    <ul class="features-list">
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Truy cập không giới hạn tất cả khóa học</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Học offline - tải video về máy</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Chứng chỉ hoàn thành khóa học</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span> <span>Hỗ
+                                trợ ưu tiên 24/7</span></li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Không quảng cáo</span>
+                        </li>
+                    </ul>
+                </div><button type="button" class="select-button"
+                    onclick="openPaymentForm('premium_month', 'Premium Tháng', 99000)"> <i
+                        class="fas fa-shopping-cart"></i> Chọn gói này </button>
+            </div><!-- Yearly Plan - Featured -->
+            <div class="pricing-card featured">
+                <div class="featured-badge">
+                    Phổ biến nhất
+                </div>
+                <div class="plan-header">
+                    <div class="plan-icon-box"><i class="fas fa-gem"></i>
+                    </div>
+                    <div class="plan-title-group">
+                        <h3>Premium Năm</h3>
+                    </div>
+                </div>
+                <p class="plan-description">Lựa chọn tốt nhất! Tiết kiệm 40% và học tập không giới hạn cả năm</p>
+                <div class="price-section">
+                    <div class="original-price-line"><span class="original-price">1,188,000₫</span> <span
+                            class="discount-tag">-40%</span>
+                    </div>
+                    <div class="current-price"><span class="price-number">699,000</span> <span
+                            class="price-currency">₫</span> <span class="price-period">/năm</span>
+                    </div>
+                </div>
+                <div class="features-section">
+                    <ul class="features-list">
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span><strong>Tất cả tính năng Premium Tháng</strong></span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Tiết kiệm 489,000₫ mỗi năm</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span> <span>Ưu
+                                tiên truy cập khóa học mới</span></li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Tặng 1 tháng học miễn phí</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Tham gia cộng đồng VIP</span>
+                        </li>
+                    </ul>
+                </div><button type="button" class="select-button"
+                    onclick="openPaymentForm('premium_year', 'Premium Năm', 699000)"> <i class="fas fa-bolt"></i> Chọn
+                    gói này ngay </button>
+            </div><!-- Lifetime Plan -->
+            <div class="pricing-card">
+                <div class="plan-header">
+                    <div class="plan-icon-box"><i class="fas fa-infinity"></i>
+                    </div>
+                    <div class="plan-title-group">
+                        <h3>Premium Trọn Đời</h3>
+                    </div>
+                </div>
+                <p class="plan-description">Một lần thanh toán, sử dụng mãi mãi. Đầu tư tốt nhất cho tương lai của bạn
+                </p>
+                <div class="price-section">
+                    <div class="current-price"><span class="price-number">2,499,000</span> <span
+                            class="price-currency">₫</span>
+                    </div>
+                </div>
+                <div class="features-section">
+                    <ul class="features-list">
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span><strong>Tất cả tính năng Premium</strong></span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Truy cập trọn đời không giới hạn</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Tất cả nội dung trong tương lai</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span>
+                            <span>Không lo gia hạn hàng tháng</span>
+                        </li>
+                        <li class="feature-row"><span class="feature-check"><i class="fas fa-check"></i></span> <span>Hỗ
+                                trợ VIP trọn đời</span></li>
+                    </ul>
+                </div><button type="button" class="select-button"
+                    onclick="openPaymentForm('premium_lifetime', 'Premium Trọn Đời', 2499000)"> <i
+                        class="fas fa-rocket"></i> Chọn gói này </button>
             </div>
-            <br/>
-            <button class="select-plan-btn" type="submit">Thanh toán & Nâng cấp</button>
-        </form>
+        </div>
     </div>
+</div><!-- Payment Modal -->
+<div class="modal-backdrop" id="paymentModal">
+    <div class="payment-modal">
+        <div class="modal-header-section"><button type="button" class="close-button" onclick="closePaymentForm()"> <i
+                    class="fas fa-times"></i> </button>
+            <h2 class="modal-title-text"><i class="fas fa-credit-card"></i> Xác Nhận Thanh Toán</h2>
+            <p class="modal-subtitle-text">Hoàn tất thông tin để nâng cấp tài khoản của bạn</p>
+        </div>
+        <div class="modal-body-section"><!-- Order Summary -->
+            <div class="order-info-box">
+                <h3 class="info-title"><i class="fas fa-receipt"></i> Thông tin đơn hàng</h3>
+                <div class="info-item"><span class="info-label">Gói dịch vụ</span> <span class="info-value"
+                        id="selectedPlanName">-</span>
+                </div>
+                <div class="info-item"><span class="info-label">Tổng thanh toán</span> <span class="info-value"
+                        id="selectedPlanPrice">-</span>
+                </div>
+            </div><!-- Payment Form -->
+            <form asp-action="CreateUpgrade" method="post" asp-controller="PayMent" id="upgradeForm">
+                <input type="hidden" name="IdempotencyKey" value="@Guid.NewGuid().ToString()">
+                <input type="hidden" name="PackageCode" id="packageCodeInput" value=""> <input type="hidden"
+                    name="Currency" value="VND"> 
+                <div class="form-group-wrapper"><label class="form-label"> <i class="fas fa-box"></i> Gói Premium
+                    </label> <select name="PackageCode" id="packageSelect" class="form-control" disabled>
+                        <option value="premium_month">Premium - 1 tháng (99,000₫)</option>
+                        <option value="premium_year">Premium - 1 năm (699,000₫)</option>
+                        <option value="premium_lifetime">Premium trọn đời (2,499,000₫)</option>
+                    </select>
+                </div>
+                <div class="form-group-wrapper"><label class="form-label" for="amountInput"> <i
+                            class="fas fa-money-bill-wave"></i> Số tiền thanh toán (VND) </label> <input type="number"
+                        asp-for="Amount" name="Amount" id="amountInput" class="form-input" value="99000" required
+                        readonly>
+                </div><button type="submit" class="submit-button"> <i class="fas fa-lock"></i> Thanh toán &amp; nâng cấp
+                    ngay </button>
+            </form>
+        </div>
+    </div>
+</div><!-- Success Toast -->
+<div class="success-toast" id="successToast"><i class="fas fa-check-circle"></i> <span>Đang chuyển đến trang thanh
+        toán...</span>
 </div>
+<script>
+    // Open payment form modal
+    function openPaymentForm(packageCode, planName, amount) {
+        document.getElementById('packageCodeInput').value = packageCode;
+        document.getElementById('packageSelect').value = packageCode;
+        document.getElementById('amountInput').value = amount;
+        document.getElementById('selectedPlanName').textContent = planName;
+        document.getElementById('selectedPlanPrice').textContent = formatCurrency(amount);
 
+        document.getElementById('paymentModal').classList.add('show');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close payment form modal
+    function closePaymentForm() {
+        document.getElementById('paymentModal').classList.remove('show');
+        document.body.style.overflow = 'auto';
+    }
+
+    // Format currency
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('vi-VN', {
+            style: 'currency',
+            currency: 'VND'
+        }).format(amount);
+    }
+
+    // Close modal on backdrop click
+    document.getElementById('paymentModal').addEventListener('click', function (e) {
+        if (e.target === this) {
+            closePaymentForm();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+            closePaymentForm();
+        }
+    });
+
+    // Form submission handler
+    document.getElementById('upgradeForm').addEventListener('submit', function (e) {
+        const submitButton = this.querySelector('.submit-button');
+        submitButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang xử lý...';
+        submitButton.disabled = true;
+
+        // Show success toast
+        setTimeout(function () {
+            document.getElementById('successToast').classList.add('show');
+        }, 500);
+    });
+</script>
 <!-- Include modal and QR rendering target inside same view or separate view UpgradeQr -->

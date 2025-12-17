@@ -14,7 +14,7 @@ namespace MyApp.Namespace
         {
             _payMentService = payMentService;
         }
-        
+
         [HttpPost("create")]
         public async Task<IActionResult> CreatePayment([FromBody] CreatePaymentRequest request)
         {
@@ -34,13 +34,11 @@ namespace MyApp.Namespace
         {
             try
             {
-                Console.WriteLine("Received Momo Notify: " + System.Text.Json.JsonSerializer.Serialize(notify));
                 await _payMentService.HandleMomoNotifyAsync(notify);
                 return NoContent();
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in MomoNotify: {ex.Message}");
                 return BadRequest(new { error = ex.Message });
             }
         }
@@ -55,11 +53,10 @@ namespace MyApp.Namespace
         {
             try
             {
-                Console.WriteLine($"Received Momo Response: orderId={orderId}, resultCode={resultCode}, message={message}");
-                
+
                 // Xử lý payment trước
                 await _payMentService.HandleMomoReturnAsync(orderId, resultCode, message, transId, signature);
-                
+
                 // Lấy payment để redirect về frontend
                 var payment = await _payMentService.GetByOrderCodeAsync(orderId);
                 if (payment == null)
@@ -69,8 +66,8 @@ namespace MyApp.Namespace
 
                 // Tạo URL redirect về frontend với các thông tin cần thiết
                 var status = resultCode == 0 ? "success" : "failed";
-                var redirectUrl = $"{payment.ReturnUrl}?orderCode={orderId}&status={status}&message={Uri.EscapeDataString(message)}";
-                
+                var redirectUrl = $"{payment.ReturnUrl}?orderCode={orderId}&packageCode={payment.PackageCode}&status={status}&message={Uri.EscapeDataString(message)}";
+
                 return Redirect(redirectUrl);
             }
             catch (Exception ex)

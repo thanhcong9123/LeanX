@@ -39,7 +39,7 @@ namespace LearnX_Application.Comman.PayMent
                 Amount = req.Amount,
                 Currency = req.Currency,
                 Status = PaymentStatus.Pending,
-                ReturnUrl =  $"{apiBaseUrl}/api/Payment/ReceiveMomoResponse", // Frontend return URL (lưu để redirect sau)
+                ReturnUrl =  req.ReturnUrl, // Frontend return URL (lưu để redirect sau)
                 NotifyUrl = $"{apiBaseUrl}/api/Payment/MomoNotify", // API endpoint
                 IdempotencyKey = req.IdempotencyKey,
                 CreatedAt = DateTime.UtcNow,
@@ -52,7 +52,7 @@ namespace LearnX_Application.Comman.PayMent
                 OrderCode = orderCode,
                 Amount = req.Amount,
                 OrderInfo = $"Payment for package {req.PackageCode}",
-                ReturnUrl = $"{apiBaseUrl}/api/Payment/ReceiveMomoResponse", // Redirect về API trước
+                ReturnUrl = req.ReturnUrl, // Redirect về API trước
                 NotifyUrl = payment.NotifyUrl,   
                 ExtraData = Uri.EscapeDataString(
                     JsonSerializer.Serialize(new { userId = req.UserId, packageCode = req.PackageCode })

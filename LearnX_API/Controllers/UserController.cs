@@ -61,7 +61,7 @@ namespace LearnX_API.Controllers
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-
+            
             var result = await _service.Update(id, request);
             if (!result.IsSuccessed)
             {

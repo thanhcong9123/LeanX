@@ -3,8 +3,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using LearnX_ApiIntegration;
 using LearnX_ApiIntegration.PayMent;
+using LearnX_ApiIntegration.SystemService;
 using LearnX_App.Models;
 using LearnX_ModelView.Catalog.PayMent;
+using LearnX_ModelView.System.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -16,11 +18,13 @@ namespace LearnX_App.Controllers
     {
         private readonly IPaymentApiClient _paymentClient;
         private readonly ILogger<PaymentController> _logger;
+        private readonly IUserApiClient _userApiClient;
 
-        public PaymentController(IPaymentApiClient paymentClient, ILogger<PaymentController> logger)
+        public PaymentController(IPaymentApiClient paymentClient, ILogger<PaymentController> logger, IUserApiClient userApiClient)
         {
             _paymentClient = paymentClient;
             _logger = logger;
+            _userApiClient = userApiClient;
         }
 
         // Show Upgrade page with a button
@@ -35,7 +39,11 @@ namespace LearnX_App.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> CreateUpgrade(CreatePaymentRequest model)
         {
-            if (!ModelState.IsValid) return View("Upgrade", model);
+            if (!ModelState.IsValid)
+            {
+                return View("Upgrade", model);
+            }
+                
 
             var uid = User.FindFirstValue(ClaimTypes.NameIdentifier);
             if (!Guid.TryParse(uid, out var userId))
@@ -50,7 +58,7 @@ namespace LearnX_App.Controllers
                 PackageCode = model.PackageCode,
                 Amount = model.Amount,
                 Currency = "VND",
-                ReturnUrl = $"{Request.Scheme}://{Request.Host}/payment/return",
+                ReturnUrl = $"http://localhost:5184/User/UpdateUserFormPayMent?packageCode={model.PackageCode}",
                 NotifyUrl = $"{Request.Scheme}://{Request.Host}/api/payment/MomoNotify",
                 IdempotencyKey = model.IdempotencyKey ?? Guid.NewGuid().ToString()
             };
@@ -61,6 +69,8 @@ namespace LearnX_App.Controllers
                 TempData["Error"] = "Không thể tạo giao dịch thanh toán. Vui lòng thử lại.";
                 return RedirectToAction("Upgrade");
             }
+            
+
             // Pass payUrl & orderId to view that will render QR
             return View("UpgradeQr", new UpgradePaymentViewModel
             {

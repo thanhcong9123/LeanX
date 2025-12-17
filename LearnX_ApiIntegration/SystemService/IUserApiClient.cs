@@ -15,6 +15,6 @@ namespace LearnX_ApiIntegration.SystemService
         Task<ApiResult<string>> GetAll();
         Task<ApiResult<UserVm>> GetByID(Guid id);
         Task<ApiResult<bool>> DeleteAccount(Guid id);
-        Task<ApiResult<bool>> UpdateUser(Guid id,UserUpdateRequest register);
+        Task<ApiResult<string>> UpdateUser(Guid id,UserUpdateRequest register);
     }
 }

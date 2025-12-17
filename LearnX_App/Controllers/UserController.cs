@@ -26,17 +26,41 @@ namespace LearnX_App.Controllers
         private readonly IUserApiClient _context;
         private readonly IConfiguration _configuration;
 
-
         public UserController(IUserApiClient context, IConfiguration configuration)
         {
             _context = context;
             _configuration = configuration;
+        }
+        public async Task<IActionResult> UpdateUserFormPayMent([FromQuery] string packageCode
+       )
+        {
+            var uid = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (!Guid.TryParse(uid, out var userId))
+            {
+                return Forbid();
+            }
+            var user = new UserUpdateRequest()
+            {
+                Id = userId,
+                PremiumUntil = packageCode == "premium_month" ? DateTime.Now.AddMonths(1) :
+                               packageCode == "premium_year" ? DateTime.Now.AddYears(1) :
+                               packageCode == "premium_lifetime" ? DateTime.Now.AddYears(100) :
+                               null
+            };
+            var updateUserResult = await _context.UpdateUser(userId, user);
+            if (updateUserResult.IsSuccessed)
+            {
+                Console.WriteLine("User premium status updated successfully.");
+                return RedirectToAction("InfoUser", "User");
+            }
+            return BadRequest("Failed to update user premium status.");
         }
         [Authorize]
         public async Task<IActionResult> InfoUser()
         {
             var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             Guid.TryParse(userId, out var id);
+            Console.WriteLine("User ID: " + id);
             var user = await _context.GetByID(id);
             if (user.IsSuccessed)
             {
@@ -47,7 +71,7 @@ namespace LearnX_App.Controllers
                     Email = user.ResultObj.Email,
                     PhoneNumber = user.ResultObj.PhoneNumber,
                     DateJoined = user.ResultObj.DateJoined,
-                    MemberDate = user.ResultObj.MemberDate,
+                    PremiumUntil = user.ResultObj.PremiumUntil,
                     Roles = user.ResultObj.Roles,
                     Dob = user.ResultObj.Dob
                 };

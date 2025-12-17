@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using LearnX_ModelView.Common;
 using LearnX_ModelView.System.User;
+using LearnX_Utilities.Constants;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.Extensions.Configuration;
@@ -88,6 +89,7 @@ namespace LearnX_ApiIntegration.SystemService
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
             var client = _httpClientFactory.CreateClient();
             client.BaseAddress = new Uri("http://localhost:5041");
+
             var response = await client.PostAsync("api/user", httpContent);
             var responseString = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
@@ -98,23 +100,22 @@ namespace LearnX_ApiIntegration.SystemService
 
         }
 
-        public async Task<ApiResult<bool>> UpdateUser(Guid id, UserUpdateRequest register)
+        public async Task<ApiResult<string>> UpdateUser(Guid id, UserUpdateRequest register)
         {
-            var client = _httpClientFactory.CreateClient();
-            var session = _httpContextAccessor.HttpContext.Session.GetString("Token");
-            client.BaseAddress = new Uri("http://localhost:5041");
-            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session);
-
             var json = JsonConvert.SerializeObject(register);
             var httpContent = new StringContent(json, Encoding.UTF8, "application/json");
+
+            var client = _httpClientFactory.CreateClient();
+            client.BaseAddress = new Uri("http://localhost:5041");
             var response = await client.PutAsync($"api/user/{id}", httpContent);
-            var result = await response.Content.ReadAsStringAsync();
+            var responseString = await response.Content.ReadAsStringAsync();
             if (response.IsSuccessStatusCode)
             {
-                return JsonConvert.DeserializeObject<ApiSuccessResult<bool>>(result);
-
+                return JsonConvert.DeserializeObject<ApiSuccessResult<string>>(responseString) ??
+                            new ApiSuccessResult<string> { ResultObj = "Success" };
             }
-            return JsonConvert.DeserializeObject<ApiErrorResult<bool>>(result) ?? new ApiErrorResult<bool> { ResultObj = false };
+            return JsonConvert.DeserializeObject<ApiErrorResult<string>>(responseString) ??
+                   new ApiErrorResult<string> { Message = "Error occurred" };
 
         }
     }

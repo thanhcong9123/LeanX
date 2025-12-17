@@ -19,8 +19,8 @@
     </header>
 
     @{
-        var isPremium = Model.MemberDate.HasValue && Model.MemberDate.Value > DateTime.Now;
-        var daysRemaining = isPremium ? (Model.MemberDate.Value - DateTime.Now).Days : 0;
+        var isPremium = Model.PremiumUntil.HasValue && Model.PremiumUntil.Value > DateTime.Now;
+        var daysRemaining = isPremium ? (Model.PremiumUntil.Value - DateTime.Now).Days : 0;
         var membershipStatus = isPremium ? "Premium" : "Miễn phí";
         var userInitial = !string.IsNullOrEmpty(Model.UserName)
             ? Model.UserName.Substring(0, 1).ToUpper()
@@ -81,7 +81,7 @@
                 {
                     <div class="membership-info-item">
                         <span class="info-label">Ngày hết hạn</span>
-                        <span class="info-value">@Model.MemberDate.Value.ToString("dd/MM/yyyy")</span>
+                        <span class="info-value">@Model.PremiumUntil.Value.ToString("dd/MM/yyyy")</span>
                     </div>
 
                     <div class="membership-info-item">
@@ -105,12 +105,12 @@
                         <span class="info-value">Tài khoản miễn phí</span>
                     </div>
 
-                    @if (Model.MemberDate.HasValue)
+                    @if (Model.PremiumUntil.HasValue)
                     {
                         <div class="membership-info-item">
                             <span class="info-label">Đã hết hạn</span>
                             <span class="info-value" style="color:#ef4444">
-                                @Model.MemberDate.Value.ToString("dd/MM/yyyy")
+                                @Model.PremiumUntil.Value.ToString("dd/MM/yyyy")
                             </span>
                         </div>
                     }
@@ -176,9 +176,9 @@
                             {
                                 <span>Còn @daysRemaining ngày</span>
                             }
-                            else if (Model.MemberDate.HasValue)
+                            else if (Model.PremiumUntil.HasValue)
                             {
-                                <span>Đã hết hạn @Model.MemberDate.Value.ToString("dd/MM/yyyy")</span>
+                                <span>Đã hết hạn @Model.PremiumUntil.Value.ToString("dd/MM/yyyy")</span>
                             }
                             else
                             {

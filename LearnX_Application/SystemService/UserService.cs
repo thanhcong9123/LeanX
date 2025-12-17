@@ -76,7 +76,7 @@ namespace LearnX_Application.SystemService
             };
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Tokens:Key"]));
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-        
+
             var token = new JwtSecurityToken(_config["Tokens:Issuer"],
                 _config["Tokens:Issuer"],
                 claims,
@@ -122,9 +122,9 @@ namespace LearnX_Application.SystemService
                 PhoneNumber = user.PhoneNumber,
                 UserName = user.UserName,
                 Roles = roles,
-                MemberDate = user.Member,
+                PremiumUntil = user.PremiumUntil,
                 DateJoined = user.DateJoined,
-                
+    
 
             };
             return new ApiSuccessResult<UserVm>(userVm);
@@ -155,7 +155,7 @@ namespace LearnX_Application.SystemService
                 Member = DateTime.Now,
                 FirstName = request.FirstName,
                 LastName = request.LastName,
-                Dob = request.Dob                
+                Dob = request.Dob
             };
             var result = await _userManager.CreateAsync(user, request.Password);
             var roles = await _userInManager.GetRolesAsync(user);
@@ -179,9 +179,21 @@ namespace LearnX_Application.SystemService
                 return new ApiErrorResult<bool>("Emai đã tồn tại");
             }
             var user = await _userManager.FindByIdAsync(id.ToString());
-            user.Email = request.Email;
-            user.PhoneNumber = request.PhoneNumber;
+            user.Email = request.Email ?? user.Email;
+            user.PhoneNumber = request.PhoneNumber ?? user.PhoneNumber;
+            user.FirstName = request.FirstName ?? user.FirstName;
+            user.LastName = request.LastName ?? user.LastName;
+            if (request.Dob != null)
+            {
+                user.Dob = request.Dob;
+            }
+            if (request.PremiumUntil != null)
+            {
+                            user.PremiumUntil = request.PremiumUntil ;
 
+            }
+
+            Console.WriteLine("Updating user premium until to: " + user.PremiumUntil);
             var result = await _userManager.UpdateAsync(user);
             if (result.Succeeded)
             {

@@ -19,7 +19,7 @@ namespace LearnX_ModelView.System.User
         [Display(Name = "Email")]
         public string? Email { get; set; }
         public DateTime? DateJoined { get; set; }
-        public DateTime? MemberDate { get; set; }
+        public DateTime? PremiumUntil { get; set; }
         public DateTime? Dob { get; set; }
         
 
