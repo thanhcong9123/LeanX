@@ -210,6 +210,9 @@
                     <div class="submission-actions">
                         @if (Model.IsTeacher)
                         {
+                            <button type="button" class="btn btn-secondary" onclick="autoGrade(@submission.Id)">
+                                <i class="fas fa-magic"></i> Chấm tự động
+                            </button>
                             <button type="button" class="btn btn-grade"
                                 data-submission-id="@submission.Id"
                                 data-user-id="@submission.IdUser"
@@ -452,6 +455,49 @@
             } catch (err) {
                 hideLoading();
                 showToast('error', 'Lỗi', err.message || 'Đã xảy ra lỗi');
+            }
+        }
+
+        // Auto grade via AI
+        async function autoGrade(submissionId) {
+            showLoading();
+            try {
+                const res = await fetch(`/EssaySubmission/AutoScore/${submissionId}`, {
+                    method: 'POST'
+                });
+
+                const ct = res.headers.get('content-type') || '';
+                if (!ct.includes('application/json')) {
+                    throw new Error('Phản hồi không hợp lệ');
+                }
+
+                const data = await res.json();
+                if (!data.success) {
+                    throw new Error(data.message || 'Chấm tự động thất bại');
+                }
+
+                const result = data.data || {};
+                const parts = [];
+                if (result.feedback) parts.push(result.feedback);
+                if (Array.isArray(result.strengths) && result.strengths.length)
+                    parts.push('Điểm mạnh: ' + result.strengths.join('; '));
+                if (Array.isArray(result.weaknesses) && result.weaknesses.length)
+                    parts.push('Điểm yếu: ' + result.weaknesses.join('; '));
+                if (result.improvement) parts.push('Gợi ý cải thiện: ' + result.improvement);
+
+                document.getElementById('submissionId').value = submissionId;
+                document.getElementById('teacherComment').value = parts.join('\n');
+                document.getElementById('score').value = result.score ?? '';
+                document.getElementById('statusSelect').value = 'Graded';
+
+                document.getElementById('gradeModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+
+                showToast('success', 'Đã gợi ý điểm', 'Kiểm tra và lưu kết quả vừa gợi ý');
+            } catch (err) {
+                showToast('error', 'Lỗi', err.message || 'Chấm tự động thất bại');
+            } finally {
+                hideLoading();
             }
         }
 

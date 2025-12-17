@@ -316,3 +316,6 @@ C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\Le
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\LearnX_API.genruntimeconfig.cache
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\obj\Debug\net8.0\ref\LearnX_API.dll
 C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\CloudinaryDotNet.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\DocumentFormat.OpenXml.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\DocumentFormat.OpenXml.Framework.dll
+C:\Users\CONGGGG\OneDrive\Documents\DotNet\LearnX\LearnX_API\bin\Debug\net8.0\System.IO.Packaging.dll

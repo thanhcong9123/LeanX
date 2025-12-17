@@ -214,21 +214,14 @@
     </div>
 
 </body>
- <script>
-        // Function to show the "My Course" table and hide the "Signed Course" table
-     
-        // Default view to show "My Course" table initially
-    </script>
+
 @section Scripts {
     <script type="text/javascript">
-       
         //Đăng ký
         $('#registerCourseModal').on('show.bs.modal', function () {
-
             const today = new Date().toISOString().split('T')[0]; // Lấy ngày hiện tại (định dạng YYYY-MM-DD)
             $('#startDate').val(today); // Đặt ngày hiện tại
         });
-
         // Hàm xử lý đăng ký khóa học
         function registerCourse() {
             var CourseID = $('#CourseID').val();

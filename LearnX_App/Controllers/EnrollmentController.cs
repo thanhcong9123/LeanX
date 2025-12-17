@@ -38,7 +38,6 @@ namespace LearnX_App.Controllers
                 {
                     enrollmentRequest.UserID = userIds;
                 }
-                Console.WriteLine("Id khoa hoc" + enrollmentRequest.CourseID);
                 MyCourses myCourses = await _context.GetmyCourse(enrollmentRequest.UserID);
                 var isAlreadySigned = myCourses.CourseSinged.Any(course => course.CourseID == enrollmentRequest.CourseID);
                 var isMyCourse = myCourses.MyCourse.Any(course => course.CourseID == enrollmentRequest.CourseID);

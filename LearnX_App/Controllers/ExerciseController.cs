@@ -1,5 +1,6 @@
 using System.Security.Claims;
 using LearnX_ApiIntegration;
+using LearnX_ApiIntegration.AI;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.Exercise;
 using LearnX_ModelView.Catalog.Scores;
@@ -15,14 +16,18 @@ namespace MyApp.Namespace
         private readonly ICourseApiClient _courseService;
         private readonly IScoreApiClient _scoreService;
         private readonly IEssaySubmissionApiClient _essaySubmissionService;
+        private readonly IAIQuestionGeneratorClient _aiQuestionGenerator;
+
 
         [ActivatorUtilitiesConstructor]
         public ExerciseController(
             IExerciseApiClient exerciseService,
             ICourseApiClient courseApiClient,
             IScoreApiClient scoreService,
-            IEssaySubmissionApiClient essaySubmissionService)
+            IEssaySubmissionApiClient essaySubmissionService,
+            IAIQuestionGeneratorClient aiQuestionGenerator)
         {
+            _aiQuestionGenerator = aiQuestionGenerator;
             _exerciseService = exerciseService;
             _courseService = courseApiClient;
             _scoreService = scoreService;
@@ -39,6 +44,20 @@ namespace MyApp.Namespace
                 }
             };
             return View(model);
+        }
+        [HttpPost]
+        public async Task<IActionResult> GenerateAIQuestions([FromBody] AIGenerateQuestionsRequest request)
+        {
+            try
+            {
+                Console.WriteLine("Received request: " + request);
+                var result = await _aiQuestionGenerator.GenerateQuestionsAsync(request);
+                return Json(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { error = ex.Message });
+            }
         }
         [HttpPost]
         [ValidateAntiForgeryToken]

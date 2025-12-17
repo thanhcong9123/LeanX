@@ -18,9 +18,8 @@
             <div class="message success" id="successMessage"><i class="fas fa-check-circle"></i> <span>Bài tập đã được
                     tạo thành công!</span>
             </div>
-           
+
             <form id="exerciseForm" asp-controller="Exercise" asp-action="Create" method="post">
-                @Html.AntiForgeryToken()
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <!-- Thông tin bài tập -->
                 <div class="form-section">
@@ -65,13 +64,20 @@
 
                 </div><!-- Câu hỏi trắc nghiệm -->
                 <div class="questions-section">
-                 <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span
-                    id="errorText">Có lỗi xảy ra, vui lòng thử lại!</span>
-            </div>
+                    <div class="message error" id="errorMessage"><i class="fas fa-exclamation-triangle"></i> <span
+                            id="errorText">Có lỗi xảy ra, vui lòng thử lại!</span>
+                    </div>
                     <div class="questions-header">
                         <h3 class="questions-title"><i class="fas fa-question-circle"></i> Câu hỏi trắc nghiệm</h3>
-                        <button type="button" class="add-question-btn" id="addQuestionBtn"> <i class="fas fa-plus"></i>
-                            Thêm câu hỏi </button>
+                        <div style="display: flex; gap: 10px;">
+                            <button type="button" class="add-question-btn" id="generateAIQuestionsBtn"
+                                style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                                <i class="fas fa-robot"></i> Tạo bằng AI
+                            </button>
+                            <button type="button" class="add-question-btn" id="addQuestionBtn">
+                                <i class="fas fa-plus"></i> Thêm câu hỏi
+                            </button>
+                        </div>
                     </div>
                     <div id="questionsContainer">
                         <div class="empty-questions"><i class="fas fa-question-circle"></i>
@@ -87,398 +93,43 @@
         </div>
     </div>
 </div>
-<script type="text/javascript">
-    document.addEventListener('DOMContentLoaded', function () {
-        const form = document.getElementById('exerciseForm');
-        const cancelBtn = document.getElementById('cancelBtn');
-        const successMessage = document.getElementById('successMessage');
-        const errorMessage = document.getElementById('errorMessage');
-        const errorText = document.getElementById('errorText');
-        const questionsContainer = document.getElementById('questionsContainer');
-        const addQuestionBtn = document.getElementById('addQuestionBtn');
-        const fileName = document.getElementById('fileName');
+<!-- AI Generation Modal -->
+<div id="aiModal"
+    style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: white; padding: 30px; border-radius: 10px; max-width: 500px; width: 90%;">
+        <h3 style="margin-bottom: 20px;"><i class="fas fa-robot"></i> Tạo câu hỏi tự động bằng AI</h3>
 
-        let questionCounter = 0;
-        let questions = [];
+        <div class="form-group">
+            <label>Chủ đề / Tiêu đề:</label>
+            <input type="text" id="aiTitle" class="form-input" placeholder="VD: Lập trình C# cơ bản">
+        </div>
 
+        <div class="form-group">
+            <label>Nội dung chi tiết:</label>
+            <textarea id="aiContent" class="form-textarea" rows="4"
+                placeholder="Mô tả chi tiết về kiến thức cần tạo câu hỏi..."></textarea>
+        </div>
 
+        <div class="form-group">
+            <label>Số lượng câu hỏi:</label>
+            <input type="number" id="aiNumberOfQuestions" class="form-input" value="5" min="1" max="20">
+        </div>
 
-        // Add question functionality
-        addQuestionBtn.addEventListener('click', function () {
-            addQuestion();
-        });
+        <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button type="button" class="btn btn-secondary" onclick="closeAIModal()">Hủy</button>
+            <button type="button" class="btn btn-primary" onclick="generateAIQuestions()">
+                <i class="fas fa-magic"></i> Tạo câu hỏi
+            </button>
+        </div>
 
-        function addQuestion() {
-            questionCounter++;
-            const questionId = `question_${questionCounter}`;
+        <div id="aiLoadingMessage" style="display:none; text-align: center; margin-top: 20px; color: #667eea;">
+            <i class="fas fa-spinner fa-spin"></i> Đang tạo câu hỏi, vui lòng đợi...
+        </div>
+    </div>
+</div>
 
-            const questionData = {
-                id: questionCounter,
-                questionId: 0,
-                questionText: '',
-                answers: []
-            };
+    <script src="~/js/AI/create.js" asp-append-version="true"></script>
 
-            questions.push(questionData);
-
-            const questionHtml = `
-                    <div class="question-item" data-question-id="${questionCounter}">
-                        <div class="question-header">
-                            <div class="question-number">Q${questionCounter}</div>
-                            <button type="button" class="remove-question-btn" onclick="removeQuestion(${questionCounter})">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                        
-                        <input type="hidden" name="QuestionRequest[${questionCounter - 1}].QuestionId" value="0">
-                        <input type="text" name="QuestionRequest[${questionCounter - 1}].QuestionText" 
-                               class="question-text-input" placeholder="Nhập câu hỏi..." 
-                               onchange="updateQuestionText(${questionCounter}, this.value)" required>
-                        <span asp-validation-for="QuestionRequest[${questionCounter - 1}].QuestionText" class="text-danger"></span>
-
-                        
-                        <div class="answers-container">
-                            <div class="answers-header">
-                                <span class="answers-title">Đáp án (chọn đáp án đúng)</span>
-                                <button type="button" class="add-answer-btn" onclick="addAnswer(${questionCounter})">
-                                    <i class="fas fa-plus"></i>
-                                    Thêm đáp án
-                                </button>
-                            </div>
-                            <div class="answers-list" id="answers_${questionCounter}">
-                                <!-- Answers will be added here -->
-                            </div>
-                        </div>
-                    </div>
-                `;
-
-            // Remove empty state if exists
-            const emptyState = questionsContainer.querySelector('.empty-questions');
-            if (emptyState) {
-                emptyState.remove();
-            }
-
-            questionsContainer.insertAdjacentHTML('beforeend', questionHtml);
-
-            // Add default answers
-            addAnswer(questionCounter);
-            addAnswer(questionCounter);
-        }
-
-        function addAnswer(questionId) {
-            const question = questions.find(q => q.id === questionId);
-            if (!question) return;
-
-            const answerIndex = question.answers.length;
-            const answerId = `answer_${questionId}_${answerIndex}`;
-
-            const answerData = {
-                answerId: 0,
-                answerText: '',
-                isCorrect: false
-            };
-
-            question.answers.push(answerData);
-
-            const answerHtml = `
-                    <div class="answer-item" data-answer-index="${answerIndex}">
-                        <input type="hidden" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].AnswerId" value="0">
-                        <div class="answer-checkbox" onclick="toggleCorrectAnswer(${questionId}, ${answerIndex})"></div>
-                        <input type="hidden" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].IsCorrect" 
-                               value="false" class="is-correct-input">
-                        <input type="text" name="QuestionRequest[${questionId - 1}].Answers[${answerIndex}].AnswerText" 
-                               class="answer-input" placeholder="Nhập đáp án..." 
-                               onchange="updateAnswerText(${questionId}, ${answerIndex}, this.value)" required>
-                        <button type="button" class="remove-answer-btn" onclick="removeAnswer(${questionId}, ${answerIndex})">
-                            <i class="fas fa-times"></i>
-                        </button>
-                    </div>
-                `;
-
-            const answersList = document.getElementById(`answers_${questionId}`);
-            answersList.insertAdjacentHTML('beforeend', answerHtml);
-        }
-
-        // Global functions for dynamic content
-        window.removeQuestion = function (questionId) {
-            const questionElement = document.querySelector(`[data-question-id="${questionId}"]`);
-            if (questionElement) {
-                questionElement.remove();
-                questions = questions.filter(q => q.id !== questionId);
-
-                // Show empty state if no questions left
-                if (questions.length === 0) {
-                    questionsContainer.innerHTML = `
-                            <div class="empty-questions">
-                                <i class="fas fa-question-circle"></i>
-                                <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
-                            </div>
-                        `;
-                }
-
-                // Renumber questions
-                renumberQuestions();
-            }
-        };
-
-        window.addAnswer = addAnswer;
-
-        window.removeAnswer = function (questionId, answerIndex) {
-            const question = questions.find(q => q.id === questionId);
-            if (!question) return;
-
-            if (question.answers.length <= 2) {
-                showError('Mỗi câu hỏi phải có ít nhất 2 đáp án!');
-                return;
-            }
-
-            const answerElement = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"]`);
-            if (answerElement) {
-                answerElement.remove();
-                question.answers.splice(answerIndex, 1);
-                renumberAnswers(questionId);
-            }
-        };
-
-        window.toggleCorrectAnswer = function (questionId, answerIndex) {
-            const question = questions.find(q => q.id === questionId);
-            if (!question) return;
-
-            // Reset all answers to false
-            question.answers.forEach((answer, index) => {
-                answer.isCorrect = false;
-                const checkbox = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${index}"] .answer-checkbox`);
-                const hiddenInput = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${index}"] .is-correct-input`);
-                if (checkbox) {
-                    checkbox.classList.remove('checked');
-                }
-                if (hiddenInput) {
-                    hiddenInput.value = 'false';
-                }
-            });
-
-            // Set selected answer to true
-            question.answers[answerIndex].isCorrect = true;
-            const selectedCheckbox = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"] .answer-checkbox`);
-            const selectedHiddenInput = document.querySelector(`[data-question-id="${questionId}"] [data-answer-index="${answerIndex}"] .is-correct-input`);
-            if (selectedCheckbox) {
-                selectedCheckbox.classList.add('checked');
-            }
-            if (selectedHiddenInput) {
-                selectedHiddenInput.value = 'true';
-            }
-        };
-
-        window.updateQuestionText = function (questionId, text) {
-            const question = questions.find(q => q.id === questionId);
-            if (question) {
-                question.questionText = text;
-            }
-        };
-
-        window.updateAnswerText = function (questionId, answerIndex, text) {
-            const question = questions.find(q => q.id === questionId);
-            if (question && question.answers[answerIndex]) {
-                question.answers[answerIndex].answerText = text;
-            }
-        };
-
-        function renumberQuestions() {
-            const questionElements = document.querySelectorAll('.question-item');
-            questionElements.forEach((element, index) => {
-                const questionNumber = element.querySelector('.question-number');
-                if (questionNumber) {
-                    questionNumber.textContent = `Q${index + 1}`;
-                }
-
-                // Update form field names
-                const inputs = element.querySelectorAll('input, select, textarea');
-                inputs.forEach(input => {
-                    if (input.name && input.name.includes('QuestionRequest[')) {
-                        input.name = input.name.replace(/QuestionRequest\[\d+\]/, `QuestionRequest[${index}]`);
-                    }
-                });
-            });
-        }
-
-        function renumberAnswers(questionId) {
-            const answerElements = document.querySelectorAll(`[data-question-id="${questionId}"] .answer-item`);
-            answerElements.forEach((element, index) => {
-                element.setAttribute('data-answer-index', index);
-
-                // Update form field names
-                const inputs = element.querySelectorAll('input');
-                inputs.forEach(input => {
-                    if (input.name && input.name.includes('.Answers[')) {
-                        input.name = input.name.replace(/\.Answers\[\d+\]/, `.Answers[${index}]`);
-                    }
-                });
-            });
-        }
-
-        // Form validation
-        function validateForm() {
-            if (questions.length === 0) {
-                showError('Vui lòng thêm ít nhất một câu hỏi!');
-                return false;
-            }
-
-            for (let question of questions) {
-                if (!question.questionText.trim()) {
-                    showError('Vui lòng nhập nội dung cho tất cả câu hỏi!');
-                    return false;
-                }
-
-                if (question.answers.length < 2) {
-                    showError('Mỗi câu hỏi phải có ít nhất 2 đáp án!');
-                    return false;
-                }
-
-                const hasCorrectAnswer = question.answers.some(answer => answer.isCorrect);
-                if (!hasCorrectAnswer) {
-                    showError('Mỗi câu hỏi phải có ít nhất một đáp án đúng!');
-                    return false;
-                }
-
-                for (let answer of question.answers) {
-                    if (!answer.answerText.trim()) {
-                        showError('Vui lòng nhập nội dung cho tất cả đáp án!');
-                        return false;
-                    }
-                }
-            }
-
-            return true;
-        }
-        window.validateForm = validateForm;
-
-        // Gắn submit handler (bổ sung nếu thiếu)
-        form.addEventListener('submit', function (e) {
-            // Đồng bộ dữ liệu từ các input vào object questions (phòng trường hợp user không rời khỏi input nên onchange chưa chạy)
-            syncLatestValues();
-            if (!validateForm()) {
-                e.preventDefault();
-                return false;
-            }
-        });
-        function syncLatestValues() {
-            // Đồng bộ câu hỏi
-            document.querySelectorAll('.question-item').forEach(qEl => {
-                const qId = parseInt(qEl.getAttribute('data-question-id'));
-                const qObj = questions.find(q => q.id === qId);
-                if (qObj) {
-                    const qInput = qEl.querySelector('input.question-text-input');
-                    if (qInput) qObj.questionText = qInput.value || '';
-                    // Đồng bộ đáp án
-                    qEl.querySelectorAll('.answer-item').forEach(aEl => {
-                        const idx = parseInt(aEl.getAttribute('data-answer-index'));
-                        const ansInput = aEl.querySelector('input.answer-input');
-                        const hiddenCorrect = aEl.querySelector('input.is-correct-input');
-                        if (qObj.answers[idx]) {
-                            if (ansInput) qObj.answers[idx].answerText = ansInput.value || '';
-                            if (hiddenCorrect) qObj.answers[idx].isCorrect = hiddenCorrect.value === 'true';
-                        }
-                    });
-                }
-            });
-        }
-        // Show success message
-        function showSuccess(message) {
-            successMessage.querySelector('span').textContent = message;
-            successMessage.style.display = 'flex';
-            errorMessage.style.display = 'none';
-
-            setTimeout(() => {
-                successMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Show error message
-        function showError(message) {
-            errorText.textContent = message;
-            errorMessage.style.display = 'flex';
-            successMessage.style.display = 'none';
-
-            setTimeout(() => {
-                errorMessage.style.display = 'none';
-            }, 5000);
-        }
-
-        // Form submission
-
-        // Cancel button
-        cancelBtn.addEventListener('click', function () {
-            const hasContent = form.querySelector('input[type="text"]').value ||
-                form.querySelector('textarea').value ||
-                questions.length > 0;
-
-            if (hasContent) {
-                // Create custom confirmation dialog
-                const confirmDialog = document.createElement('div');
-                confirmDialog.style.cssText = `
-                        position: fixed;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: rgba(0, 0, 0, 0.5);
-                        display: flex;
-                        align-items: center;
-                        justify-content: center;
-                        z-index: 1000;
-                    `;
-
-                confirmDialog.innerHTML = `
-                        <div style="background: white; padding: 30px; border-radius: 20px; max-width: 400px; text-align: center;">
-                            <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #f59e0b; margin-bottom: 20px;"></i>
-                            <h3 style="margin: 0 0 15px 0; color: #2d3748;">Xác nhận hủy bỏ</h3>
-                            <p style="margin: 0 0 25px 0; color: #64748b;">Bạn có chắc chắn muốn hủy bỏ? Tất cả dữ liệu đã nhập sẽ bị mất.</p>
-                            <div style="display: flex; gap: 15px;">
-                                <button id="confirmCancel" style="flex: 1; padding: 12px; background: #ef4444; color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer;">Xác nhận</button>
-                                <button id="keepEditing" style="flex: 1; padding: 12px; background: #f8fafc; color: #64748b; border: 2px solid #e2e8f0; border-radius: 10px; font-weight: 600; cursor: pointer;">Tiếp tục</button>
-                            </div>
-                        </div>
-                    `;
-
-                document.body.appendChild(confirmDialog);
-
-                document.getElementById('confirmCancel').addEventListener('click', function () {
-                    form.reset();
-                    questions = [];
-                    questionCounter = 0;
-                    questionsContainer.innerHTML = `
-                            <div class="empty-questions">
-                                <i class="fas fa-question-circle"></i>
-                                <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
-                            </div>
-                        `;
-                    fileName.style.display = 'none';
-                    document.body.removeChild(confirmDialog);
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-
-                document.getElementById('keepEditing').addEventListener('click', function () {
-                    document.body.removeChild(confirmDialog);
-                });
-            } else {
-                form.reset();
-                questions = [];
-                questionCounter = 0;
-                questionsContainer.innerHTML = `
-                        <div class="empty-questions">
-                            <i class="fas fa-question-circle"></i>
-                            <p>Chưa có câu hỏi nào. Nhấn "Thêm câu hỏi" để bắt đầu.</p>
-                        </div>
-                    `;
-                fileName.style.display = 'none';
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-            }
-        });
-
-        // Add first question by default
-        addQuestion();
-    });
-</script>
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

@@ -1,9 +1,11 @@
 using LearnX_ApiIntegration;
+using LearnX_ApiIntegration.AI;
 using LearnX_ApiIntegration.FileService;
 using LearnX_ApiIntegration.PayMent;
 using LearnX_ApiIntegration.SystemService;
 using LearnX_App.Hubs;
 using LearnX_App.Models;
+using LearnX_Application.Comman.AI;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.Extensions.Options;
 
@@ -42,6 +44,13 @@ builder.Services.AddTransient<ICategoryApiClient, CategoryApiClient>();
 builder.Services.AddHttpClient<IPaymentApiClient, PaymentApiClient>(
     client => client.BaseAddress = new Uri("http://localhost:5190")
 );
+
+// builder.Services.AddHttpClient<IAIQuestionGeneratorClient, AIQuestionGeneratorClient>(
+//         client => client.BaseAddress = new Uri("http://localhost:5041")
+
+// );
+builder.Services.AddTransient<IAIQuestionGeneratorClient, AIQuestionGeneratorClient>();
+
 
 builder.Services.AddRazorPages();
 builder.Services.AddSignalR();

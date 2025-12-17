@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 using Microsoft.OpenApi.Models;
 using AutoMapper;
+using LearnX_Application.Comman.AI;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -85,6 +86,8 @@ builder.Services.AddScoped<IMessageService, MessageService>();
 builder.Services.AddScoped<IEBookService, EBookService>();
 builder.Services.AddScoped<IEssaySubmissionService, EssaySubmissionService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddHttpClient<IAIQuestionGenerator, AIQuestionGenerator>();
+builder.Services.AddTransient<IAIQuestionGenerator, AIQuestionGenerator>();
 var tokenKey = builder.Configuration["Tokens:Key"];
 var tokenIssuer = builder.Configuration["Tokens:Issuer"];
 if (string.IsNullOrWhiteSpace(tokenKey))

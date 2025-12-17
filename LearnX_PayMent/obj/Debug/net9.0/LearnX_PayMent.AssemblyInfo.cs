@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LearnX_PayMent")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+bc08c914741c61b7b6b00c82bbb04a6dc39fed59")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec21964b96ca1d5e8972b8153aec9c6a1b730181")]
 [assembly: System.Reflection.AssemblyProductAttribute("LearnX_PayMent")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LearnX_PayMent")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

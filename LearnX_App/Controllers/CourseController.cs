@@ -187,27 +187,17 @@ namespace LearnX_App.Controllers
 
             return View(course);
         }
-
-        // GET: Course/Delete/5
-
-
         // POST: Course/Delete/5
         [HttpGet]
         public async Task<IActionResult> Delete(int courseId)
         {
-
             try
             {
                 if (!ModelState.IsValid)
                 {
                     return Json(new { success = false, message = "Invalid course data." });
                 }
-
-                // Logic để xử lý lưu course
-                // Ví dụ: lưu vào database hoặc gọi một API
                 bool isSaved = await _context.Delete(courseId);
-
-                Console.WriteLine("id" + courseId);
                 if (isSaved != false)
                 {
                     return Json(new { success = true, message = "Course Delete successfully!" });

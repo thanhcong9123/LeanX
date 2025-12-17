@@ -3,6 +3,8 @@ using LearnX_ApiIntegration;
 using LearnX_App.Models;
 using LearnX_ModelView.Catalog.EssaySubmission;
 using LearnX_ModelView.Catalog.Exercise;
+using LearnX_ApiIntegration.AI;
+using LearnX_ModelView.Catalog.Exercise;
 using Microsoft.AspNetCore.Mvc;
 using CloudinaryDotNet;
 using Microsoft.AspNetCore.Authorization;
@@ -18,6 +20,7 @@ namespace LearnX_App.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly IScoreApiClient scoreApiClient;
         private readonly Cloudinary _cloudinary; // add field and inject in ctor
+        private readonly IAIQuestionGeneratorClient _aiClient;
 
         [ActivatorUtilitiesConstructor]
         public EssaySubmissionController(
@@ -26,7 +29,8 @@ namespace LearnX_App.Controllers
             ICourseApiClient courseService,
             IWebHostEnvironment webHostEnvironment,
             Cloudinary cloudinary,
-            IScoreApiClient _scoreApiClient)
+            IScoreApiClient _scoreApiClient,
+            IAIQuestionGeneratorClient aiClient)
         {
             _essaySubmissionService = essaySubmissionService;
             _exerciseService = exerciseService;
@@ -34,6 +38,7 @@ namespace LearnX_App.Controllers
             _webHostEnvironment = webHostEnvironment;
             _cloudinary = cloudinary;
             scoreApiClient = _scoreApiClient;
+            _aiClient = aiClient;
         }
 
         // GET: Tạo bài tập tự luận mới
@@ -304,12 +309,11 @@ namespace LearnX_App.Controllers
                 ShowAllSubmissions = showAll && isInMyCourse, // Chỉ cho phép showAll nếu là chủ sở hữu
                 IsTeacher = isInMyCourse, // Thay đổi logic kiểm tra
                 AnswerFile = exercise.AnswerFile
-
-
             };
 
             return View(viewModel);
         }
+        
 
         // GET: Xem chi tiết bài nộp
         public async Task<IActionResult> ViewSubmissionDetail(int id)
@@ -395,6 +399,67 @@ namespace LearnX_App.Controllers
             }
 
             return RedirectToAction("ViewSubmissionDetail", new { id });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> AutoScore(int id)
+        {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Json(new { success = false, message = "Không có quyền truy cập" });
+            }
+
+            var submission = await _essaySubmissionService.GetEssaySubmissionByIdAsync(id);
+            if (submission == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy bài nộp" });
+            }
+
+            var exercise = await _exerciseService.GetExerciseByIdAsync(submission.ExerciseId);
+            if (exercise == null)
+            {
+                return Json(new { success = false, message = "Không tìm thấy bài tập" });
+            }
+
+            var userGuid = Guid.Parse(userId);
+            var courseofUser = await _courseService.GetmyCourse(userGuid);
+            var isOwner = courseofUser?.MyCourse?.Any(c => c.CourseID == exercise.CourseId) ?? false;
+            if (!isOwner)
+            {
+                return Json(new { success = false, message = "Bạn không có quyền thực hiện chức năng này" });
+            }
+
+            if (string.IsNullOrEmpty(exercise.AnswerFile) || string.IsNullOrEmpty(submission.AttachmentFilePath))
+            {
+                return Json(new { success = false, message = "Thiếu file đáp án hoặc bài nộp" });
+            }
+
+            try
+            {
+                var scoringRequest = new AIScoringRequest
+                {
+                    AnswerKeyUrl = exercise.AnswerFile,
+                    SubmissionFileUrl = submission.AttachmentFilePath,
+                    ScoringCriteria = exercise.Instruct ?? exercise.Describe ?? "Chấm theo đáp án chuẩn",
+                    MaxScore = 100,
+                    ExerciseId = submission.ExerciseId,
+                    StudentId = submission.IdUser
+                };
+
+                var result = await _aiClient.ScoringAsync(scoringRequest);
+
+                return Json(new
+                {
+                    success = true,
+                    data = result
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message });
+            }
         }
 
         // POST: Cập nhật trạng thái bài nộp
