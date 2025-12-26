@@ -1,7 +1,9 @@
+using System.Security.Claims;
 using CloudinaryDotNet;
 using CloudinaryDotNet.Actions;
 using LearnX_ApiIntegration;
 using LearnX_ApiIntegration.FileService;
+using LearnX_ApiIntegration.SystemService;
 using LearnX_App.Models;
 using LearnX_Data.Entities;
 using LearnX_ModelView.Catalog.EBook;
@@ -14,6 +16,7 @@ namespace MyApp.Namespace
         // GET: EBookController
         private readonly IEBookApiClient _ebookApiClient;
         private readonly IFileUpLoadServices _fileUpLoadServices;
+        private readonly IUserApiClient _userApiClient;
         private readonly Cloudinary _cloudinary;
         private readonly HttpClient _httpClient;
 
@@ -21,12 +24,14 @@ namespace MyApp.Namespace
         public EBookController(IEBookApiClient ebookApiClient,
                             IFileUpLoadServices fileUpLoadServices,
                             Cloudinary cloudinary,
-                            HttpClient httpClient)
+                            HttpClient httpClient,
+                            IUserApiClient userApiClient)
         {
             _ebookApiClient = ebookApiClient;
             _fileUpLoadServices = fileUpLoadServices;
             _cloudinary = cloudinary;
-            _httpClient = httpClient ?? new HttpClient(); // <- gán HttpClient (tránh null)
+            _httpClient = httpClient ?? new HttpClient();
+            _userApiClient = userApiClient; // <- gán HttpClient (tránh null)
         }
 
         // Danh sách sách
@@ -39,6 +44,12 @@ namespace MyApp.Namespace
         // Chi tiết sách
         public async Task<IActionResult> Details(int id)
         {
+            var userId = HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            Guid.TryParse(userId, out var userIds);
+            var apiResult = await _userApiClient.GetByID(userIds);
+            var infoUser = apiResult.ResultObj;
+
+
             if (id <= 0)
             {
                 return BadRequest(id);
@@ -47,6 +58,12 @@ namespace MyApp.Namespace
             if (book == null)
             {
                 return NotFound();
+            }
+            if ((infoUser.PremiumUntil == null || infoUser.PremiumUntil < DateTime.Now) && book.Status == "Premium")
+            {
+                TempData["ErrorMessage"] = "Bạn cần đăng ký Premium để đọc sách này.";
+
+                return RedirectToAction("Index", "EBook");
             }
             var model = new EBook()
             {

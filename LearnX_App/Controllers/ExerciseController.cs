@@ -218,14 +218,11 @@ namespace MyApp.Namespace
                 }).ToList()
 
             };
-            foreach (var item in modelSubmit.Questions)
-            {
-                Console.WriteLine("Keets quar " + item.SelectedAnswerId);
-            }
+         
             // Gửi dữ liệu nộp bài tập đến service để xử lý
             var result = await _exerciseService.SubmitExerciseAsync(modelSubmit);
             var score = result;
-            var isPassed = score >= 5;
+            var isPassed = score >= 50;
             // Cập nhật điểm số và trạng thái
             ViewBag.Score = score;
             ViewBag.IsPassed = isPassed;
@@ -233,7 +230,7 @@ namespace MyApp.Namespace
             {
                 IdUser = Guid.Parse(HttpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value),
                 ExerciseId = model.ExerciseId,
-                DateCompleted = DateTime.UtcNow,  // Ngày hoàn thành bài tập
+                DateCompleted = DateTime.UtcNow,  
                 Score = score,
                 IsPassed = isPassed
             };

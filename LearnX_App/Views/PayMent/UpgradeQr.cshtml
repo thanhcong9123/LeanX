@@ -3,43 +3,74 @@
 @{
     ViewData["Title"] = "Thanh toán - Quét QR";
 }
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="~/css/payment/upgradeQR.css" />
 <div class="page-container">
-    <h2>Thanh toán</h2>
-    <p>Gói: <strong>@Model.PackageName</strong></p>
-    <p>Số tiền: <strong>@Model.Amount</strong> VND</p>
-    <p>Mã đơn hàng: <strong>@Model.OrderId</strong></p>
-
-    <div id="qrcode" style="width:260px;height:260px;margin-bottom:10px;"></div>
-    <p>
-        <a id="openLink" class="btn btn-success" target="_blank">Mở liên kết thanh toán</a>
-    </p>
-    <div id="statusMessage"></div>
+    <div class="payment-card">
+        <h2><i class="fas fa-credit-card"></i> Thanh toán</h2>
+        <div class="package-info">
+            <div class="info-row"><span class="info-label">Gói dịch vụ:</span> <span
+                    class="info-value">@Model.PackageName</span>
+            </div>
+            <div class="info-row"><span class="info-label">Số tiền:</span> <span
+                    class="info-value amount-value">@Model.Amount VND</span>
+            </div>
+            <div class="info-row"><span class="info-label">Mã đơn hàng:</span> <span
+                    class="info-value">@Model.OrderId</span>
+            </div>
+        </div>
+        <div class="qr-section">
+            <div id="qrcode"></div>
+        </div>
+        <p><a id="openLink" class="btn-payment" target="_blank" rel="noopener noreferrer"> <i
+                    class="fas fa-external-link-alt"></i> Mở liên kết thanh toán </a></p>
+        <div id="statusMessage"></div>
+    </div>
 </div>
-
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
     const payUrl = '@Model.PayUrl';
     const orderId = '@Model.OrderId';
+
     // Render QR
     new QRCode(document.getElementById("qrcode"), { text: payUrl, width: 250, height: 250 });
     document.getElementById("openLink").href = payUrl;
 
     async function checkStatus() {
         try {
-            const res = await fetch('@Url.Action("CheckStatus","Payment")?orderId=' + encodeURIComponent(orderId));
+            const res = await fetch('@Url.Action("CheckStatus", "Payment")?orderId=' + encodeURIComponent(orderId));
             const data = await res.json();
+
             if (data.status && (data.status.toLowerCase() === 'success')) {
-                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-success">Thanh toán thành công. Tài khoản đã được nâng cấp.</div>';
-                setTimeout(()=> window.location.href = '/User/Profile',2000);
+                document.getElementById('statusMessage').innerHTML = `
+                    <div class="status-box status-success">
+                        <i class="fas fa-check-circle icon-large"></i>
+                        <span>Thanh toán thành công! Tài khoản đã được nâng cấp.</span>
+                    </div>
+                `;
+                setTimeout(() => window.location.href = '/User/Profile', 2000);
             } else if (data.status && data.status.toLowerCase() === 'failed') {
-                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-danger">Thanh toán thất bại.</div>';
+                document.getElementById('statusMessage').innerHTML = `
+                    <div class="status-box status-error">
+                        <i class="fas fa-times-circle icon-large"></i>
+                        <span>Thanh toán thất bại. Vui lòng thử lại.</span>
+                    </div>
+                `;
             } else {
-                document.getElementById('statusMessage').innerHTML = '<div class="alert alert-info">Đang chờ thanh toán... (status: '+ (data.status||'Pending') +')</div>';
+                document.getElementById('statusMessage').innerHTML = `
+                    <div class="status-box status-pending">
+                        <div class="spinner"></div>
+                        <span>Đang chờ thanh toán...</span>
+                    </div>
+                `;
             }
         } catch (err) {
             console.error(err);
-            document.getElementById('statusMessage').innerText = 'Lỗi khi kiểm tra trạng thái';
+            document.getElementById('statusMessage').innerHTML = `
+                <div class="status-box status-error">
+                    <i class="fas fa-exclamation-triangle icon-large"></i>
+                    <span>Lỗi khi kiểm tra trạng thái</span>
+                </div>
+            `;
         }
     }
 

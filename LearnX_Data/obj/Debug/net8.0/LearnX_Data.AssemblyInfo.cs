@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("LearnX_Data")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+ec21964b96ca1d5e8972b8153aec9c6a1b730181")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b462117f8be9cfd9f275a50ad074b96e5ab19bf9")]
 [assembly: System.Reflection.AssemblyProductAttribute("LearnX_Data")]
 [assembly: System.Reflection.AssemblyTitleAttribute("LearnX_Data")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

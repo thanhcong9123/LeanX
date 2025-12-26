@@ -18,7 +18,7 @@ namespace LearnX_Application.Comman.AI
         public AIQuestionGenerator(HttpClient httpClient, IConfiguration configuration)
         {
             _httpClient = httpClient;
-            _apiKey = configuration["OpenRouter:ApiKey"] ?? "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";
+            _apiKey = configuration["OpenRouter:ApiKey"] ?? "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";
         }
         public async Task<AIGeneratedQuestionsResponse> GenerateQuestionsAsync(AIGenerateQuestionsRequest request)
         {
